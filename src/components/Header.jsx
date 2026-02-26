@@ -3,6 +3,7 @@ import accountIcon from "/icons/account_icon.svg";
 import AuthButtons from "./AuthButtons.jsx";
 
 const Header = () => {
+ 
     return (
         <header className="w-full h-[80px] flex items-center justify-center bg-white">
             <div className="w-full max-w-[1440px] px-8 flex items-center justify-between">

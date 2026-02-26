@@ -10,6 +10,7 @@ function App() {
         <div className="App h-auto font-nunito-sans">
             <Header></Header>
             <MainContent></MainContent>
+            
         </div>
     );
 }
