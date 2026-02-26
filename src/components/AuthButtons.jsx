@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AuthButtons = ({ accountIcon, isLoggedIn = false }) => {
-    const baseBtn = "h-[32px] border border-border-gray rounded-full bg-[#FFFFFF] font-nunito-sans text-[16px] font-normal flex items-center";
+    const baseBtn = "h-[32px] border border-gray rounded-full bg-[#FFFFFF] font-nunito-sans text-[16px] font-normal flex items-center";
 
     return (
         <div className="flex items-center gap-[10px]">

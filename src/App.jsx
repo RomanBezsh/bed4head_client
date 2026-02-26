@@ -7,7 +7,7 @@ function App() {
 
 
     return(
-        <div className="App h-auto">
+        <div className="App h-auto font-nunito-sans">
             <Header></Header>
             <MainContent></MainContent>
         </div>
