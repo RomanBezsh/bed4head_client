@@ -24,7 +24,7 @@ const Header = () => {
                        flex items-center justify-center"
                     >
                         <img
-                            src="/language-icons/gb.png"
+                            src="/language_icons/gb.png"
                             alt="English"
                             className="w-[26px] h-[26px] rounded-full"
                         />
