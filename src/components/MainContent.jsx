@@ -12,7 +12,7 @@ const MainContent = () => {
             alt=""
         />
         <Search />
-        <AuthModal />
+        <AuthModal mode="register" />
       </div>
   );
 };
