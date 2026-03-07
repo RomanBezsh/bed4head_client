@@ -1,7 +1,7 @@
-import googleIcon from "/auth_icons/google.svg";
-import facebookIcon from "/auth_icons/facebook.svg";
-import appleIcon from "/auth_icons/apple.svg";
-import closerIcon from "/icons/closer_icon.svg";
+import googleIcon from "../assets/auth_icons/google.svg";
+import facebookIcon from "../assets/auth_icons/facebook.svg";
+import appleIcon from "../assets/auth_icons/apple.svg";
+import closerIcon from "../assets/icons/closer_icon.svg";
 
 const AuthModal = ({ mode = "register" }) => {
     const isLogin = mode === "login";

@@ -1,6 +1,8 @@
-import headImage from "/independed_images/head_image.jpg";
+import headImage from "../assets/independed_images/head_image.jpg";
 import Search from "./Search.jsx";
 import AuthModal from "./AuthModal.jsx";
+import Features from "./Features.jsx";
+import RecommendedHotels from "./RecommendedHotels.jsx";
 
 
 const MainContent = () => {
@@ -12,7 +14,9 @@ const MainContent = () => {
             alt=""
         />
         <Search />
-        <AuthModal mode="register" />
+        <Features />
+        <RecommendedHotels />
+        {/*<AuthModal mode="register" />*/}
       </div>
   );
 };

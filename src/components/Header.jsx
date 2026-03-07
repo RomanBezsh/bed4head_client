@@ -1,5 +1,5 @@
-import logo from "/logo.svg";
-import accountIcon from "/icons/account_icon.svg";
+import logo from "../assets/logo.svg";
+import accountIcon from "../assets/icons/account_icon.svg";
 import AuthButtons from "./AuthButtons.jsx";
 
 const Header = () => {
@@ -24,7 +24,7 @@ const Header = () => {
                        flex items-center justify-center"
                     >
                         <img
-                            src="/language_icons/gb.png"
+                            src="/src/assets/language_icons/gb.png"
                             alt="English"
                             className="w-[26px] h-[26px] rounded-full"
                         />
