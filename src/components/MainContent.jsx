@@ -6,6 +6,8 @@ import RecommendedHotels from "./RecommendedHotels.jsx";
 import Reviews from "./Reviews.jsx";
 import Advantages from "./Advantages.jsx";
 import Loyalty from "./Loyalty.jsx";
+import RegistrationCTA from "./RegistrationCTA.jsx";
+import Footer from "./Footer.jsx";
 
 
 const MainContent = () => {
@@ -28,6 +30,10 @@ const MainContent = () => {
             <div className="mt-[61px]">
                 <Loyalty />
             </div>
+            <div className="mt-[64px]">
+                <RegistrationCTA />
+            </div>
+            <Footer />
         </div>
     );
 };
