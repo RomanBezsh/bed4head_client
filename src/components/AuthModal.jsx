@@ -2,26 +2,30 @@ import googleIcon from "../assets/auth_icons/google.svg";
 import facebookIcon from "../assets/auth_icons/facebook.svg";
 import appleIcon from "../assets/auth_icons/apple.svg";
 import closerIcon from "../assets/icons/closer_icon.svg";
+import {useState} from "react";
 
-const AuthModal = ({ mode = "register" }) => {
+const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const isLogin = mode === "login";
+
+    const [password, setPassword] = useState("");
+    const [passwordRepeated, setPasswordRepeated] = useState("");
+
 
     return (
         /* Overlay */
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
-            {/* Main container */}
-            <div className="relative border-[#DDDDDD] border w-[528px] max-w-full h-auto min-h-[679px]
-             bg-white rounded-[13px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)]
-              pt-[31px] pb-[31px] flex flex-col box-border">
+        <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8"
+            onClick={(e) => e.target === e.currentTarget && onClose()} // Теперь onClose будет работать
+        >
+            <div className="relative border-[#DDDDDD] border w-[528px] max-w-full h-auto min-h-[679px] bg-white rounded-[13px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)] pt-[31px] pb-[31px] flex flex-col box-border">
                 {/* Header */}
                 <div className="relative flex items-center justify-center">
                     <h2 className="text-[24px] font-extrabold text-[#581ADB]">
                         {isLogin ? "Sign In" : "Register"}
                     </h2>
                     <button
-                        className="absolute right-[24px] top-1/2 -translate-y-2/3 flex w-[24px]
-                        h-[24px] items-center justify-center rounded-full bg-white p-0
-                        hover:bg-gray-50 transition-colors"
+                        onClick={onClose} // И здесь тоже заработает
+                        className="absolute right-[24px] top-1/2 -translate-y-2/3 flex w-[24px] h-[24px] items-center justify-center rounded-full bg-white p-0 hover:bg-gray-50 transition-colors"
                         type="button"
                         aria-label="Close modal"
                     >
@@ -64,17 +68,19 @@ const AuthModal = ({ mode = "register" }) => {
                             <AuthInput
                                 type="password"
                                 placeholder="Password"
-                                className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD]
-                                rounded-full outline-none"
+                                className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
                                 showCounter
+                                value={password} // Передаем значение
+                                onChange={(e) => setPassword(e.target.value)} // Обновляем состояние
                             />
 
                             <AuthInput
                                 type="password"
                                 placeholder="Repeat password"
-                                className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD]
-                                rounded-full outline-none"
+                                className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
                                 showCounter
+                                value={passwordRepeated} // Передаем значение
+                                onChange={(e) => setPasswordRepeated(e.target.value)} // Обновляем состояние
                             />
 
                             <p className="text-[16px] text-[#717171] px-[24px]">
@@ -94,14 +100,14 @@ const AuthModal = ({ mode = "register" }) => {
                 {isLogin && (
                     <p className="text-center text-[14px] text-[#717171] mb-6">
                         Do not have an account?{" "}
-                        <button type="button" className="text-[#581ADB]">
+                        <button type="button" className="text-[#581ADB]" onClick={() => onSwitch("register")}>
                             Register
                         </button>
                     </p>
                 )}
 
                 {/* Social auth buttons */}
-                <div className="flex flex-col gap-[14px] w-[432px] max-w-full mx-auto mt-auto">
+                <div className="flex flex-col gap-[14px] w-[432px] max-w-full mx-auto mt-8">
                     <SocialAuthButton name="Google" url={googleIcon} />
                     <SocialAuthButton name="Facebook" url={facebookIcon} />
                     <SocialAuthButton name="Apple" url={appleIcon} />
@@ -112,13 +118,16 @@ const AuthModal = ({ mode = "register" }) => {
 };
 
 
-const AuthInput = ({ type = "text", placeholder, className = "", showCounter = false }) => {
+const AuthInput = ({ type = "text", placeholder, className = "", showCounter = false, value = "", onChange }) => {
     if (!showCounter) {
         return (
             <input
                 type={type}
                 placeholder={placeholder}
                 className={className}
+                maxLength={50} // Ограничение на уровне браузера
+                value={value}
+                onChange={onChange}
             />
         );
     }
@@ -129,14 +138,17 @@ const AuthInput = ({ type = "text", placeholder, className = "", showCounter = f
                 type={type}
                 placeholder={placeholder}
                 className={className}
+                maxLength={50} // Ограничение на уровне браузера
+                value={value}
+                onChange={onChange}
             />
+            {/* Счётчик теперь берет длину из value */}
             <span className="absolute right-[24px] top-1/3 -translate-y-1/2 text-[#C2C2C2] text-[12px]">
-                0/50
+                {value.length}/50
             </span>
         </div>
     );
 };
-
 
 const AuthPrimaryButton = ({ children, variant = "primary" }) => {
     const baseClasses = "w-full h-[56px] rounded-full font-semibold text-[16px] transition-colors";
