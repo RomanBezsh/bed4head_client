@@ -118,16 +118,15 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 };
 
 
-const AuthInput = ({ type = "text", placeholder, className = "", showCounter = false, value = "", onChange }) => {
+const AuthInput = ({ type = "text", placeholder, className = "", showCounter = false, value, onChange }) => {
     if (!showCounter) {
         return (
             <input
                 type={type}
                 placeholder={placeholder}
                 className={className}
-                maxLength={50} // Ограничение на уровне браузера
-                value={value}
-                onChange={onChange}
+                maxLength={50}
+                {...(value !== undefined ? { value, onChange } : {})}
             />
         );
     }
@@ -138,11 +137,10 @@ const AuthInput = ({ type = "text", placeholder, className = "", showCounter = f
                 type={type}
                 placeholder={placeholder}
                 className={className}
-                maxLength={50} // Ограничение на уровне браузера
+                maxLength={50}
                 value={value}
                 onChange={onChange}
             />
-            {/* Счётчик теперь берет длину из value */}
             <span className="absolute right-[24px] top-1/3 -translate-y-1/2 text-[#C2C2C2] text-[12px]">
                 {value.length}/50
             </span>
