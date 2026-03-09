@@ -11,7 +11,7 @@ const Features = () => {
         { icon: relevantInformation, text: "Relevant information" },
     ];
     return (
-        <div className="flex justify-center gap-[70px] py-6">
+        <div className="flex justify-center gap-[70px] mt-7 mb-16">
             {items.map((item) => (
                 <FeatureItem key={item.text} text={item.text} icon={item.icon} {...item} />
             ))}
