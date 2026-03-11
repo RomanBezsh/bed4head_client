@@ -31,6 +31,7 @@ const Catalog = () => {
         price: 85,
         onChoose: () => alert("Hotel Selected!")
     };
+
     return (
         <div className="w-full flex flex-col">
             <img
@@ -40,7 +41,17 @@ const Catalog = () => {
             />
             <Search />
             <Features items={catalogFeatures} />
-            <HotelCard {...testHotel} />
+            <div className="flex flex-col items-center gap-8">
+
+                <HotelCard {...testHotel} />
+                <HotelCard {...testHotel} />
+                <HotelCard {...testHotel} />
+                <HotelCard {...testHotel} />
+                <HotelCard {...testHotel} />
+                <HotelCard {...testHotel} />
+
+            </div>
+
         </div>
     );
 }
