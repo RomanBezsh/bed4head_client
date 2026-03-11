@@ -1,8 +1,8 @@
-import Header from './components/Header'
-import MainContent from './components/MainContent'
+import Header from './components/common/Header.jsx'
+import Home from './pages/Home.jsx'
 // import Catalog from './pages/Catalog' 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Catalog from "./components/Catalog.jsx";
+import Catalog from "./pages/Catalog.jsx";
 
 function App() {
     return (
@@ -11,7 +11,7 @@ function App() {
                 <Header />
 
                 <Routes>
-                    <Route path="/" element={<MainContent />} />
+                    <Route path="/" element={<Home />} />
                     <Route path="/catalog" element={<Catalog />} />
                 </Routes>
             </div>
