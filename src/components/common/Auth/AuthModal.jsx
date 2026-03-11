@@ -24,7 +24,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                         {isLogin ? "Sign In" : "Register"}
                     </h2>
                     <button
-                        onClick={onClose} // И здесь тоже заработает
+                        onClick={onClose} 
                         className="absolute right-[24px] top-1/2 -translate-y-2/3 flex w-[24px] h-[24px] items-center justify-center rounded-full bg-white p-0 hover:bg-gray-50 transition-colors"
                         type="button"
                         aria-label="Close modal"
@@ -70,8 +70,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                 placeholder="Password"
                                 className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
                                 showCounter
-                                value={password} // Передаем значение
-                                onChange={(e) => setPassword(e.target.value)} // Обновляем состояние
+                                value={password} 
+                                onChange={(e) => setPassword(e.target.value)} 
                             />
 
                             <AuthInput
@@ -79,8 +79,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                 placeholder="Repeat password"
                                 className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
                                 showCounter
-                                value={passwordRepeated} // Передаем значение
-                                onChange={(e) => setPasswordRepeated(e.target.value)} // Обновляем состояние
+                                value={passwordRepeated} 
+                                onChange={(e) => setPasswordRepeated(e.target.value)} 
                             />
 
                             <p className="text-[16px] text-[#717171] px-[24px]">
