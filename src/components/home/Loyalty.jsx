@@ -1,4 +1,4 @@
-import loyaltyImg from "../assets/independed_images/loyalty_img.jpg"
+import loyaltyImg from "../../assets/independed_images/loyalty_img.jpg"
 
 
 

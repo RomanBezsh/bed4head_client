@@ -1,8 +1,8 @@
 import React, { useState } from 'react'; // Добавили useState
-import logo from "../assets/logo.svg";
-import accountIcon from "../assets/icons/account_icon.svg";
-import AuthButtons from "./AuthButtons.jsx";
-import AuthModal from "./AuthModal.jsx"; // Импортируем модалку
+import logo from "../../assets/logo.svg";
+import accountIcon from "../../assets/icons/account_icon.svg";
+import AuthButtons from "./Auth/AuthButtons.jsx";
+import AuthModal from "./Auth/AuthModal.jsx"; // Импортируем модалку
 
 const Header = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);

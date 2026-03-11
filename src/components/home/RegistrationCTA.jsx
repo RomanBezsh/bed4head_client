@@ -1,5 +1,5 @@
-import leftFlagIcon from '../assets/icons/left_flag_icon.svg';
-import rightFlagIcon from '../assets/icons/right_flag_icon.svg';
+import leftFlagIcon from '../../assets/icons/left_flag_icon.svg';
+import rightFlagIcon from '../../assets/icons/right_flag_icon.svg';
 
 
 

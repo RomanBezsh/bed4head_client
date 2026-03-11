@@ -1,7 +1,7 @@
 import { useState } from "react";
-import starIcon from "../assets/icons/star_Icon.svg";
-import hotelCardImg from "../assets/independed_images/hotel_card_img.jpg";
-import favoriteIcon from "../assets/icons/favorite_Icon.svg";
+import starIcon from "../../assets/icons/star_icon.svg";
+import hotelCardImg from "../../assets/independed_images/hotel_card_img.jpg";
+import favoriteIcon from "../../assets/icons/favorite_icon.svg";
 
 const RecommendedHotels = () => {
 
@@ -69,7 +69,7 @@ const HotelCard = ({ images }) => {
                     Hotel name | City | Country
                 </h2>
 
-                <div className="flex items-center">
+                <div className="flex flex-row items-center">
                     {[...Array(5)].map((_, i) => (
                         <img key={i} src={starIcon} alt="star" />
                     ))}
