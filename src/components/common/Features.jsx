@@ -13,7 +13,6 @@ const Features = ({ items = [] }) => {
 const FeatureItem = ({ text, icon }) => {
     return (
         <div className="flex flex-col items-center gap-[13px]">
-            {/* Используем icon как компонент или как src для img */}
             <img className="h-6 w-auto" src={icon} alt={text} />
             <span className="text-[#717171] text-base font-normal">{text}</span>
         </div>

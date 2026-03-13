@@ -50,7 +50,6 @@ const Footer = () => {
                 {footerSections.map((section) => (
                     <div key={section.category} className="flex flex-col gap-2">
                         {section.links.map((link) => (
-                            // 2. Ключ для самой ссылки (используем текст ссылки)
                             <a
                                 key={link}
                                 href="#"
