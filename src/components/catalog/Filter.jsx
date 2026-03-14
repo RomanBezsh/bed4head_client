@@ -1,5 +1,6 @@
 import loupeIcon from "../../assets/icons/loupe_icon.svg"
 import chevronDownIcon from "../../assets/icons/chevron_down_icon.svg"
+import {useState} from "react";
 
 const Filter = () => {
 
@@ -67,6 +68,31 @@ const Filter = () => {
         ],
     },];
 
+    // Struct: { rating: ["9+", "8+"], stars: ["5 stars"] }
+    const [selectedFilters, setSelectedFilters] = useState({});
+
+
+    const [price, setPrice] = useState(76);
+
+
+
+    const handleCheckboxChange = (sectionId, value) => {
+        setSelectedFilters((prev) => {
+            const currentSectionValues = prev[sectionId] || [];
+
+            // Если значение уже есть — удаляем, если нет — добавляем
+            const nextValues = currentSectionValues.includes(value)
+                ? currentSectionValues.filter((v) => v !== value)
+                : [...currentSectionValues, value];
+
+            return {
+                ...prev,
+                [sectionId]: nextValues,
+            };
+        });
+        //console.log(selectedFilters);
+    };
+
 
     return (<div
             className="flex flex-col border border-gray w-68 text-[#717171] bg-white rounded-lg gap-0 divide-y divide-gray">
@@ -74,15 +100,17 @@ const Filter = () => {
             <div className="flex flex-col gap-3 p-6">
                 <h3 className="text-[16px] font-bold text-[#555555]">Price</h3>
                 <div className="flex flex-row justify-between text-[16px]">
-                    <span>76$ night</span>
-                    <span>230$ night</span>
+                    <span>{price}$ night</span>
+                    <span>100$ night</span>
                 </div>
                 <div className="relative w-[222.53875732421875px] h-6">
                     <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#B3B3B3]"/>
                     <input
                         type="range"
-                        min="76"
-                        max="230"
+                        min={76}
+                        max={100}
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
                         className="
                             absolute
                             inset-x-0
@@ -138,9 +166,17 @@ const Filter = () => {
                     <h4 className="font-bold ">{section.title}</h4>
 
                     <ul className="flex flex-col gap-3.25 ">
-                        {section.options.map((option) => (<li className="flex flex-row justify-between w-56" key={option.label}>
-                                <label className="flex flex-row gap-2">
-                                    <input className="w-4 h-4" type="radio" name={section.id} value={option.label}/>
+                        {section.options.map((option) => (
+                            <li className="flex flex-row justify-between w-56" key={option.label}>
+                                <label className="flex items-center gap-2 cursor-pointer">
+
+                                    <input
+                                        type="checkbox"
+                                        checked={(selectedFilters[section.id] || []).includes(option.label)}
+                                        onChange={() => handleCheckboxChange(section.id, option.label)}
+                                        className="appearance-none w-4 h-4 border border-[#B3B3B3] rounded-full checked:bg-[#581ADB]"
+                                    />
+
                                     <span className="text-[16px]">{option.label}</span>
                                 </label>
                                 <span>{option.count}</span>
