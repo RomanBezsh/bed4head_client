@@ -10,6 +10,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const [password, setPassword] = useState("");
     const [passwordRepeated, setPasswordRepeated] = useState("");
 
+    const [step, setStep] = useState("form");
 
     return (
         /* Overlay */
@@ -21,7 +22,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 {/* Header */}
                 <div className="relative flex items-center justify-center">
                     <h2 className="text-[24px] font-extrabold text-[#581ADB]">
-                        {isLogin ? "Sign In" : "Register"}
+                        {step === "code" ? "Authentication" : (isLogin ? "Sign In" : "Register")}
                     </h2>
                     <button
                         onClick={onClose} 
@@ -34,65 +35,89 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 </div>
 
                 {/* Fields */}
-                <div className="flex flex-col gap-4 mt-[22px] mb-8 w-[432px] max-w-full mx-auto">
-                    {isLogin ? (
+                <div className="flex flex-col gap-4 mt-[22px] mb-8 w-[432px] max-w-full mx-auto flex-1">
+
+                    {step === "form" && (
                         <>
-                            <AuthInput
-                                type="email"
-                                placeholder="Email"
-                                className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full
-                                outline-none focus:border-[#581ADB]"
-                            />
-                            <AuthInput
-                                type="password"
-                                placeholder="Password"
-                                className="w-full h-[56px] px-[24px] border border-[#DDDDDD] rounded-full
-                                outline-none"
-                            />
+                            {isLogin ? (
+                                <>
+                                    <AuthInput
+                                        type="email"
+                                        placeholder="Email"
+                                        className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                    />
+                                    <AuthInput
+                                        type="password"
+                                        placeholder="Password"
+                                        className="w-full h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none"
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex flex-col">
+                                        <AuthInput
+                                            type="email"
+                                            placeholder="Email"
+                                            className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                        />
+                                        <p className="text-[16px] mt-2 mx-[24px] text-[#717171] font-normal leading-[16px]">
+                                            We will send you an email to confirm your email address
+                                        </p>
+                                    </div>
+
+                                    <AuthInput
+                                        type="password"
+                                        placeholder="Password"
+                                        className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
+                                        showCounter
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+
+                                    <AuthInput
+                                        type="password"
+                                        placeholder="Repeat password"
+                                        className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
+                                        showCounter
+                                        value={passwordRepeated}
+                                        onChange={(e) => setPasswordRepeated(e.target.value)}
+                                    />
+
+                                    <p className="text-[16px] text-[#717171] px-[24px]">
+                                        *Get acquainted with our <a href="#" className="text-[#581ADB]">Privacy policy</a>
+                                    </p>
+                                </>
+                            )}
                         </>
-                    ) : (
-                        <>
-                            <div className="flex flex-col">
+                    )}
+
+                    {step === "code" && (
+                        <div className="flex flex-col justify-between h-full">
+
+                            <div className="flex flex-col gap-4">
                                 <AuthInput
-                                    type="email"
-                                    placeholder="Email"
-                                    className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full
-                                    outline-none focus:border-[#581ADB]"
+                                    type="text"
+                                    placeholder="Code"
+                                    className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
                                 />
-                                <p className="text-[16px] mt-2 mx-[24px] text-[#717171] font-normal
-                                leading-[16px]">
-                                    We will send you an email to confirm your email address
+
+                                <p className="text-[16px] text-[#717171] px-[24px] leading-[22px]">
+                                    We have sent you an email with the code.
+                                    Check your mail and enter the code for the authentication
                                 </p>
                             </div>
 
-                            <AuthInput
-                                type="password"
-                                placeholder="Password"
-                                className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
-                                showCounter
-                                value={password} 
-                                onChange={(e) => setPassword(e.target.value)} 
-                            />
-
-                            <AuthInput
-                                type="password"
-                                placeholder="Repeat password"
-                                className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
-                                showCounter
-                                value={passwordRepeated} 
-                                onChange={(e) => setPasswordRepeated(e.target.value)} 
-                            />
-
-                            <p className="text-[16px] text-[#717171] px-[24px]">
-                                *Get acquainted with our <a href="#" className="text-[#581ADB]">Privacy policy</a>
-                            </p>
-                        </>
+                        </div>
                     )}
+
                 </div>
 
                 {/* Continue button */}
                 <div className={`w-[432px] max-w-full mx-auto ${isLogin ? "mb-3" : "mb-8"}`}>
-                    <AuthPrimaryButton variant={isLogin ? "disabled" : "primary"}>
+                    <AuthPrimaryButton
+                        variant={isLogin ? "disabled" : "primary"}
+                        onClick={() => !isLogin && setStep("code")}
+                    >
                         Contunie
                     </AuthPrimaryButton>
                 </div>
@@ -107,11 +132,14 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 )}
 
                 {/* Social auth buttons */}
-                <div className="flex flex-col gap-[14px] w-[432px] max-w-full mx-auto mt-8">
-                    <SocialAuthButton name="Google" url={googleIcon} />
-                    <SocialAuthButton name="Facebook" url={facebookIcon} />
-                    <SocialAuthButton name="Apple" url={appleIcon} />
-                </div>
+                {step !== "code" && (
+                    <div className="flex flex-col gap-[14px] w-[432px] max-w-full mx-auto mt-8">
+                        <SocialAuthButton name="Google" url={googleIcon} />
+                        <SocialAuthButton name="Facebook" url={facebookIcon} />
+                        <SocialAuthButton name="Apple" url={appleIcon} />
+                    </div>
+                )}
+
             </div>
         </div>
     );
@@ -148,8 +176,9 @@ const AuthInput = ({ type = "text", placeholder, className = "", showCounter = f
     );
 };
 
-const AuthPrimaryButton = ({ children, variant = "primary" }) => {
+const AuthPrimaryButton = ({ children, variant = "primary", onClick }) => {
     const baseClasses = "w-full h-[56px] rounded-full font-semibold text-[16px] transition-colors";
+
     const variants = {
         primary: "bg-[#581ADB] text-white hover:bg-[#4a15ba]",
         disabled: "bg-[#E0E0E0] text-[#9E9E9E] cursor-not-allowed hover:bg-[#E0E0E0]",
@@ -158,7 +187,11 @@ const AuthPrimaryButton = ({ children, variant = "primary" }) => {
     const variantClasses = variants[variant] || variants.primary;
 
     return (
-        <button type="button" className={`${baseClasses} ${variantClasses}`}>
+        <button
+            type="button"
+            onClick={onClick}
+            className={`${baseClasses} ${variantClasses}`}
+        >
             {children}
         </button>
     );
