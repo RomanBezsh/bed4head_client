@@ -6,6 +6,9 @@ import Search from "../components/common/Search.jsx";
 import Features from "../components/common/Features.jsx";
 import HotelCard from "../components/catalog/HotelCard.jsx";
 import hotelsCardExample from "../assets/hotel_card_example.jpg";
+import MapPinButton from "../components/catalog/MapPinButton.jsx";
+import FilterBar from "../components/catalog/FilterBar.jsx";
+import Footer from "../components/common/Footer.jsx";
 
 
 const Catalog = () => {
@@ -41,17 +44,20 @@ const Catalog = () => {
             />
             <Search />
             <Features items={catalogFeatures} />
-            <div className="flex flex-col items-center gap-8">
 
-                <HotelCard {...testHotel} />
-                <HotelCard {...testHotel} />
-                <HotelCard {...testHotel} />
-                <HotelCard {...testHotel} />
-                <HotelCard {...testHotel} />
-                <HotelCard {...testHotel} />
-
+            <div className="flex flex-row mx-auto  gap-8">
+                <FilterBar />
+                <div className="flex flex-col items-center gap-8">
+                    <HotelCard {...testHotel} />
+                    <HotelCard {...testHotel} />
+                    <HotelCard {...testHotel} />
+                    <HotelCard {...testHotel} />
+                    <HotelCard {...testHotel} />
+                    <HotelCard {...testHotel} />
+                </div>
             </div>
 
+            <Footer />
         </div>
     );
 }

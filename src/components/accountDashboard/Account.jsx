@@ -1,7 +1,7 @@
-import UserPlaceholder from "../../assets/icons/user_placeholder.svg";
-import EditIcon from "../../assets/icons/edit_icon.svg";
-import CameraIcon from "../../assets/icons/camera_icon.svg";
-import SelectArrowIcon from "../../assets/icons/select_arrow_icon.svg";
+import userPlaceholder from "../../assets/icons/user_placeholder.svg";
+import editIcon from "../../assets/icons/edit_icon.svg";
+import cameraIcon from "../../assets/icons/camera_icon.svg";
+import selectArrowIcon from "../../assets/icons/select_arrow_icon.svg";
 
 function FieldInput({ placeholder, note = "", smallNote = "" }) {
     return (
@@ -37,7 +37,7 @@ function FieldSelect({ placeholder }) {
             </select>
 
             <img
-                src={SelectArrowIcon}
+                src={selectArrowIcon}
                 alt="arrow"
                 className="pointer-events-none absolute right-[18px] top-1/2 h-[10px] w-[10px] -translate-y-1/2"
             />
@@ -57,7 +57,7 @@ function Account() {
                     <div className="flex h-[248px] w-[800px] overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
                         <div className="flex h-[248px] w-[248px] items-center justify-center bg-[#E9E9E9]">
                             <img
-                                src={UserPlaceholder}
+                                src={userPlaceholder}
                                 alt="user"
                                 className="h-[248px] w-[248px] object-contain opacity-70"
                             />
@@ -70,7 +70,7 @@ function Account() {
                                 </span>
 
                                 <img
-                                    src={EditIcon}
+                                    src={editIcon}
                                     alt="edit"
                                     className="h-[24px] w-24px] object-contain opacity-70"
                                 />
@@ -79,7 +79,7 @@ function Account() {
                             <button className="flex h-[32px] w-[192px] items-center justify-center gap-[8px] rounded-full border border-[#D9D9D9] bg-white text-[11px] text-[#8F8F8F]">
                                 <span className="text-[#717171] font-normal text-[16px]">Change the photo</span>
                                 <img
-                                    src={CameraIcon}
+                                    src={cameraIcon}
                                     alt="camera"
                                     className="h-[24px] w-[24px] object-contain"
                                 />

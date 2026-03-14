@@ -14,7 +14,7 @@ const RecommendedHotels = () => {
     ];
 
     return (
-        <div className="flex flex-wrap w-[1184px] h-[723px] gap-[32px] mx-auto">
+        <div className="flex flex-wrap w-296 h-180.75 gap-8 mx-auto">
             <HotelCard images={images} />
             <HotelCard images={images} />
             <HotelCard images={images} />

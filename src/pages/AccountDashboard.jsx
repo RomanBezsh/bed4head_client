@@ -1,14 +1,13 @@
 import { useState } from "react";
 
-import AccountDashboardHeader from "./AccountDashboardHeader";
-import ToMainPageButton from "./ToMainPageButton";
-import DashboardNavigation from "./DashboardNavigation";
+import ToMainPageButton from "../components/accountDashboard/ToMainPageButton.jsx";
+import DashboardNavigation from "../components/accountDashboard/DashboardNavigation.jsx";
 
-import Account from "./Account";
-import PaymentMethod from "./PaymentMethod";
-import TravelInformation from "./TravelInformation";
-import Newsletters from "./Newsletters";
-import Security from "./Security";
+import Account from "../components/accountDashboard/Account.jsx";
+import PaymentMethod from "../components/accountDashboard/PaymentMethod.jsx";
+import TravelInformation from "../components/accountDashboard/TravelInformation.jsx";
+import Newsletters from "../components/accountDashboard/Newsletters.jsx";
+import Security from "../components/accountDashboard/Security.jsx";
 
 function AccountDashboard() {
 
@@ -31,9 +30,6 @@ function AccountDashboard() {
 
     return (
         <div className="w-full min-h-screen bg-white">
-
-            <AccountDashboardHeader />
-
             <div className="px-[80px] pt-[24px]">
 
                 <div className="flex items-center gap-[24px]">

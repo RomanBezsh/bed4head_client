@@ -1,50 +1,50 @@
-import AccountIcon from "../../assets/icons/account_icon.svg";
-import PaymentIcon from "../../assets/icons/payment_icon.svg";
-import TravelIcon from "../../assets/icons/travel_info_icon.svg";
-import NewsletterIcon from "../../assets/icons/newsletter_icon.svg";
-import SecurityIcon from "../../assets/icons/security_icon.svg";
+import accountIcon from "../../assets/icons/account_icon.svg";
+import paymentIcon from "../../assets/icons/payment_icon.svg";
+import travelIcon from "../../assets/icons/travel_info_icon.svg";
+import newsletterIcon from "../../assets/icons/newsletter_icon.svg";
+import securityIcon from "../../assets/icons/security_icon.svg";
 
-import AccountIconActive from "../../assets/icons/active_icons/account_icon_active.svg";
-import PaymentIconActive from "../../assets/icons/active_icons/payment_icon_active.svg";
-import TravelIconActive from "../../assets/icons/active_icons/travel_info_icon_active.svg";
-import NewsletterIconActive from "../../assets/icons/active_icons/newsletter_icon_active.svg";
-import SecurityIconActive from "../../assets/icons/active_icons/security_icon_active.svg";
+import accountIconActive from "../../assets/icons/active_icons/account_icon_active.svg";
+import paymentIconActive from "../../assets/icons/active_icons/payment_icon_active.svg";
+import travelIconActive from "../../assets/icons/active_icons/travel_info_icon_active.svg";
+import newsletterIconActive from "../../assets/icons/active_icons/newsletter_icon_active.svg";
+import securityIconActive from "../../assets/icons/active_icons/security_icon_active.svg";
 
 function DashboardNavigation({ activeTab, setActiveTab }) {
     const tabs = [
         {
             id: "account",
             title: "Account",
-            icon: AccountIcon,
-            iconActive: AccountIconActive,
+            icon: accountIcon,
+            iconActive: accountIconActive,
             width: "w-[120px]"
         },
         {
             id: "payment",
             title: "Payment method",
-            icon: PaymentIcon,
-            iconActive: PaymentIconActive,
+            icon: paymentIcon,
+            iconActive: paymentIconActive,
             width: "w-[184px]"
         },
         {
             id: "travel",
             title: "Travel information",
-            icon: TravelIcon,
-            iconActive: TravelIconActive,
+            icon: travelIcon,
+            iconActive: travelIconActive,
             width: "w-[184px]"
         },
         {
             id: "newsletters",
             title: "Newsletters",
-            icon: NewsletterIcon,
-            iconActive: NewsletterIconActive,
+            icon: newsletterIcon,
+            iconActive: newsletterIconActive,
             width: "w-[140px]"
         },
         {
             id: "security",
             title: "Security",
-            icon: SecurityIcon,
-            iconActive: SecurityIconActive,
+            icon: securityIcon,
+            iconActive: securityIconActive,
             width: "w-[120px]"
         }
     ];
