@@ -3,6 +3,7 @@ import Header from "./components/common/Header.jsx";
 import Home from "./pages/Home.jsx";
 import Catalog from "./pages/Catalog.jsx";
 import AccountDashboard from "./pages/AccountDashboard.jsx";
+import HotelPage from "./pages/HotelPage.jsx";
 
 
 
@@ -22,6 +23,12 @@ function App() {
                         path="/catalog"
                         element={
                             <Catalog />
+                        }
+                    />
+                    <Route
+                        path="/hotel"
+                        element={
+                            <HotelPage />
                         }
                     />
                     <Route
