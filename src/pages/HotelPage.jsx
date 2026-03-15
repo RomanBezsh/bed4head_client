@@ -11,26 +11,13 @@ import HotelHeader from "../components/hotelPage/HotelHeader.jsx";
 import Facilities from "../components/hotelPage/Facilities.jsx";
 
 
-import generalIcon from "../assets/icons/accountDashboard/travel/general_icon.svg";
-import accessibilityIcon from "../assets/icons/accountDashboard/travel/accesibility_icon.svg";
-import languagesIcon from "../assets/icons/accountDashboard/travel/language_spoken_icon.svg";
-import parkingIcon from "../assets/icons/accountDashboard/travel/parking_icon.svg";
-import receptionIcon from "../assets/icons/reception_bell_icon.svg";
-import cleaningIcon from "../assets/icons/cleaning_icon.svg";
-import entertainmentIcon from "../assets/icons/family_entertainment.svg";
-import securityIcon from "../assets/icons/security_shield.svg";
-import bathroomIcon from "../assets/icons/bathroom_amenities_icon.svg";
-import bedroomIcon from "../assets/icons/bedroom_icon.svg";
-import kitchenIcon from "../assets/icons/kitchen_icon.svg";
-import amenitiesIcon from "../assets/icons/room_features_icon.svg";
-import petsIcon from "../assets/icons/pets_icon.svg";
-import mediaIcon from "../assets/icons/media_tech_icon.svg";
-import foodIcon from "../assets/icons/food_beverage_icon.svg";
-import internetIcon from "../assets/icons/wifi_connection_icon.svg";
-
 import ImportantInfo from "../components/hotelPage/ImportantInfo.jsx";
 import Booking from "../components/hotelPage/Booking.jsx";
 import Nearby from "../components/hotelPage/Nearby.jsx";
+import Comments from "../components/home/Reviews.jsx";
+import Faq from "../components/hotelPage/Faq.jsx";
+import HotelsNearby from "../components/hotelPage/HotelsNearby.jsx";
+import Footer from "../components/common/Footer.jsx";
 
 
 
@@ -233,6 +220,10 @@ const HotelPage = () => {
             <ImportantInfo info={importantData}/>
             <Booking />
             <Nearby places={nearbyData} />
+            <Comments />
+            <Faq />
+            <HotelsNearby />
+            <Footer />
             <ScrollToTop />
         </div>
     );
