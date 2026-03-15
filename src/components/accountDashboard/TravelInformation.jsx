@@ -1,3 +1,4 @@
+import { useState } from "react";
 import General from "../../assets/icons/accountDashboard/travel/general_icon.svg";
 import Accessibility from "../../assets/icons/accountDashboard/travel/accesibility_icon.svg";
 import LanguageSpoken from "../../assets/icons/accountDashboard/travel/language_spoken_icon.svg";
@@ -11,31 +12,41 @@ function SectionTitle({ icon, title }) {
     return (
         <div className="mb-[12px] flex items-center gap-[8px]">
             <img src={icon} alt="" className="h-[20px] w-[20px] object-contain" />
-            <span className="text-[16px] font-normal text-[#717171] font-nunito-sans">
+            <span className="font-nunito-sans text-[16px] font-normal text-[#717171]">
                 {title}
             </span>
         </div>
     );
 }
 
-function ServiceItem({ text }) {
+function ServiceItem({ text, checked, onChange }) {
     return (
-        <div className="mb-[6px] flex items-center gap-[8px]">
-            <div className="h-[14px] w-[14px] rounded-full border border-[#717171]" />
-            <span className="text-[16px] font-normal text-[#717171] font-nunito-sans leading-[1.2]">
+        <label className="mb-[6px] flex cursor-pointer items-center gap-[8px]">
+            <input
+                type="checkbox"
+                checked={checked}
+                onChange={onChange}
+                className="appearance-none w-4 h-4 border border-[#B3B3B3] rounded-full checked:bg-[#581ADB] shrink-0"
+            />
+            <span className="font-nunito-sans text-[16px] font-normal leading-[1.2] text-[#717171]">
                 {text}
             </span>
-        </div>
+        </label>
     );
 }
 
-function InfoSection({ icon, title, items }) {
+function InfoSection({ icon, title, items, selectedItems, onToggle }) {
     return (
         <div className="mb-[28px]">
             <SectionTitle icon={icon} title={title} />
             <div>
                 {items.map((item, index) => (
-                    <ServiceItem key={index} text={item} />
+                    <ServiceItem
+                        key={index}
+                        text={item}
+                        checked={selectedItems.includes(item)}
+                        onChange={() => onToggle(item)}
+                    />
                 ))}
             </div>
         </div>
@@ -43,6 +54,16 @@ function InfoSection({ icon, title, items }) {
 }
 
 function TravelInformation() {
+    const [selectedServices, setSelectedServices] = useState([]);
+
+    const toggleService = (service) => {
+        setSelectedServices((prev) =>
+            prev.includes(service)
+                ? prev.filter((item) => item !== service)
+                : [...prev, service]
+        );
+    };
+
     const generalItems = [
         "Shuttle service",
         "Additional charge",
@@ -123,18 +144,24 @@ function TravelInformation() {
                                 icon={General}
                                 title="General"
                                 items={generalItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
 
                             <InfoSection
                                 icon={Accessibility}
                                 title="Accessibility"
                                 items={accessibilityItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
 
                             <InfoSection
                                 icon={LanguageSpoken}
                                 title="Languages spoken"
                                 items={languageItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
                         </div>
 
@@ -143,43 +170,53 @@ function TravelInformation() {
                                 icon={Parking}
                                 title="Parking"
                                 items={parkingItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
 
                             <InfoSection
                                 icon={ReceptionServices}
                                 title="Reception services"
                                 items={receptionItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
 
                             <InfoSection
                                 icon={CleaningServices}
                                 title="Cleaning services"
                                 items={cleaningItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
 
                             <InfoSection
                                 icon={FamilyServices}
                                 title="Entertainment and family services"
                                 items={familyItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
 
                             <InfoSection
                                 icon={SafetyAndSecurity}
                                 title="Safety & security"
                                 items={safetyItems}
+                                selectedItems={selectedServices}
+                                onToggle={toggleService}
                             />
                         </div>
                     </div>
 
                     <div className="min-h-[260px] w-[340px] rounded-[10px] border border-[#E5E5E5] bg-white px-[26px] py-[34px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                        <p className="mb-[24px] text-[16px] font-normal leading-[1.55] text-[#8A8A8A] font-nunito-sans">
+                        <p className="mb-[24px] font-nunito-sans text-[16px] font-normal leading-[1.55] text-[#8A8A8A]">
                             With this information at hand, we can tailor the best deals
                             specifically for you and provide highlighted details in the
                             hotel descriptions to ensure you have all the important
                             information.
                         </p>
 
-                        <p className="text-[16px] font-normal leading-[1.55] text-[#8A8A8A] font-nunito-sans">
+                        <p className="font-nunito-sans text-[16px] font-normal leading-[1.55] text-[#8A8A8A]">
                             Select the services that you prioritize
                         </p>
                     </div>

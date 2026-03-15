@@ -27,7 +27,16 @@ function TopicCard({ image, title, text }) {
                     <input
                         type="radio"
                         name="newsletter-topic"
-                        className="h-[24px] w-[24px]"
+                        className="
+                            appearance-none
+                            w-[24px]
+                            h-[24px]
+                            border
+                            border-[#B3B3B3]
+                            rounded-full
+                            checked:bg-[#581ADB]
+                            cursor-pointer
+                        "
                     />
                     <span className="text-[16px] font-normal font-nunito-sans text-[#717171] leading-[24px]">
                         Choose this topic
