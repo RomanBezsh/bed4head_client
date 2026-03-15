@@ -1,8 +1,8 @@
-import hotelStandardsIcon from "../../assets/icons/hotel_standards_icon.svg";
-import securePaymentIcon from "../../assets/icons/secure_payment_icon2.svg";
-import bestPriceIcon from "../../assets/icons/best_price_icon.svg";
-import easyBookingIcon from "../../assets/icons/easy_booking_icon2.svg";
-import emailConfirmIcon from "../../assets/icons/email_confirm_icon.svg";
+import hotelStandardsIcon from "../../assets/icons/home/hotel_standards_icon.svg";
+import securePaymentIcon from "../../assets/icons/home/secure_payment_icon2.svg";
+import bestPriceIcon from "../../assets/icons/home/best_price_icon.svg";
+import easyBookingIcon from "../../assets/icons/home/easy_booking_icon2.svg";
+import emailConfirmIcon from "../../assets/icons/home/email_confirm_icon.svg";
 
 
 const Advantages = () => {

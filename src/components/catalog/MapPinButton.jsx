@@ -1,5 +1,5 @@
 import {NavLink} from "react-router";
-import mapPinIcon from "../../assets/icons/map_pin_icon.svg";
+import mapPinIcon from "../../assets/icons/common/map_pin_icon.svg";
 
 const MapPinButton = () => {
     return (

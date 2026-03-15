@@ -1,5 +1,5 @@
-import loupeIcon from "../../assets/icons/loupe_icon.svg"
-import chevronDownIcon from "../../assets/icons/chevron_down_icon.svg"
+import loupeIcon from "../../assets/icons/catalog/loupe_icon.svg"
+import chevronDownIcon from "../../assets/icons/common/chevron_down_icon.svg"
 import {useState} from "react";
 
 const Filter = () => {

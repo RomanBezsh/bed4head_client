@@ -1,14 +1,56 @@
-import plainIcon from "../assets/icons/plain_icon.svg";
-import calendar from "../assets/icons/calendar.svg";
-import profile2Users from "../assets/icons/profile2user.svg";
-import HotelHeader from "../components/hotelPage/HotelHeader.jsx";
+import plainIcon from "../assets/icons/common/plain_icon.svg";
+import calendar from "../assets/icons/common/calendar.svg";
+import profile2Users from "../assets/icons/common/profile2user.svg";
 import image from "../assets/independed_images/head_image.jpg";
-import HotelMainInfo from "../components/hotelPage/HotelMainInfo.jsx";
-import chevronLeftIcon from "../assets/icons/chevron_left_icon.svg";
+import chevronLeftIcon from "../assets/icons/common/chevron_left_icon.svg";
 
 import React from "react";
 import ReviewStats from "../components/hotelPage/ReviewStats.jsx";
+import HotelMainInfo from "../components/hotelPage/HotelMainInfo.jsx";
+import HotelHeader from "../components/hotelPage/HotelHeader.jsx";
+import Facilities from "../components/hotelPage/Facilities.jsx";
+
+
+import generalIcon from "../assets/icons/accountDashboard/travel/general_icon.svg";
+import accessibilityIcon from "../assets/icons/accountDashboard/travel/accesibility_icon.svg";
+import languagesIcon from "../assets/icons/accountDashboard/travel/language_spoken_icon.svg";
+import parkingIcon from "../assets/icons/accountDashboard/travel/parking_icon.svg";
+import receptionIcon from "../assets/icons/reception_bell_icon.svg";
+import cleaningIcon from "../assets/icons/cleaning_icon.svg";
+import entertainmentIcon from "../assets/icons/family_entertainment.svg";
+import securityIcon from "../assets/icons/security_shield.svg";
+import bathroomIcon from "../assets/icons/bathroom_amenities_icon.svg";
+import bedroomIcon from "../assets/icons/bedroom_icon.svg";
+import kitchenIcon from "../assets/icons/kitchen_icon.svg";
+import amenitiesIcon from "../assets/icons/room_features_icon.svg";
+import petsIcon from "../assets/icons/pets_icon.svg";
+import mediaIcon from "../assets/icons/media_tech_icon.svg";
+import foodIcon from "../assets/icons/food_beverage_icon.svg";
+import internetIcon from "../assets/icons/wifi_connection_icon.svg";
+import ImportantInfo from "../components/hotelPage/ImportantInfo.jsx";
+import Booking from "../components/hotelPage/Booking.jsx";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const HotelPage = () => {
+
+
 
 
     const hotelData = {
@@ -24,6 +66,118 @@ const HotelPage = () => {
         ]
     };
 
+    const hotelFacilities = [
+        {
+            name: "General",
+            icon: generalIcon,
+            items: ["Shuttle service", "Additional charge", "Grocery deliveries", "Minimarket on site", "Designated smoking area", "Air conditioning", "Mosquito net", "Wake-up service", "Heating", "Interconnected room(s) available", "Lift", "Family rooms", "Barber/beauty shop", "Airport shuttle", "Non-smoking rooms", "Room service"]
+        },
+        {
+            name: "Accessibility",
+            icon: accessibilityIcon,
+            items: ["Upper floors accessible by stairs only", "Upper floors accessible by elevator"]
+        },
+        {
+            name: "Languages spoken",
+            icon: languagesIcon,
+            items: ["English", "Russian", "Ukrainian"]
+        },
+        {
+            name: "Parking",
+            icon: parkingIcon,
+            items: ["Parking garage"]
+        },
+        {
+            name: "Reception services",
+            icon: receptionIcon,
+            items: ["Fire extinguishers", "CCTV outside property", "CCTV in common areas", "Smoke alarms", "Security alarm", "Key card access", "24-hour security", "Safety deposit box"]
+        },
+        {
+            name: "Cleaning services",
+            icon: cleaningIcon,
+            items: ["Daily housekeeping", "Laundry", "Additional charge"]
+        },
+        {
+            name: "Entertainment and family services",
+            icon: entertainmentIcon,
+            items: ["Kids' outdoor play equipment"]
+        },
+        {
+            name: "Safety & security",
+            icon: securityIcon,
+            items: ["Invoice provided", "Private check-in/check-out", "Concierge service", "Luggage storage", "Express check-in/check-out", "24-hour front desk"]
+        },
+        {
+            name: "Bathroom",
+            icon: bathroomIcon,
+            items: ["Toilet paper", "Towels", "Slippers", "Private bathroom", "Toilet", "Free toiletries", "Hairdryer", "Shower"]
+        },
+        {
+            name: "Bedroom",
+            icon: bedroomIcon,
+            items: ["Linen"]
+        },
+        {
+            name: "Kitchen",
+            icon: kitchenIcon,
+            items: ["Electric kettle"]
+        },
+        {
+            name: "Room Amenities",
+            icon: amenitiesIcon,
+            items: ["Clothes rack"]
+        },
+        {
+            name: "Pets",
+            icon: petsIcon,
+            items: ["Pets are allowed. No extra charges"]
+        },
+        {
+            name: "Media & Technology",
+            icon: mediaIcon,
+            items: ["Flat-screen TV", "Cable channels"]
+        },
+        {
+            name: "Food & Drinks",
+            icon: foodIcon,
+            items: ["Coffee house on site"]
+        },
+        {
+            name: "Internet",
+            icon: internetIcon,
+            items: ["Internet access available"]
+        }
+    ];
+
+    const importantData = [
+        {
+            iconKey: "Clock",
+            title: "Check-in time",
+            content_lines: ["Check-in time from", "15:00 to 23:00"]
+        },
+        {
+            iconKey: "Bed",
+            title: "Extra beds",
+            content_lines: ["Maximum number of", "extra beds 1"]
+        },
+        {
+            iconKey: "Center",
+            title: "City Center",
+            content_lines: ["City center 45 m"]
+        },
+        {
+            iconKey: "Transit",
+            title: "Transit",
+            content_lines: ["Train station 356 m", "Airport 543 m"]
+        },
+        {
+            iconKey: "Pets",
+            title: "Pets",
+            content_lines: ["Pets are allowed", "No extra charge"]
+        }
+    ];
+
+
     return (
         <div className="w-full relative">
             <HotelHeader {...hotelData} />
@@ -32,6 +186,9 @@ const HotelPage = () => {
                 tags={["popular", "city_centre", "comfortable"]}
             />
             <ReviewStats />
+            <Facilities facilities={hotelFacilities} />
+            <ImportantInfo info={importantData}/>
+            <Booking />
             <ScrollToTop />
         </div>
     );

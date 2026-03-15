@@ -1,7 +1,7 @@
 import {NavLink} from "react-router";
-import chevronLeftIcon from "../../assets/icons/chevron_left_icon.svg";
-import starIcon from "../../assets/icons/star_icon.svg";
-import chevronDownIcon from "../../assets/icons/chevron_down_icon.svg";
+import chevronLeftIcon from "../../assets/icons/common/chevron_left_icon.svg";
+import starIcon from "../../assets/icons/common/star_icon.svg";
+import chevronDownIcon from "../../assets/icons/common/chevron_down_icon.svg";
 
 const HotelHeader = ({ name, stars, rating, reviewsCount, phone, searchData }) => {
     return (

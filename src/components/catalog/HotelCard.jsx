@@ -1,8 +1,8 @@
-import starIcon from "../../assets/icons/star_icon.svg";
-import arrowRightIcon from "../../assets/icons/arrow_right_icon.svg";
-import popularIcon from "../../assets/icons/popular_icon.svg";
-import cityIcon from "../../assets/icons/city_centre_icon.svg";
-import comfortIcon from "../../assets/icons/comfortable.svg";
+import starIcon from "../../assets/icons/common/star_icon.svg";
+import arrowRightIcon from "../../assets/icons/common/arrow_right_icon.svg";
+import popularIcon from "../../assets/icons/common/popular_icon.svg";
+import cityIcon from "../../assets/icons/common/city_centre_icon.svg";
+import comfortIcon from "../../assets/icons/common/comfortable.svg";
 import {NavLink} from "react-router";
 
 const TAG_ICONS = {

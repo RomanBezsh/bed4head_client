@@ -1,17 +1,17 @@
-import userPlaceholder from "../../assets/icons/user_placeholder.svg";
-import editIcon from "../../assets/icons/edit_icon.svg";
-import cameraIcon from "../../assets/icons/camera_icon.svg";
-import selectArrowIcon from "../../assets/icons/select_arrow_icon.svg";
+import userPlaceholder from "../../assets/icons/common/user_placeholder.svg";
+import editIcon from "../../assets/icons/common/edit_icon.svg";
+import cameraIcon from "../../assets/icons/common/camera_icon.svg";
+import selectArrowIcon from "../../assets/icons/common/select_arrow_icon.svg";
 
-import bedIcon from "../../assets/icons/bed_icon.svg";
-import freeWifiIcon from "../../assets/icons/free_wifi_icon.svg";
-import poolIcon from "../../assets/icons/pool_icon.svg";
-import bathIcon from "../../assets/icons/bath_icon.svg";
+import bedIcon from "../../assets/icons/accountDashboard/account/bed_icon.svg";
+import freeWifiIcon from "../../assets/icons/accountDashboard/account/free_wifi_icon.svg";
+import poolIcon from "../../assets/icons/accountDashboard/account/pool_icon.svg";
+import bathIcon from "../../assets/icons/accountDashboard/account/bath_icon.svg";
 
-import calendarIcon from "../../assets/icons/calendar.svg";
-import plainIcon from "../../assets/icons/plain_icon.svg";
-import profile2userIcon from "../../assets/icons/profile2user.svg";
-import noReviewsIcon from "../../assets/icons/no_reviews_icon.svg";
+import calendarIcon from "../../assets/icons/common/calendar.svg";
+import plainIcon from "../../assets/icons/common/plain_icon.svg";
+import profile2userIcon from "../../assets/icons/common/profile2user.svg";
+import noReviewsIcon from "../../assets/icons/common/no_reviews_icon.svg";
 
 import hotelRoomPhoto from "../../assets/independed_images/hotel_room_photo_example.png";
 

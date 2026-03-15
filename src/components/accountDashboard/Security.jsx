@@ -1,4 +1,4 @@
-import arrowRightIcon from "../../assets/icons/arrowright_icon.svg";
+import arrowRightIcon from "../../assets/icons/common/arrowright_icon.svg";
 
 function SecurityRow({ placeholder, text, linkText, isPassword = false }) {
     return (

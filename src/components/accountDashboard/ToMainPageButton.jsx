@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import ArrowBack from "../../assets/icons/arrow_back.svg";
+import ArrowBack from "../../assets/icons/accountDashboard/common/arrow_back.svg";
 
 function ToMainPageButton() {
     const navigate = useNavigate();

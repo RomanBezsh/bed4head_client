@@ -1,7 +1,7 @@
-import googleIcon from "../../../assets/auth_icons/google.svg";
-import facebookIcon from "../../../assets/auth_icons/facebook.svg";
-import appleIcon from "../../../assets/auth_icons/apple.svg";
-import closerIcon from "../../../assets/icons/closer_icon.svg";
+import googleIcon from "../../../assets/icons/auth_icons/google.svg";
+import facebookIcon from "../../../assets/icons/auth_icons/facebook.svg";
+import appleIcon from "../../../assets/icons/auth_icons/apple.svg";
+import closerIcon from "../../../assets/icons/common/closer_icon.svg";
 import {useState} from "react";
 
 const AuthModal = ({ mode = "register", onClose, onSwitch }) => {

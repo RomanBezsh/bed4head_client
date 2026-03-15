@@ -1,5 +1,5 @@
-import SelectArrowIcon from "../../assets/icons/select_arrow_icon.svg";
-import NoCardIcon from "../../assets/icons/no_card_icon.svg";
+import SelectArrowIcon from "../../assets/icons/common/select_arrow_icon.svg";
+import NoCardIcon from "../../assets/icons/common/no_card_icon.svg";
 
 function PaymentInput({ placeholder, className = "" }) {
     return (

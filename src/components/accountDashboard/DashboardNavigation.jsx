@@ -1,14 +1,14 @@
-import accountIcon from "../../assets/icons/account_icon.svg";
-import paymentIcon from "../../assets/icons/payment_icon.svg";
-import travelIcon from "../../assets/icons/travel_info_icon.svg";
-import newsletterIcon from "../../assets/icons/newsletter_icon.svg";
-import securityIcon from "../../assets/icons/security_icon.svg";
+import accountIcon from "../../assets/icons/accountDashboard/account/icon.svg";
+import paymentIcon from "../../assets/icons/accountDashboard/payment/icon.svg";
+import travelIcon from "../../assets/icons/accountDashboard/travel/icon.svg";
+import newsletterIcon from "../../assets/icons/accountDashboard/newsletters/icon.svg";
+import securityIcon from "../../assets/icons/accountDashboard/security/icon.svg";
 
-import accountIconActive from "../../assets/icons/active_icons/account_icon_active.svg";
-import paymentIconActive from "../../assets/icons/active_icons/payment_icon_active.svg";
-import travelIconActive from "../../assets/icons/active_icons/travel_info_icon_active.svg";
-import newsletterIconActive from "../../assets/icons/active_icons/newsletter_icon_active.svg";
-import securityIconActive from "../../assets/icons/active_icons/security_icon_active.svg";
+import accountIconActive from "../../assets/icons/accountDashboard/account/active.svg";
+import paymentIconActive from "../../assets/icons/accountDashboard/payment/active.svg";
+import travelIconActive from "../../assets/icons/accountDashboard/travel/active.svg";
+import newsletterIconActive from "../../assets/icons/accountDashboard/newsletters/active.svg";
+import securityIconActive from "../../assets/icons/accountDashboard/security/active.svg";
 
 function DashboardNavigation({ activeTab, setActiveTab }) {
     const tabs = [

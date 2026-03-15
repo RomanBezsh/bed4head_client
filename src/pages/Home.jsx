@@ -8,9 +8,9 @@ import Advantages from "../components/home/Advantages.jsx";
 import Loyalty from "../components/home/Loyalty.jsx";
 import RegistrationCTA from "../components/home/RegistrationCTA.jsx";
 import Footer from "../components/common/Footer.jsx";
-import easyBookingIcon from "../assets/icons/easy_booking_icon.svg";
-import securePaymentIcon from "../assets/icons/secure_payment_icon.svg";
-import relevantInformation from "../assets/icons/relevant_information_icon.svg";
+import easyBookingIcon from "../assets/icons/home/easy_booking_icon.svg";
+import securePaymentIcon from "../assets/icons/home/secure_payment_icon.svg";
+import relevantInformation from "../assets/icons/home/relevant_information_icon.svg";
 
 
 
