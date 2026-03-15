@@ -27,20 +27,10 @@ import petsIcon from "../assets/icons/pets_icon.svg";
 import mediaIcon from "../assets/icons/media_tech_icon.svg";
 import foodIcon from "../assets/icons/food_beverage_icon.svg";
 import internetIcon from "../assets/icons/wifi_connection_icon.svg";
+
 import ImportantInfo from "../components/hotelPage/ImportantInfo.jsx";
 import Booking from "../components/hotelPage/Booking.jsx";
-
-
-
-
-
-
-
-
-
-
-
-
+import Nearby from "../components/hotelPage/Nearby.jsx";
 
 
 
@@ -69,82 +59,82 @@ const HotelPage = () => {
     const hotelFacilities = [
         {
             name: "General",
-            icon: generalIcon,
+            iconKey: "general", // Используем строку вместо переменной
             items: ["Shuttle service", "Additional charge", "Grocery deliveries", "Minimarket on site", "Designated smoking area", "Air conditioning", "Mosquito net", "Wake-up service", "Heating", "Interconnected room(s) available", "Lift", "Family rooms", "Barber/beauty shop", "Airport shuttle", "Non-smoking rooms", "Room service"]
         },
         {
             name: "Accessibility",
-            icon: accessibilityIcon,
+            iconKey: "accessibility",
             items: ["Upper floors accessible by stairs only", "Upper floors accessible by elevator"]
         },
         {
             name: "Languages spoken",
-            icon: languagesIcon,
+            iconKey: "languages",
             items: ["English", "Russian", "Ukrainian"]
         },
         {
             name: "Parking",
-            icon: parkingIcon,
+            iconKey: "parking",
             items: ["Parking garage"]
         },
         {
             name: "Reception services",
-            icon: receptionIcon,
+            iconKey: "reception",
             items: ["Fire extinguishers", "CCTV outside property", "CCTV in common areas", "Smoke alarms", "Security alarm", "Key card access", "24-hour security", "Safety deposit box"]
         },
         {
             name: "Cleaning services",
-            icon: cleaningIcon,
+            iconKey: "cleaning",
             items: ["Daily housekeeping", "Laundry", "Additional charge"]
         },
         {
             name: "Entertainment and family services",
-            icon: entertainmentIcon,
+            iconKey: "entertainment",
             items: ["Kids' outdoor play equipment"]
         },
         {
             name: "Safety & security",
-            icon: securityIcon,
+            iconKey: "security",
             items: ["Invoice provided", "Private check-in/check-out", "Concierge service", "Luggage storage", "Express check-in/check-out", "24-hour front desk"]
         },
         {
             name: "Bathroom",
-            icon: bathroomIcon,
+            iconKey: "bathroom",
             items: ["Toilet paper", "Towels", "Slippers", "Private bathroom", "Toilet", "Free toiletries", "Hairdryer", "Shower"]
         },
         {
             name: "Bedroom",
-            icon: bedroomIcon,
+            iconKey: "bedroom",
             items: ["Linen"]
         },
         {
             name: "Kitchen",
-            icon: kitchenIcon,
+            iconKey: "kitchen",
             items: ["Electric kettle"]
         },
         {
             name: "Room Amenities",
-            icon: amenitiesIcon,
+            iconKey: "amenities",
             items: ["Clothes rack"]
         },
         {
             name: "Pets",
-            icon: petsIcon,
+            iconKey: "pets",
             items: ["Pets are allowed. No extra charges"]
         },
         {
             name: "Media & Technology",
-            icon: mediaIcon,
+            iconKey: "media",
             items: ["Flat-screen TV", "Cable channels"]
         },
         {
             name: "Food & Drinks",
-            icon: foodIcon,
+            iconKey: "food",
             items: ["Coffee house on site"]
         },
         {
             name: "Internet",
-            icon: internetIcon,
+            iconKey: "internet",
             items: ["Internet access available"]
         }
     ];
@@ -177,6 +167,59 @@ const HotelPage = () => {
         }
     ];
 
+    const nearbyData = [
+        {
+            title: "Attractions",
+            iconKey: "attractions",
+            items: [
+                { name: "Park Yunist", dist: "2 km" },
+                { name: "Сквер Павла Шклярука", dist: "1 km" },
+                { name: "Сквер героїчної оборони Одеси", dist: "2 km" },
+                { name: "Міжрейсова база моряків", dist: "5 km" },
+                { name: "Школа-інтернат № 91 для глухонімих дітей", dist: "12 km" },
+                { name: "Український науковий центр екології моря", dist: "11 km" },
+                { name: "Сквер героїв-льотчиків", dist: "4 km" },
+                { name: "Скеледром", dist: "8 km" },
+                { name: "Стадіон ОНЮА", dist: "2 km" },
+                { name: "Botanical Garden", dist: "2 km" },
+            ]
+        },
+        {
+            title: "Attractions",
+            iconKey: "food",
+            items: [
+                { name: "Cafe/bar Бекерай SDOBA", dist: "2 km" },
+                { name: "Restaurant Shpinat", dist: "1 km" },
+                { name: "Restaurant Стронг Хаус", dist: "2 km" },
+            ]
+        },
+        {
+            title: "Public transport",
+            iconKey: "transport",
+            items: [
+                { name: "Train Odessa-Mala", dist: "16 km" },
+                { name: "Train Odessa Train Station", dist: "11 km" },
+            ]
+        },
+        {
+            title: "Public transport",
+            iconKey: "airport",
+            items: [
+                { name: "Kyiv International Airport", dist: "16 km" },
+            ]
+        },
+        {
+            title: "Beaches in the neighbourhood",
+            iconKey: "beaches",
+            items: [
+                { name: "Arkadia Beach", dist: "9 km" },
+                { name: "Station Velykoho Fontanu Beach", dist: "8 km" },
+                { name: "Chayka", dist: "12 km" },
+                { name: "SBU beach", dist: "18 km" },
+                { name: "Malomu Fontani Beach", dist: "19 km" },
+            ]
+        }
+    ];
 
     return (
         <div className="w-full relative">
@@ -189,6 +232,7 @@ const HotelPage = () => {
             <Facilities facilities={hotelFacilities} />
             <ImportantInfo info={importantData}/>
             <Booking />
+            <Nearby places={nearbyData} />
             <ScrollToTop />
         </div>
     );
