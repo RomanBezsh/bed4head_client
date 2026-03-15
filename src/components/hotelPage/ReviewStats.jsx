@@ -11,7 +11,7 @@ const ReviewStats = () => {
 
     return (
         <div className="w-full max-w-275 mt-16 gap-8 flex flex-col items-center mx-auto">
-            <h3 className="text-[16px] text-[#717171] uppercase tracking-[0.2em]">
+            <h3 className="text-[16px] text-[#717171] uppercase">
                 Guest reviews
             </h3>
             <div className="flex flex-row justify-between w-full">

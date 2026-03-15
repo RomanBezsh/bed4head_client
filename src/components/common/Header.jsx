@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router';
 import logo from "../../assets/logo.svg";
-import accountIcon from "../../assets/icons/account_icon.svg";
+import accountIcon from "../../assets/icons/accountDashboard/account/icon.svg";
 import AuthButtons from "./Auth/AuthButtons.jsx";
 import AuthModal from "./Auth/AuthModal.jsx";
 
@@ -10,7 +10,6 @@ const Header = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("register");
 
-    // Проверяем, находимся ли мы на странице аккаунта
     const isAccountPage = location.pathname === "/account";
 
     const openModal = (mode) => {

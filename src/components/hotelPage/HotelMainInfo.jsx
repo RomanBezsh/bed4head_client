@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import chevronWhiteIcon from "../../assets/icons/chevron_white_icon.svg"
-import mapPinIcon from "../../assets/icons/map_pin_icon.svg";
-import popularIcon from "../../assets/icons/popular_icon.svg";
-import cityIcon from "../../assets/icons/city_centre_icon.svg";
-import comfortIcon from "../../assets/icons/comfortable.svg";
+import chevronWhiteIcon from "../../assets/icons/common/chevron_white_icon.svg"
+import mapPinIcon from "../../assets/icons/common/map_pin_icon.svg";
+import popularIcon from "../../assets/icons/common/popular_icon.svg";
+import cityIcon from "../../assets/icons/common/city_centre_icon.svg";
+import comfortIcon from "../../assets/icons/common/comfortable.svg";
 import avatar from "../../assets/avatar.png";
 import ReviewSlider from "./ReviewSlider.jsx";
 

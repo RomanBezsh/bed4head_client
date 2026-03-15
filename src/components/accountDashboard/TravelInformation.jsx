@@ -1,12 +1,12 @@
 import { useState } from "react";
-import General from "../../assets/icons/general_icon.svg";
-import Accessibility from "../../assets/icons/accesibility_icon.svg";
-import LanguageSpoken from "../../assets/icons/language_spoken_icon.svg";
-import Parking from "../../assets/icons/parking_icon.svg";
-import ReceptionServices from "../../assets/icons/reception_icon.svg";
-import CleaningServices from "../../assets/icons/cleaning_services_icon.svg";
-import FamilyServices from "../../assets/icons/family_services_icon.svg";
-import SafetyAndSecurity from "../../assets/icons/safety_and_security_icon.svg";
+import General from "../../assets/icons/accountDashboard/travel/general_icon.svg";
+import Accessibility from "../../assets/icons/accountDashboard/travel/accesibility_icon.svg";
+import LanguageSpoken from "../../assets/icons/accountDashboard/travel/language_spoken_icon.svg";
+import Parking from "../../assets/icons/accountDashboard/travel/parking_icon.svg";
+import ReceptionServices from "../../assets/icons/accountDashboard/travel/reception_icon.svg";
+import CleaningServices from "../../assets/icons/accountDashboard/travel/cleaning_services_icon.svg";
+import FamilyServices from "../../assets/icons/accountDashboard/travel/family_services_icon.svg";
+import SafetyAndSecurity from "../../assets/icons/accountDashboard/travel/safety_and_security_icon.svg";
 
 function SectionTitle({ icon, title }) {
     return (

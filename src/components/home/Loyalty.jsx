@@ -1,29 +1,62 @@
-import loyaltyImg from "../../assets/independed_images/loyalty_img.jpg"
+import React from 'react';
 
+import clockIcon from "../../assets/icons/clock_icon.svg";
+import bedIcon from "../../assets/icons/bedroom_icon.svg";
+import centerIcon from "../../assets/icons/museum_or_temple_center.svg";
+import transitIcon from "../../assets/icons/transit_station_train_train.svg";
+import petsIcon from "../../assets/icons/pets_icon.svg";
 
+const INFO_ICONS = {
+    Clock: clockIcon,
+    Bed: bedIcon,
+    Center: centerIcon,
+    Transit: transitIcon,
+    Pets: petsIcon
+};
 
+const ImportantInfo = ({ info }) => {
+    if (!info || info.length === 0) return null;
 
-const Loyalty = () => {
     return (
-        <div className="flex flex-col items-center gap-8">
-            <h2 className="font-[16px] text-[#717171] font-normal uppercase">be our regular</h2>
-            <div className="flex flex-row gap-8">
-                <img
-                    className="w-68 h-[171px] rounded-[13px]"
-                    src={loyaltyImg}
-                    alt={loyaltyImg}
-                />
-                <div className="w-220 h-42  flex flex-col justify-between border border-gray rounded-[13px] pl-8 pr-6 pt-8 pb-9 text-[#222222]">
-                    <p className="">
-                        We believe that every customer deserves the best, and we're committed to providing top-class services to all of our clients. When you book with us, you can enjoy not only great deals on your travel arrangements, but also exclusive discounts and special offers. We value your loyalty and want to show our appreciation by giving back.
-                    </p>
-                    <p>
-                        So start your search today and discover the amazing rewards waiting for you on our website!
-                    </p>
-                </div>
+        <div className="flex flex-col items-center gap-8 mt-20 mb-20">
+            {/* Заголовок как в Loyalty */}
+            <h2 className="text-[16px] text-[#717171] font-normal uppercase">
+                Important Information
+            </h2>
+
+            {/* Список блоков, идущих друг под другом */}
+            <div className="flex flex-col gap-8">
+                {info.map((item, index) => {
+                    const iconUrl = INFO_ICONS[item.iconKey];
+
+                    return (
+                        <div key={index} className="flex flex-row gap-8 items-center">
+                            {/* "Картинка" слева — используем стили w-68 h-[171px] из Loyalty */}
+                            <div className="w-68 h-[171px] flex items-center justify-center bg-[#F9F9F9] rounded-[13px]">
+                                <img
+                                    className="w-4 h-16 opacity-80"
+                                    src={iconUrl}
+                                    alt={item.title}
+                                />
+                            </div>
+
+                            {/* Текстовый блок справа — СТРОГО стили из твоего Loyalty */}
+                            <div className="w-220 h-42 flex flex-col justify-center border border-gray rounded-[13px] pl-8 pr-6 pt-8 pb-9 text-[#222222]">
+                                <h3 className="font-bold mb-2 uppercase text-[14px] text-[#717171]">
+                                    {item.title}
+                                </h3>
+                                {item.content_lines.map((line, lineIdx) => (
+                                    <p key={lineIdx} className="leading-relaxed">
+                                        {line}
+                                    </p>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
-}
+};
 
-export default Loyalty;
+export default ImportantInfo;

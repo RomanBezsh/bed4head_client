@@ -1,5 +1,5 @@
 
-import chevronWhiteIcon from "../../assets/icons/chevron_white_icon.svg"
+import chevronWhiteIcon from "../../assets/icons/common/chevron_white_icon.svg"
 import {useState} from "react";
 
 const ReviewSlider = ({ reviews }) => {

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import starIcon from "../../assets/icons/star_icon.svg";
+import starIcon from "../../assets/icons/common/star_icon.svg";
 import hotelCardImg from "../../assets/independed_images/hotel_card_img.jpg";
-import favoriteIcon from "../../assets/icons/favorite_icon.svg";
+import favoriteIcon from "../../assets/icons/home/favorite_icon.svg";
 
 const RecommendedHotels = () => {
 

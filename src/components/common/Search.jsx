@@ -1,8 +1,8 @@
-import searchButton from "../../assets/icons/searchnormal.svg";
-import profile2Users from "../../assets/icons/profile2user.svg";
-import plainIcon from "../../assets/icons/plain_icon.svg";
-import calendar from "../../assets/icons/calendar.svg";
-import arrowsIcon from "../../assets/icons/arrows_icon.svg";
+import searchButton from "../../assets/icons/common/searchnormal.svg";
+import profile2Users from "../../assets/icons/common/profile2user.svg";
+import plainIcon from "../../assets/icons/common/plain_icon.svg";
+import calendar from "../../assets/icons/common/calendar.svg";
+import arrowsIcon from "../../assets/icons/common/arrows_icon.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
