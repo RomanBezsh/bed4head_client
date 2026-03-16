@@ -2,7 +2,11 @@ import googleIcon from "../../../assets/icons/auth_icons/google.svg";
 import facebookIcon from "../../../assets/icons/auth_icons/facebook.svg";
 import appleIcon from "../../../assets/icons/auth_icons/apple.svg";
 import closerIcon from "../../../assets/icons/common/closer_icon.svg";
+
+import checkmarkIcon from "../../../assets/icons/big_check_purple_icon.svg";
+
 import {useState} from "react";
+import { useNavigate } from 'react-router-dom';
 
 const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const isLogin = mode === "login";
@@ -12,29 +16,42 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
     const [step, setStep] = useState("form");
 
+    const navigate = useNavigate();
+
+
+    const handleContinue = () => {
+        if (step === "form") {
+            setStep("code");
+        } else if (step === "code") {
+            setStep("success");
+        } else {
+            onClose(); // Если уже успех — закрываем
+        }
+    };
+
     return (
         /* Overlay */
         <div
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8"
-            onClick={(e) => e.target === e.currentTarget && onClose()} // Теперь onClose будет работать
+            onClick={(e) => e.target === e.currentTarget && onClose()}
         >
-            <div className="relative border-[#DDDDDD] border w-[528px] max-w-full h-auto min-h-[679px] bg-white rounded-[13px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)] pt-[31px] pb-[31px] flex flex-col box-border">
+            <div className={`relative border-[#DDDDDD] border w-[528px] max-w-full bg-white rounded-[13px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)] pt-[31px] pb-[31px] flex flex-col box-border transition-all duration-300 ${
+                step === "success" ? "h-[448px]" : "min-h-[679px]"
+            }`}>
+
                 {/* Header */}
                 <div className="relative flex items-center justify-center">
                     <h2 className="text-[24px] font-extrabold text-[#581ADB]">
-                        {step === "code" ? "Authentication" : (isLogin ? "Sign In" : "Register")}
+                        {step === "code" ? "Authentication" :
+                            step === "success" ? "All done!" :
+                                (isLogin ? "Sign In" : "Register")}
                     </h2>
-                    <button
-                        onClick={onClose} 
-                        className="absolute right-[24px] top-1/2 -translate-y-2/3 flex w-[24px] h-[24px] items-center justify-center rounded-full bg-white p-0 hover:bg-gray-50 transition-colors"
-                        type="button"
-                        aria-label="Close modal"
-                    >
+                    <button onClick={onClose} className="absolute right-[24px] top-1/2 -translate-y-2/3 flex w-[24px] h-[24px] items-center justify-center rounded-full bg-white p-0 hover:bg-gray-50 transition-colors">
                         <img src={closerIcon} alt="Close" className="w-[24px] h-[24px]" />
                     </button>
                 </div>
 
-                {/* Fields */}
+                {/* Fields Area */}
                 <div className="flex flex-col gap-4 mt-[22px] mb-8 w-[432px] max-w-full mx-auto flex-1">
 
                     {step === "form" && (
@@ -110,19 +127,51 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                         </div>
                     )}
 
+                    {step === "success" && (
+                        <div className="flex flex-col items-center text-center h-full px-[24px]">
+                            <div className="w-[93.62px] h-[93.62px] mt-14 border-[4px] border-[#581ADB] rounded-full flex items-center justify-center">
+                                <img className="w-15" src={checkmarkIcon} alt="check" />
+                            </div>
+
+                            {/* Кнопки как на макете */}
+                            <div className="flex flex-col gap-4 mt-14 w-full">
+                                <button
+                                    type="button"
+                                    className="w-full h-[56px] bg-[#581ADB] text-white rounded-full font-bold text-[16px] hover:bg-[#4a15ba] transition-colors"
+                                    onClick={() => {
+                                        navigate('/account');
+                                        onClose();
+                                    }}
+                                >
+                                    Check your profile!
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="w-full h-[56px] bg-white text-[#581ADB] border border-[#581ADB] rounded-full font-bold text-[16px] hover:bg-purple-50 transition-colors"
+                                    onClick={onClose}
+                                >
+                                    Continue booking
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                 </div>
 
                 {/* Continue button */}
-                <div className={`w-[432px] max-w-full mx-auto ${isLogin ? "mb-3" : "mb-8"}`}>
-                    <AuthPrimaryButton
-                        variant={isLogin ? "disabled" : "primary"}
-                        onClick={() => !isLogin && setStep("code")}
-                    >
-                        Contunie
-                    </AuthPrimaryButton>
-                </div>
+                {step !== "success" && (
+                    <div className={`w-[432px] max-w-full mx-auto ${isLogin ? "mb-3" : "mb-8"}`}>
+                        <AuthPrimaryButton
+                            variant={(isLogin && step === "form") ? "disabled" : "primary"}
+                            onClick={handleContinue}
+                        >
+                            Continue
+                        </AuthPrimaryButton>
+                    </div>
+                )}
 
-                {isLogin && (
+                {step === "form" && isLogin && (
                     <p className="text-center text-[14px] text-[#717171] mb-6">
                         Do not have an account?{" "}
                         <button type="button" className="text-[#581ADB]" onClick={() => onSwitch("register")}>
@@ -132,7 +181,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 )}
 
                 {/* Social auth buttons */}
-                {step !== "code" && (
+                {step === "form" && (
                     <div className="flex flex-col gap-[14px] w-[432px] max-w-full mx-auto mt-8">
                         <SocialAuthButton name="Google" url={googleIcon} />
                         <SocialAuthButton name="Facebook" url={facebookIcon} />

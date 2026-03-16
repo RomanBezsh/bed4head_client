@@ -18,39 +18,41 @@ const ImportantInfo = ({ info }) => {
     if (!info || info.length === 0) return null;
 
     return (
-        <div className="flex flex-col items-center gap-8 mt-20 mb-20">
-            <h2 className="text-[16px] text-[#717171] font-normal uppercase">
+        <div className="flex flex-col items-center mt-[60px] w-full max-w-[1200px] mx-auto px-4">
+            <h2 className="text-[16px] text-[#717171] font-normal uppercase mb-8">
                 Important Information
             </h2>
 
-
-            <div className="flex flex-row gap-10">
-                {info.map((item, index) => (
-                    <InfoCard
-                        key={index}
-                        icon={INFO_ICONS[item.iconKey]}
-                        content_lines={item.content_lines}
-                    />
-                ))}
-            </div>
-        </div>
-    );
-}
-
-const InfoCard = ({ icon, content_lines }) => {
-    return (
-        <div className="flex flex-col items-center justify-center w-[208px] h-[208px] border border-[#E5E5E5] rounded-[15px] p-6 text-center shadow-sm bg-white">
-            <div className="flex flex-col items-center justify-between gap-6 w-40 h-32">
-                <img className="w-6 h-6 object-contain" src={icon} alt="" />
-
-                <div className="text-[#717171] text-[14px] h-20 flex flex-col justify-center leading-snug font-normal">
-                    {content_lines.map((line, idx) => (
-                        <p key={idx}>{line}</p>
-                    ))}
-                </div>
+            <div className="flex flex-row gap-6 overflow-x-auto pb-4">
+                {info.map((item, index) => {
+                    const iconUrl = INFO_ICONS[item.iconKey];
+                    return (
+                        <AdvantageCard
+                            key={index}
+                            icon={iconUrl}
+                            text={item.text || item.title}
+                        />
+                    );
+                })}
             </div>
         </div>
     );
 };
+
+
+const AdvantageCard = ({ icon, text }) => {
+    return (
+        <div className="flex flex-col items-center justify-center w-52 h-[208px] border border-[#E5E5E5] rounded-[15px] p-6 text-center shadow-sm">
+            <div className="flex flex-col items-center justify-between gap-6 w-40 h-32">
+                <img className="w-6 h-6 object-contain" src={icon} alt="" />
+                <p className="text-[#717171] text-[16px] h-20 flex flex-col justify-center leading-snug font-normal">
+                    {text}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+
 
 export default ImportantInfo;

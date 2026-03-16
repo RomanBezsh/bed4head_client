@@ -14,14 +14,10 @@ import Facilities from "../components/hotelPage/Facilities.jsx";
 import ImportantInfo from "../components/hotelPage/ImportantInfo.jsx";
 import Booking from "../components/hotelPage/Booking.jsx";
 import Nearby from "../components/hotelPage/Nearby.jsx";
-import Comments from "../components/home/Reviews.jsx";
+import Comments from "../components/hotelPage/Comments.jsx";
 import Faq from "../components/hotelPage/Faq.jsx";
 import HotelsNearby from "../components/hotelPage/HotelsNearby.jsx";
 import Footer from "../components/common/Footer.jsx";
-
-
-
-
 
 
 
@@ -128,29 +124,24 @@ const HotelPage = () => {
 
     const importantData = [
         {
-            iconKey: "Clock",
-            title: "Check-in time",
-            content_lines: ["Check-in time from", "15:00 to 23:00"]
+            iconKey: 'Clock',
+            text: 'Check-in time from 15:00 to 23:00'
         },
         {
-            iconKey: "Bed",
-            title: "Extra beds",
-            content_lines: ["Maximum number of", "extra beds 1"]
+            iconKey: 'Bed',
+            text: 'Maximum number of extra beds 1'
         },
         {
-            iconKey: "Center",
-            title: "City Center",
-            content_lines: ["City center 45 m"]
+            iconKey: 'Center',
+            text: 'City center 45 m'
         },
         {
-            iconKey: "Transit",
-            title: "Transit",
-            content_lines: ["Train station 356 m", "Airport 543 m"]
+            iconKey: 'Transit',
+            text: 'Train station 356 m Airport 543 m'
         },
         {
-            iconKey: "Pets",
-            title: "Pets",
-            content_lines: ["Pets are allowed", "No extra charge"]
+            iconKey: 'Pets',
+            text: 'Pets are allowed No extra charge'
         }
     ];
 

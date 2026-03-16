@@ -1,62 +1,23 @@
 import React from 'react';
+import loyaltyImg from "../../assets/independed_images/loyalty_img.jpg";
 
-import clockIcon from "../../assets/icons/clock_icon.svg";
-import bedIcon from "../../assets/icons/bedroom_icon.svg";
-import centerIcon from "../../assets/icons/museum_or_temple_center.svg";
-import transitIcon from "../../assets/icons/transit_station_train_train.svg";
-import petsIcon from "../../assets/icons/pets_icon.svg";
-
-const INFO_ICONS = {
-    Clock: clockIcon,
-    Bed: bedIcon,
-    Center: centerIcon,
-    Transit: transitIcon,
-    Pets: petsIcon
-};
-
-const ImportantInfo = ({ info }) => {
-    if (!info || info.length === 0) return null;
-
+const Loyalty = () => {
     return (
-        <div className="flex flex-col items-center gap-8 mt-20 mb-20">
-            {/* Заголовок как в Loyalty */}
-            <h2 className="text-[16px] text-[#717171] font-normal uppercase">
-                Important Information
-            </h2>
-
-            {/* Список блоков, идущих друг под другом */}
-            <div className="flex flex-col gap-8">
-                {info.map((item, index) => {
-                    const iconUrl = INFO_ICONS[item.iconKey];
-
-                    return (
-                        <div key={index} className="flex flex-row gap-8 items-center">
-                            {/* "Картинка" слева — используем стили w-68 h-[171px] из Loyalty */}
-                            <div className="w-68 h-[171px] flex items-center justify-center bg-[#F9F9F9] rounded-[13px]">
-                                <img
-                                    className="w-4 h-16 opacity-80"
-                                    src={iconUrl}
-                                    alt={item.title}
-                                />
-                            </div>
-
-                            {/* Текстовый блок справа — СТРОГО стили из твоего Loyalty */}
-                            <div className="w-220 h-42 flex flex-col justify-center border border-gray rounded-[13px] pl-8 pr-6 pt-8 pb-9 text-[#222222]">
-                                <h3 className="font-bold mb-2 uppercase text-[14px] text-[#717171]">
-                                    {item.title}
-                                </h3>
-                                {item.content_lines.map((line, lineIdx) => (
-                                    <p key={lineIdx} className="leading-relaxed">
-                                        {line}
-                                    </p>
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
+        <div className="w-full max-w-[1200px] mx-auto flex flex-row items-center gap-[60px] px-4">
+            <img
+                src={loyaltyImg}
+                className="w-[300px] h-[200px] object-cover rounded-[13px]"
+                alt="Loyalty"
+            />
+            <div className="flex flex-col gap-4">
+                <h2 className="text-[16px] text-[#717171] uppercase font-normal">Be our regular</h2>
+                <div className="text-[16px] text-[#222222] flex flex-col gap-4 max-w-[700px]">
+                    <p>We believe that every customer deserves the best, and we're committed to providing top-class services to all of our clients...</p>
+                    <p>So start your search today and discover the amazing rewards waiting for you on our website!</p>
+                </div>
             </div>
         </div>
     );
 };
 
-export default ImportantInfo;
+export default Loyalty;
