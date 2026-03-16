@@ -12,7 +12,7 @@ import Facilities from "../components/hotelPage/Facilities.jsx";
 
 
 import ImportantInfo from "../components/hotelPage/ImportantInfo.jsx";
-import Booking from "../components/hotelPage/Booking.jsx";
+import Book from "../components/hotelPage/Book.jsx";
 import Nearby from "../components/hotelPage/Nearby.jsx";
 import Comments from "../components/hotelPage/Comments.jsx";
 import Faq from "../components/hotelPage/Faq.jsx";
@@ -209,7 +209,7 @@ const HotelPage = () => {
             <ReviewStats />
             <Facilities facilities={hotelFacilities} />
             <ImportantInfo info={importantData}/>
-            <Booking />
+            <Book />
             <Nearby places={nearbyData} />
             <Comments />
             <Faq />
