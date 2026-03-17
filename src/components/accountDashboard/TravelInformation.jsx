@@ -8,7 +8,7 @@ import CleaningServices from "../../assets/icons/accountDashboard/travel/cleanin
 import FamilyServices from "../../assets/icons/accountDashboard/travel/family_services_icon.svg";
 import SafetyAndSecurity from "../../assets/icons/accountDashboard/travel/safety_and_security_icon.svg";
 
-function SectionTitle({ icon, title }) {
+const SectionTitle = ({ icon, title }) => {
     return (
         <div className="mb-[12px] flex items-center gap-[8px]">
             <img src={icon} alt="" className="h-[20px] w-[20px] object-contain" />
@@ -17,25 +17,25 @@ function SectionTitle({ icon, title }) {
             </span>
         </div>
     );
-}
+};
 
-function ServiceItem({ text, checked, onChange }) {
+const ServiceItem = ({ text, checked, onChange }) => {
     return (
         <label className="mb-[6px] flex cursor-pointer items-center gap-[8px]">
             <input
                 type="checkbox"
                 checked={checked}
                 onChange={onChange}
-                className="appearance-none w-4 h-4 border border-[#B3B3B3] rounded-full checked:bg-[#581ADB] shrink-0"
+                className="h-4 w-4 shrink-0 appearance-none rounded-full border border-[#B3B3B3] checked:bg-[#581ADB]"
             />
             <span className="font-nunito-sans text-[16px] font-normal leading-[1.2] text-[#717171]">
                 {text}
             </span>
         </label>
     );
-}
+};
 
-function InfoSection({ icon, title, items, selectedItems, onToggle }) {
+const InfoSection = ({ icon, title, items, selectedItems, onToggle }) => {
     return (
         <div className="mb-[28px]">
             <SectionTitle icon={icon} title={title} />
@@ -51,9 +51,9 @@ function InfoSection({ icon, title, items, selectedItems, onToggle }) {
             </div>
         </div>
     );
-}
+};
 
-function TravelInformation() {
+const TravelInformation = () => {
     const [selectedServices, setSelectedServices] = useState([]);
 
     const toggleService = (service) => {
@@ -131,9 +131,9 @@ function TravelInformation() {
     ];
 
     return (
-        <div className="mt-[40px] px-[20px] font-nunito-sans">
+        <div className="mt-[40px] font-nunito-sans">
             <div className="mx-auto w-full max-w-[1140px]">
-                <h1 className="mb-[30px] text-[18px] font-bold text-[#5A35F2]">
+                <h1 className="mb-[30px] text-[36px] font-bold text-[#5A35F2]">
                     Travel Information
                 </h1>
 
@@ -224,6 +224,6 @@ function TravelInformation() {
             </div>
         </div>
     );
-}
+};
 
 export default TravelInformation;

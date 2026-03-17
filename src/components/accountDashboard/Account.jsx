@@ -15,7 +15,7 @@ import noReviewsIcon from "../../assets/icons/common/no_reviews_icon.svg";
 
 import hotelRoomPhoto from "../../assets/independed_images/hotel_room_photo_example.png";
 
-function FieldInput({ placeholder, note = "", smallNote = "" }) {
+const FieldInput = ({ placeholder, note = "", smallNote = "" }) => {
     return (
         <div className="flex flex-col gap-[8px]">
             <div className="flex items-center gap-[14px]">
@@ -39,9 +39,9 @@ function FieldInput({ placeholder, note = "", smallNote = "" }) {
             )}
         </div>
     );
-}
+};
 
-function FieldSelect({ placeholder }) {
+const FieldSelect = ({ placeholder }) => {
     return (
         <div className="relative w-[248px]">
             <select className="w-[248px] h-[56px] appearance-none rounded-full border border-[#D9D9D9] bg-white px-[18px] text-[16px] text-[#717171] font-nunito-sans outline-none">
@@ -55,9 +55,9 @@ function FieldSelect({ placeholder }) {
             />
         </div>
     );
-}
+};
 
-function BookingInfoItem({ icon, label, text }) {
+const BookingInfoItem = ({ icon, label, text }) => {
     return (
         <div className="flex items-center gap-[6px] text-[11px] text-[#8A8A8A]">
             <img src={icon} alt="" className="h-[24px] w-[24px] object-contain" />
@@ -71,9 +71,9 @@ function BookingInfoItem({ icon, label, text }) {
             </span>
         </div>
     );
-}
+};
 
-function BookingStat({ icon, value }) {
+const BookingStat = ({ icon, value }) => {
     return (
         <div className="flex h-[88px] w-[112px] flex-col items-center justify-center rounded-[10px] border border-[#E5E5E5] bg-white">
             <img
@@ -86,9 +86,9 @@ function BookingStat({ icon, value }) {
             </span>
         </div>
     );
-}
+};
 
-function BookingInfo() {
+const BookingInfo = () => {
     return (
         <div className="flex">
             <img
@@ -132,9 +132,9 @@ function BookingInfo() {
             </div>
         </div>
     );
-}
+};
 
-function BookingActions() {
+const BookingActions = () => {
     return (
         <div className="flex flex-col justify-between px-[18px] py-[12px]">
             <div className="flex gap-[10px]">
@@ -163,9 +163,9 @@ function BookingActions() {
             </div>
         </div>
     );
-}
+};
 
-function BookingCard() {
+const BookingCard = () => {
     return (
         <div className="flex w-full overflow-hidden rounded-[12px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
             <BookingInfo />
@@ -175,9 +175,9 @@ function BookingCard() {
             </div>
         </div>
     );
-}
+};
 
-function ReviewsEmpty() {
+const ReviewsEmpty = () => {
     return (
         <div className="flex h-[232px] w-full items-center justify-center rounded-[12px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
             <div className="flex flex-col items-center justify-center">
@@ -192,13 +192,13 @@ function ReviewsEmpty() {
             </div>
         </div>
     );
-}
+};
 
-function Account() {
+const Account = () => {
     return (
-        <div className="min-h-screen px-[20px] py-[18px] font-nunito-sans">
+        <div className="mt-[40px] font-nunito-sans">
             <div className="mx-auto w-full max-w-[1140px]">
-                <h1 className="mb-[14px] text-[18px] font-bold text-[#5A35F2]">
+                <h1 className="mb-[14px] text-[36px] font-bold text-[#5A35F2]">
                     Your Account
                 </h1>
 
@@ -295,6 +295,6 @@ function Account() {
             </div>
         </div>
     );
-}
+};
 
 export default Account;

@@ -10,7 +10,6 @@ import Newsletters from "../components/accountDashboard/Newsletters.jsx";
 import Security from "../components/accountDashboard/Security.jsx";
 
 function AccountDashboard() {
-
     const [activeTab, setActiveTab] = useState("account");
 
     const renderContent = () => {
@@ -29,24 +28,25 @@ function AccountDashboard() {
     };
 
     return (
-        <div className="w-full min-h-screen bg-white">
-            <div className="px-[80px] pt-[24px]">
+        <div className="min-h-screen bg-white pt-[24px]">
+            <div className="mx-auto w-full max-w-[1308px] px-[20px]">
+    <div className="grid grid-cols-[auto_1fr] items-start gap-[2%]">
+    <div className="flex justify-start">
+        <ToMainPageButton />
+    </div>
 
-                <div className="flex items-center gap-[24px]">
-                    <ToMainPageButton />
+                    <div>
+                        <DashboardNavigation
+                            activeTab={activeTab}
+                            setActiveTab={setActiveTab}
+                        />
 
-                    <DashboardNavigation
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                    />
+                        <div className="mt-[32px]">
+                            {renderContent()}
+                        </div>
+                    </div>
                 </div>
-
-                <div className="mt-[40px]">
-                    {renderContent()}
-                </div>
-
             </div>
-
         </div>
     );
 }

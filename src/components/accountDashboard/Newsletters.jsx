@@ -5,7 +5,7 @@ import Pic4 from "../../assets/independed_images/news_letters_images/fourth_pict
 import Pic5 from "../../assets/independed_images/news_letters_images/fifth_picture.png";
 import Pic6 from "../../assets/independed_images/news_letters_images/sixth_picture.png";
 
-function TopicCard({ image, title, text }) {
+const TopicCard = ({ image, title, text }) => {
     return (
         <div className="w-[245px] overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
             <img
@@ -15,11 +15,11 @@ function TopicCard({ image, title, text }) {
             />
 
             <div className="flex h-[230px] flex-col px-[16px] py-[16px]">
-                <h3 className="mb-[12px] text-[20px] font-bold font-nunito-sans text-[#222222] leading-[100%]">
+                <h3 className="mb-[12px] font-nunito-sans text-[20px] font-bold leading-[100%] text-[#222222]">
                     {title}
                 </h3>
 
-                <p className="text-[16px] leading-[24px] font-normal font-nunito-sans text-[#717171]">
+                <p className="font-nunito-sans text-[16px] font-normal leading-[24px] text-[#717171]">
                     {text}
                 </p>
 
@@ -28,30 +28,30 @@ function TopicCard({ image, title, text }) {
                         type="radio"
                         name="newsletter-topic"
                         className="
-                            appearance-none
-                            w-[24px]
                             h-[24px]
+                            w-[24px]
+                            cursor-pointer
+                            appearance-none
+                            rounded-full
                             border
                             border-[#B3B3B3]
-                            rounded-full
                             checked:bg-[#581ADB]
-                            cursor-pointer
                         "
                     />
-                    <span className="text-[16px] font-normal font-nunito-sans text-[#717171] leading-[24px]">
+                    <span className="font-nunito-sans text-[16px] font-normal leading-[24px] text-[#717171]">
                         Choose this topic
                     </span>
                 </label>
             </div>
         </div>
     );
-}
+};
 
-function Newsletters() {
+const Newsletters = () => {
     return (
-        <div className="mt-[40px] px-[20px] font-nunito-sans">
+        <div className="mt-[40px] font-nunito-sans">
             <div className="mx-auto w-full max-w-[1140px]">
-                <h1 className="mb-[18px] text-[20px] font-bold text-[#5A35F2]">
+                <h1 className="mb-[18px] text-[36px] font-bold text-[#5A35F2]">
                     Newsletters
                 </h1>
 
@@ -65,7 +65,7 @@ function Newsletters() {
                     </div>
 
                     <div className="flex h-[232px] w-[320px] flex-col justify-center rounded-[10px] border border-[#E5E5E5] bg-white px-[24px] py-[20px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                        <p className="mb-[20px] text-[16px] leading-[24px] font-normal font-nunito-sans text-[#717171]">
+                        <p className="mb-[20px] font-nunito-sans text-[16px] font-normal leading-[24px] text-[#717171]">
                             We curate a daily selection of topics based on your interests and send them straight to your email address.
                         </p>
 
@@ -111,7 +111,7 @@ function Newsletters() {
 
                 <div className="flex gap-[20px]">
                     <div className="w-[576px] rounded-[10px] border border-[#E5E5E5] bg-white px-[20px] py-[20px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                        <p className="text-[16px] leading-[24px] font-normal font-nunito-sans text-[#717171]">
+                        <p className="font-nunito-sans text-[16px] font-normal leading-[24px] text-[#717171]">
                             Discover captivating travel articles crafted by our expert team. Each week, we curate the most relevant and fascinating texts on selected topics, ensuring our site users enjoy a captivating reading experience.
                         </p>
                     </div>
@@ -125,6 +125,6 @@ function Newsletters() {
             </div>
         </div>
     );
-}
+};
 
 export default Newsletters;

@@ -1,30 +1,30 @@
 import arrowRightIcon from "../../assets/icons/common/arrowright_icon.svg";
 
-function SecurityRow({ placeholder, text, linkText, isPassword = false }) {
+const SecurityRow = ({ placeholder, text, linkText, isPassword = false }) => {
     return (
         <div className="flex items-center gap-[14px]">
             <input
                 type={isPassword ? "password" : "text"}
                 placeholder={placeholder}
-                className="h-[48px] w-[320px] rounded-full border border-[#D9D9D9] bg-white px-[20px] text-[16px] font-normal font-nunito-sans text-[#717171] outline-none placeholder:text-[#B3B3B3]"
+                className="h-[48px] w-[320px] rounded-full border border-[#D9D9D9] bg-white px-[20px] font-nunito-sans text-[16px] font-normal text-[#717171] outline-none placeholder:text-[#B3B3B3]"
             />
 
-            <span className="text-[16px] font-normal font-nunito-sans text-[#717171]">
+            <span className="font-nunito-sans text-[16px] font-normal text-[#717171]">
                 {text}
             </span>
 
-            <button className="text-[16px] font-normal font-nunito-sans text-[#581ADB]">
+            <button className="font-nunito-sans text-[16px] font-normal text-[#581ADB]">
                 {linkText}
             </button>
         </div>
     );
-}
+};
 
-function Security() {
+const Security = () => {
     return (
-        <div className="mt-[40px] px-[20px] font-nunito-sans">
+        <div className="mt-[40px] font-nunito-sans">
             <div className="mx-auto w-full max-w-[1140px]">
-                <h1 className="mb-[18px] text-[20px] font-bold text-[#5A35F2]">
+                <h1 className="mb-[18px] text-[36px] font-bold text-[#5A35F2]">
                     Security
                 </h1>
 
@@ -97,6 +97,6 @@ function Security() {
             </div>
         </div>
     );
-}
+};
 
 export default Security;
