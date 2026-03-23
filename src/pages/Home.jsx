@@ -23,7 +23,7 @@ const Home = () => {
     ];
 
     return (
-        <div className="w-full flex flex-col">
+        <div className=" flex flex-col">
             <img
                 src={headImage}
                 className="w-full aspect-[1920/220] object-cover object-[50%_50%] block"
