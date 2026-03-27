@@ -29,19 +29,19 @@ function AccountDashboard() {
 
     return (
         <div className="min-h-screen bg-white pt-[24px]">
-            <div className="mx-auto w-full max-w-[1308px] px-[20px]">
-    <div className="grid grid-cols-[auto_1fr] items-start gap-[2%]">
-    <div className="flex justify-start">
-        <ToMainPageButton />
-    </div>
+            <div className="mx-auto w-full max-w-[1308px] px-[16px] sm:px-[20px]">
+                <div className="flex flex-col gap-[20px] lg:grid lg:grid-cols-[auto_1fr] lg:items-start lg:gap-[2%]">
+                    <div className="flex justify-start lg:pt-[6px]">
+                        <ToMainPageButton />
+                    </div>
 
-                    <div>
+                    <div className="min-w-0">
                         <DashboardNavigation
                             activeTab={activeTab}
                             setActiveTab={setActiveTab}
                         />
 
-                        <div className="mt-[32px]">
+                        <div className="mt-[24px] sm:mt-[32px]">
                             {renderContent()}
                         </div>
                     </div>

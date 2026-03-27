@@ -11,8 +11,8 @@ import SafetyAndSecurity from "../../assets/icons/accountDashboard/travel/safety
 const SectionTitle = ({ icon, title }) => {
     return (
         <div className="mb-[12px] flex items-center gap-[8px]">
-            <img src={icon} alt="" className="h-[20px] w-[20px] object-contain" />
-            <span className="font-nunito-sans text-[16px] font-normal text-[#717171]">
+            <img src={icon} alt="" className="h-[20px] w-[20px]" />
+            <span className="text-[16px] text-[#717171]">
                 {title}
             </span>
         </div>
@@ -28,7 +28,7 @@ const ServiceItem = ({ text, checked, onChange }) => {
                 onChange={onChange}
                 className="h-4 w-4 shrink-0 appearance-none rounded-full border border-[#B3B3B3] checked:bg-[#581ADB]"
             />
-            <span className="font-nunito-sans text-[16px] font-normal leading-[1.2] text-[#717171]">
+            <span className="text-[16px] leading-[1.2] text-[#717171]">
                 {text}
             </span>
         </label>
@@ -65,24 +65,11 @@ const TravelInformation = () => {
     };
 
     const generalItems = [
-        "Shuttle service",
-        "Additional charge",
-        "Grocery deliveries",
-        "Minimarket on site",
-        "Designated smoking area",
-        "Air conditioning",
-        "Mosquito net",
-        "Wake-up service",
-        "Heating",
-        "Interconnected room(s) available",
-        "Lift",
-        "Family rooms",
-        "Barber/beauty shop",
-        "Airport shuttle",
-        "Additional charge",
-        "Non-smoking rooms",
-        "Wake up service/Alarm clock",
-        "Room service",
+        "Shuttle service", "Additional charge", "Grocery deliveries", "Minimarket on site",
+        "Designated smoking area", "Air conditioning", "Mosquito net", "Wake-up service",
+        "Heating", "Interconnected room(s) available", "Lift", "Family rooms",
+        "Barber/beauty shop", "Airport shuttle", "Additional charge",
+        "Non-smoking rooms", "Wake up service/Alarm clock", "Room service",
     ];
 
     const accessibilityItems = [
@@ -90,31 +77,17 @@ const TravelInformation = () => {
         "Upper floors accessible by elevator",
     ];
 
-    const languageItems = [
-        "English",
-        "Russian",
-        "Ukrainian",
-    ];
-
-    const parkingItems = [
-        "Parking garage",
-    ];
+    const languageItems = ["English", "Russian", "Ukrainian"];
+    const parkingItems = ["Parking garage"];
 
     const receptionItems = [
-        "Fire extinguishers",
-        "CCTV outside property",
-        "CCTV in common areas",
-        "Smoke alarms",
-        "Security alarm",
-        "Key card access",
-        "24-hour security",
+        "Fire extinguishers", "CCTV outside property", "CCTV in common areas",
+        "Smoke alarms", "Security alarm", "Key card access", "24-hour security",
         "Safety deposit box",
     ];
 
     const cleaningItems = [
-        "Daily housekeeping",
-        "Laundry",
-        "Additional charge",
+        "Daily housekeeping", "Laundry", "Additional charge",
     ];
 
     const familyItems = [
@@ -122,23 +95,20 @@ const TravelInformation = () => {
     ];
 
     const safetyItems = [
-        "Invoice provided",
-        "Private check-in/check-out",
-        "Concierge service",
-        "Luggage storage",
-        "Express check-in/check-out",
-        "24-hour front desk",
+        "Invoice provided", "Private check-in/check-out", "Concierge service",
+        "Luggage storage", "Express check-in/check-out", "24-hour front desk",
     ];
 
     return (
-        <div className="mt-[40px] font-nunito-sans">
+        <div className="mt-[40px] px-[16px] sm:px-0">
             <div className="mx-auto w-full max-w-[1140px]">
-                <h1 className="mb-[30px] text-[36px] font-bold text-[#5A35F2]">
+                <h1 className="mb-[20px] text-[28px] font-bold text-[#5A35F2] sm:text-[36px]">
                     Travel Information
                 </h1>
 
-                <div className="flex items-start justify-between gap-[48px]">
-                    <div className="grid w-full max-w-[760px] grid-cols-2 gap-x-[70px]">
+                <div className="flex flex-col gap-[20px] xl:flex-row xl:gap-[48px]">
+
+                    <div className="order-2 grid w-full grid-cols-1 gap-x-[40px] md:grid-cols-2 md:gap-x-[70px] xl:order-1">
                         <div>
                             <InfoSection
                                 icon={General}
@@ -147,7 +117,6 @@ const TravelInformation = () => {
                                 selectedItems={selectedServices}
                                 onToggle={toggleService}
                             />
-
                             <InfoSection
                                 icon={Accessibility}
                                 title="Accessibility"
@@ -155,7 +124,6 @@ const TravelInformation = () => {
                                 selectedItems={selectedServices}
                                 onToggle={toggleService}
                             />
-
                             <InfoSection
                                 icon={LanguageSpoken}
                                 title="Languages spoken"
@@ -173,7 +141,6 @@ const TravelInformation = () => {
                                 selectedItems={selectedServices}
                                 onToggle={toggleService}
                             />
-
                             <InfoSection
                                 icon={ReceptionServices}
                                 title="Reception services"
@@ -181,7 +148,6 @@ const TravelInformation = () => {
                                 selectedItems={selectedServices}
                                 onToggle={toggleService}
                             />
-
                             <InfoSection
                                 icon={CleaningServices}
                                 title="Cleaning services"
@@ -189,7 +155,6 @@ const TravelInformation = () => {
                                 selectedItems={selectedServices}
                                 onToggle={toggleService}
                             />
-
                             <InfoSection
                                 icon={FamilyServices}
                                 title="Entertainment and family services"
@@ -197,7 +162,6 @@ const TravelInformation = () => {
                                 selectedItems={selectedServices}
                                 onToggle={toggleService}
                             />
-
                             <InfoSection
                                 icon={SafetyAndSecurity}
                                 title="Safety & security"
@@ -208,18 +172,19 @@ const TravelInformation = () => {
                         </div>
                     </div>
 
-                    <div className="min-h-[260px] w-[340px] rounded-[10px] border border-[#E5E5E5] bg-white px-[26px] py-[34px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                        <p className="mb-[24px] font-nunito-sans text-[16px] font-normal leading-[1.55] text-[#8A8A8A]">
+                    <div className="order-1 w-full rounded-[10px] border border-[#E5E5E5] bg-white px-[20px] py-[24px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:order-2 xl:max-h-[296px] xl:max-w-[340px]">
+                        <p className="mb-[16px] text-[14px] leading-[1.55] text-[#8A8A8A] sm:text-[16px]">
                             With this information at hand, we can tailor the best deals
                             specifically for you and provide highlighted details in the
                             hotel descriptions to ensure you have all the important
                             information.
                         </p>
 
-                        <p className="font-nunito-sans text-[16px] font-normal leading-[1.55] text-[#8A8A8A]">
+                        <p className="text-[14px] leading-[1.55] text-[#8A8A8A] sm:text-[16px]">
                             Select the services that you prioritize
                         </p>
                     </div>
+
                 </div>
             </div>
         </div>

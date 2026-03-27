@@ -6,14 +6,14 @@ const PaymentInput = ({ placeholder, className = "" }) => {
         <input
             type="text"
             placeholder={placeholder}
-            className={`h-[40px] rounded-full border border-[#D9D9D9] bg-white px-[18px] text-[12px] font-normal font-nunito-sans text-[#717171] placeholder:text-[#B3B3B3] outline-none ${className}`}
+            className={`h-[40px] w-full rounded-full border border-[#D9D9D9] bg-white px-[18px] text-[12px] font-normal font-nunito-sans text-[#717171] placeholder:text-[#B3B3B3] outline-none ${className}`}
         />
     );
 };
 
 const PaymentSelect = ({ placeholder }) => {
     return (
-        <div className="relative w-[248px]">
+        <div className="relative w-full md:max-w-[248px]">
             <select className="h-[56px] w-full appearance-none rounded-full border border-[#D9D9D9] bg-white px-[18px] text-[12px] font-normal font-nunito-sans text-[#B3B3B3] outline-none">
                 <option>{placeholder}</option>
             </select>
@@ -29,17 +29,21 @@ const PaymentSelect = ({ placeholder }) => {
 
 const PaymentMethod = () => {
     return (
-        <div className="mt-[40px]">
-            <h1 className="mb-[14px] font-nunito-sans text-[36px] font-bold text-[#5A35F2]">
+        <div className="mt-[40px] px-[16px] sm:px-0">
+            <h1 className="mb-[14px] font-nunito-sans text-[28px] sm:text-[36px] font-bold text-[#5A35F2]">
                 Payment method
             </h1>
 
-            <div className="mb-[14px] flex gap-[32px]">
-                <div className="h-[296px] w-[800px] rounded-[10px] border border-[#E3E3E3] bg-white px-[24px] py-[18px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                    <div className="mb-[40px] flex items-center gap-[14px]">
+            {/* MAIN BLOCK */}
+            <div className="mb-[14px] flex flex-col gap-[20px] xl:flex-row xl:gap-[32px]">
+                
+                {/* LEFT CARD */}
+                <div className="w-full rounded-[10px] border border-[#E3E3E3] bg-white px-[16px] sm:px-[24px] py-[18px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:max-w-[800px]">
+
+                    <div className="mb-[24px] flex flex-col gap-[12px] sm:flex-row sm:items-center sm:gap-[14px]">
                         <PaymentSelect placeholder="Type of your debit card" />
 
-                        <button className="flex items-center gap-[6px] text-[10px] font-normal text-[#5A35F2]">
+                        <button className="flex items-center gap-[6px] text-[12px] text-[#5A35F2]">
                             <span>No card?</span>
                         </button>
                     </div>
@@ -47,32 +51,34 @@ const PaymentMethod = () => {
                     <div className="mb-[12px]">
                         <PaymentInput
                             placeholder="Credit or debit card number"
-                            className="h-[56px] w-[248px]"
+                            className="h-[56px] md:max-w-[248px]"
                         />
                     </div>
 
                     <PaymentInput
                         placeholder="Month | Date"
-                        className="h-[56px] w-[168px] text-center"
+                        className="h-[56px] md:max-w-[168px] text-center"
                     />
                 </div>
 
-                <div className="h-[296px] w-[352px] rounded-[10px] border border-[#E3E3E3] bg-white px-[24px] py-[32px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                    <p className="mb-[18px] max-w-[288px] text-center font-nunito-sans text-[16px] leading-[1.6] text-[#717171]">
+                {/* RIGHT CARD */}
+                <div className="w-full rounded-[10px] border border-[#E3E3E3] bg-white px-[16px] sm:px-[24px] py-[24px] sm:py-[32px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:max-w-[352px]">
+                    <p className="mb-[18px] text-center font-nunito-sans text-[14px] sm:text-[16px] leading-[1.6] text-[#717171]">
                         This information will be kept private and confidential.
                     </p>
 
-                    <p className="max-w-[288px] text-center font-nunito-sans text-[16px] leading-[1.6] text-[#717171]">
+                    <p className="text-center font-nunito-sans text-[14px] sm:text-[16px] leading-[1.6] text-[#717171]">
                         Once your booking is confirmed, the payment details will be automatically filled in for your convenience.
                     </p>
                 </div>
             </div>
 
-            <p className="mb-[8px] font-nunito-sans text-[16px] font-normal uppercase tracking-[0.03em] text-[#717171]">
+            {/* SAVED METHODS */}
+            <p className="mb-[8px] font-nunito-sans text-[16px] uppercase tracking-[0.03em] text-[#717171]">
                 Saved payment methods
             </p>
 
-            <div className="mb-[18px] flex h-[232px] w-[1184px] items-center justify-center rounded-[10px] border border-[#E3E3E3] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+            <div className="mb-[18px] flex h-[200px] sm:h-[232px] w-full items-center justify-center rounded-[10px] border border-[#E3E3E3] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
                 <div className="flex flex-col items-center gap-[8px]">
                     <img
                         src={NoCardIcon}
@@ -80,18 +86,19 @@ const PaymentMethod = () => {
                         alt=""
                     />
 
-                    <p className="text-[12px] text-[#9A9A9A]">
+                    <p className="text-[12px] text-[#9A9A9A] text-center">
                         You have no saved payment methods
                     </p>
                 </div>
             </div>
 
-            <div className="h-[187px] w-[592px]">
-                <p className="font-nunito-sans text-[16px] font-normal leading-[24px] tracking-normal text-[#717171]">
+            {/* TEXT BLOCK */}
+            <div className="w-full xl:max-w-[592px]">
+                <p className="mb-[10px] font-nunito-sans text-[14px] sm:text-[16px] leading-[24px] text-[#717171]">
                     Rest assured that the payment information you enter on our site is meticulously protected to ensure your utmost security. We prioritize the safety of your transactions, employing robust encryption protocols and industry-standard security measures. With our steadfast commitment to providing a completely safe payment process, you can confidently book with us knowing that your financial information is in trusted hands.
                 </p>
 
-                <button className="flex items-center gap-[8px] text-[10px] text-[#5A35F2]">
+                <button className="flex items-center gap-[8px] text-[12px] text-[#5A35F2]">
                     <span>See privacy policy</span>
                     <span>→</span>
                 </button>
