@@ -17,40 +17,40 @@ function DashboardNavigation({ activeTab, setActiveTab }) {
             title: "Account",
             icon: accountIcon,
             iconActive: accountIconActive,
-            width: "w-[120px]"
+            width: "lg:w-[120px]"
         },
         {
             id: "payment",
             title: "Payment method",
             icon: paymentIcon,
             iconActive: paymentIconActive,
-            width: "w-[184px]"
+            width: "lg:w-[184px]"
         },
         {
             id: "travel",
             title: "Travel information",
             icon: travelIcon,
             iconActive: travelIconActive,
-            width: "w-[184px]"
+            width: "lg:w-[184px]"
         },
         {
             id: "newsletters",
             title: "Newsletters",
             icon: newsletterIcon,
             iconActive: newsletterIconActive,
-            width: "w-[140px]"
+            width: "lg:w-[140px]"
         },
         {
             id: "security",
             title: "Security",
             icon: securityIcon,
             iconActive: securityIconActive,
-            width: "w-[120px]"
+            width: "lg:w-[120px]"
         }
     ];
 
     return (
-        <div className="flex items-center gap-[16px]">
+        <div className="flex flex-col gap-[12px] lg:flex-row lg:flex-wrap lg:items-center lg:gap-[16px]">
             {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
 
@@ -59,6 +59,7 @@ function DashboardNavigation({ activeTab, setActiveTab }) {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`
+                            w-full
                             ${tab.width}
                             h-[32px]
                             flex

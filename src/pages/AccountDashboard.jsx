@@ -30,8 +30,8 @@ function AccountDashboard() {
     return (
         <div className="min-h-screen bg-white pt-[24px]">
             <div className="mx-auto w-full max-w-[1308px] px-[16px] sm:px-[20px]">
-                <div className="flex flex-col gap-[20px] lg:grid lg:grid-cols-[auto_1fr] lg:items-start lg:gap-[2%]">
-                    <div className="flex justify-start lg:pt-[6px]">
+                <div className="flex flex-col gap-[20px] lg:grid lg:grid-cols-[auto_1fr] lg:items-start lg:gap-[32px]">
+                    <div className="flex justify-start ">
                         <ToMainPageButton />
                     </div>
 

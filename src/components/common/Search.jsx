@@ -3,6 +3,7 @@ import profile2Users from "../../assets/icons/common/profile2user.svg";
 import plainIcon from "../../assets/icons/common/plain_icon.svg";
 import calendar from "../../assets/icons/common/calendar.svg";
 import arrowsIcon from "../../assets/icons/common/arrows_icon.svg";
+import blueSettingIcon from "../../assets/icons/blue_setting_icon.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,12 +33,13 @@ const Search = () => {
 
     return (
         <div className="-mt-[32px] relative z-50 flex justify-center">
-            <div className="relative w-[1104px] h-[64px]">
-                <div className="w-full h-full bg-white border border-gray rounded-[60px] shadow-[0px_4px_69px_rgba(0,0,0,0.05),0px_1px_8px_rgba(0,0,0,0.08)] flex items-center pl-[59px] gap-[60px]">
+            <div className="relative h-[64px] w-full max-w-[1104px]">
 
-                    {/* 1 location */}
-                    <div className="flex items-center gap-[12px] flex-none">
-                        <img src={plainIcon} className="w-[24px] h-[24px]" />
+                <div className="flex h-full w-full items-center rounded-[60px] border border-gray bg-white shadow-[0px_4px_69px_rgba(0,0,0,0.05),0px_1px_8px_rgba(0,0,0,0.08)] pl-[20px] lg:pl-[59px] pr-[70px]">
+
+                    {/* 1 location (always visible) */}
+                    <div className="flex items-center gap-[12px] flex-1 min-w-0">
+                        <img src={plainIcon} className="w-[24px] h-[24px] shrink-0" alt="" />
 
                         <input
                             type="text"
@@ -46,16 +48,16 @@ const Search = () => {
                             onChange={(e) =>
                                 setSearchData({ ...searchData, location: e.target.value })
                             }
-                            className="outline-none bg-transparent text-[14px] placeholder:text-[#222]"
+                            className="flex-1 min-w-0 outline-none bg-transparent text-[14px] placeholder:text-[#222]"
                         />
                     </div>
 
                     {/* divider */}
-                    <div className="w-[1px] h-[39px] bg-[#DDDDDD]" />
+                    <div className="hidden lg:block w-[1px] h-[39px] bg-[#DDDDDD] mx-[30px]" />
 
                     {/* 2 dates */}
-                    <div className="flex items-center gap-[12px] flex-none">
-                        <img src={calendar} className="w-[24px] h-[24px]" />
+                    <div className="hidden lg:flex items-center gap-[12px] flex-none">
+                        <img src={calendar} className="w-[24px] h-[24px]" alt="" />
 
                         <input
                             type="text"
@@ -74,11 +76,11 @@ const Search = () => {
                     </div>
 
                     {/* divider */}
-                    <div className="w-[1px] h-[39px] bg-[#DDDDDD]" />
+                    <div className="hidden lg:block w-[1px] h-[39px] bg-[#DDDDDD] mx-[30px]" />
 
                     {/* 3 guests */}
-                    <div className="flex items-center gap-[12px] flex-none">
-                        <img src={profile2Users} className="w-[24px] h-[24px]" />
+                    <div className="hidden lg:flex items-center gap-[12px] flex-none">
+                        <img src={profile2Users} className="w-[24px] h-[24px]" alt="" />
 
                         <input
                             type="text"
@@ -90,14 +92,22 @@ const Search = () => {
                         <img
                             src={arrowsIcon}
                             className="w-[20px] h-[20px]"
+                            alt=""
                         />
                     </div>
                 </div>
 
-                {/* search icon */}
+                {/* 🔹 mobile icon (settings) */}
+                <img
+                    src={blueSettingIcon}
+                    className="lg:hidden absolute right-[10px] top-1/2 -translate-y-1/2 w-[48px] h-[48px] cursor-pointer"
+                    alt=""
+                />
+
+                {/* 🔹 desktop icon (search) */}
                 <img
                     src={searchButton}
-                    className="h-[36px] w-[36px] absolute right-[20px] top-1/2 -translate-y-1/2 cursor-pointer"
+                    className="hidden lg:block h-[36px] w-[36px] absolute right-[20px] top-1/2 -translate-y-1/2 cursor-pointer"
                     alt=""
                     onClick={handleSearch}
                 />
