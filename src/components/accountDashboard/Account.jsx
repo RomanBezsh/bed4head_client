@@ -179,12 +179,12 @@ const BookingCard = () => {
 
 const ReviewsEmpty = () => {
     return (
-        <div className="flex h-[232px] w-full items-center justify-center rounded-[12px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
             <div className="flex flex-col items-center justify-center">
                 <img
                     src={noReviewsIcon}
                     alt="no reviews"
-                    className="mb-[8px] h-[24px] w-[24px] object-contain"
+                    className="mb-2 h-6 w-6 object-contain"
                 />
                 <span className="text-[16px] font-normal font-nunito-sans text-[#717171]">
                     You have no reviews
