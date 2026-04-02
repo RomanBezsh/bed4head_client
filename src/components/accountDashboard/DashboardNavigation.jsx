@@ -50,7 +50,7 @@ function DashboardNavigation({ activeTab, setActiveTab }) {
     ];
 
     return (
-        <div className="flex flex-col gap-[12px] lg:flex-row lg:flex-wrap lg:items-center lg:gap-[16px]">
+        <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:gap-4">
             {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
 
@@ -61,26 +61,26 @@ function DashboardNavigation({ activeTab, setActiveTab }) {
                         className={`
                             w-full
                             ${tab.width}
-                            h-[32px]
+                            h-8
                             flex
                             items-center
                             justify-between
-                            pl-[16px]
-                            pr-[10px]
+                            pl-4
+                            pr-2.5
                             rounded-[60px]
                             border
                             text-[16px]
                             transition
                             ${isActive
                                 ? "border-[#581ADB] text-[#581ADB]"
-                                : "border-[#DDDDDD] text-black"}
+                                : "border-gray text-black"}
                         `}
                     >
                         <span>{tab.title}</span>
                         <img
                             src={isActive ? tab.iconActive : tab.icon}
                             alt=""
-                            className="w-[24px] h-[24px]"
+                            className="w-6 h-6"
                         />
                     </button>
                 );
