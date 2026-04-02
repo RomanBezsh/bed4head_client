@@ -9,22 +9,20 @@ import TravelInformation from "../components/accountDashboard/TravelInformation.
 import Newsletters from "../components/accountDashboard/Newsletters.jsx";
 import Security from "../components/accountDashboard/Security.jsx";
 
+
+const TABS_MAP = {
+    account: <Account />,
+    payment: <PaymentMethod />,
+    travel: <TravelInformation />,
+    newsletters: <Newsletters />,
+    security: <Security />,
+};
+
 function AccountDashboard() {
     const [activeTab, setActiveTab] = useState("account");
 
     const renderContent = () => {
-        switch (activeTab) {
-            case "payment":
-                return <PaymentMethod />;
-            case "travel":
-                return <TravelInformation />;
-            case "newsletters":
-                return <Newsletters />;
-            case "security":
-                return <Security />;
-            default:
-                return <Account />;
-        }
+        return TABS_MAP[activeTab] || <Account />;
     };
 
     return (
