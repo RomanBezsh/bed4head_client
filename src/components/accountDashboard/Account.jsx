@@ -17,12 +17,12 @@ import hotelRoomPhoto from "../../assets/independed_images/hotel_room_photo_exam
 
 const FieldInput = ({ placeholder, note = "", smallNote = "" }) => {
     return (
-        <div className="flex flex-col gap-[8px] w-full">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-[10px] sm:gap-[14px]">
+        <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <input
                     type="text"
                     placeholder={placeholder}
-                    className="h-[56px] w-full rounded-full border border-[#D9D9D9] bg-white px-[18px] text-[16px] font-normal font-nunito-sans text-[#717171] placeholder:text-[#717171] outline-none md:max-w-[248px]"
+                    className="h-14 w-full rounded-full border border-[#D9D9D9] bg-white px-4.5 text-[16px] font-normal font-nunito-sans text-[#717171] placeholder:text-[#717171] outline-none md:max-w-62"
                 />
 
                 {note && (
@@ -33,7 +33,7 @@ const FieldInput = ({ placeholder, note = "", smallNote = "" }) => {
             </div>
 
             {smallNote && (
-                <span className="pl-[12px] text-[11px] text-[#D3D3D3]">
+                <span className="pl-3 text-[11px] text-[#D3D3D3]">
                     {smallNote}
                 </span>
             )}
@@ -43,15 +43,15 @@ const FieldInput = ({ placeholder, note = "", smallNote = "" }) => {
 
 const FieldSelect = ({ placeholder }) => {
     return (
-        <div className="relative w-full md:max-w-[248px]">
-            <select className="h-[56px] w-full appearance-none rounded-full border border-[#D9D9D9] bg-white px-[18px] text-[16px] text-[#717171] font-nunito-sans outline-none">
+        <div className="relative w-full md:max-w-62">
+            <select className="h-14 w-full appearance-none rounded-full border border-[#D9D9D9] bg-white px-4.5 text-[16px] text-[#717171] font-nunito-sans outline-none">
                 <option>{placeholder}</option>
             </select>
 
             <img
                 src={selectArrowIcon}
                 alt="arrow"
-                className="pointer-events-none absolute right-[18px] top-1/2 h-[10px] w-[10px] -translate-y-1/2"
+                className="pointer-events-none absolute right-4.5 top-1/2 h-2.5 w-2.5 -translate-y-1/2"
             />
         </div>
     );
@@ -59,8 +59,8 @@ const FieldSelect = ({ placeholder }) => {
 
 const BookingInfoItem = ({ icon, label, text }) => {
     return (
-        <div className="flex items-center gap-[6px] text-[11px] text-[#8A8A8A]">
-            <img src={icon} alt="" className="h-[24px] w-[24px] object-contain" />
+        <div className="flex items-center gap-1.5 text-[11px] text-[#8A8A8A]">
+            <img src={icon} alt="" className="h-6 w-6 object-contain" />
             {label && (
                 <span className="text-[#717171] font-normal text-[16px]">
                     {label}
@@ -75,11 +75,11 @@ const BookingInfoItem = ({ icon, label, text }) => {
 
 const BookingStat = ({ icon, value }) => {
     return (
-        <div className="flex h-[88px] min-w-[112px] flex-1 sm:flex-none sm:w-[112px] flex-col items-center justify-center rounded-[10px] border border-[#E5E5E5] bg-white">
+        <div className="flex h-22 min-w-28 flex-1 sm:flex-none sm:w-28 flex-col items-center justify-center rounded-[10px] border border-[#E5E5E5] bg-white">
             <img
                 src={icon}
                 alt=""
-                className="mb-[6px] h-[24px] w-[24px] object-contain"
+                className="mb-1.5 h-6 w-6 object-contain"
             />
             <span className="text-[16px] text-[#717171] font-normal font-nunito-sans text-center">
                 {value}
@@ -94,16 +94,16 @@ const BookingInfo = () => {
             <img
                 src={hotelRoomPhoto}
                 alt="hotel room"
-                className="h-[220px] w-full object-cover sm:h-[232px] lg:h-[232px] lg:w-[320px]"
+                className="h-55 w-full object-cover sm:h-58 lg:h-58 lg:w-[320px]"
             />
 
-            <div className="flex w-full flex-col justify-between px-[14px] py-[10px] lg:max-w-[390px]">
+            <div className="flex w-full flex-col justify-between px-3.5 py-2.5 lg:max-w-97.5">
                 <div>
-                    <h3 className="mb-[8px] font-bold text-[20px] font-nunito-sans text-[#222222]">
+                    <h3 className="mb-2 font-bold text-[20px] font-nunito-sans text-[#222222]">
                         Suite with a queen-size bed
                     </h3>
 
-                    <div className="mt-[10px]">
+                    <div className="mt-2.5">
                         <BookingInfoItem
                             icon={bedIcon}
                             label="Bed:"
@@ -111,7 +111,7 @@ const BookingInfo = () => {
                         />
                     </div>
 
-                    <div className="mt-[15px]">
+                    <div className="mt-3.75">
                         <BookingInfoItem
                             icon={profile2userIcon}
                             label="Guests:"
@@ -119,14 +119,14 @@ const BookingInfo = () => {
                         />
                     </div>
 
-                    <div className="mt-[24px] flex flex-wrap gap-[12px] lg:mt-[40px]">
+                    <div className="mt-6 flex flex-wrap gap-3 lg:mt-10">
                         <BookingInfoItem icon={freeWifiIcon} text="free wi-fi" />
                         <BookingInfoItem icon={bathIcon} text="bath" />
                         <BookingInfoItem icon={poolIcon} text="private pool" />
                     </div>
                 </div>
 
-                <div className="mt-[18px] text-[16px] font-normal font-nunito-sans text-[#581ADB]">
+                <div className="mt-4.5 text-[16px] font-normal font-nunito-sans text-[#581ADB]">
                     ✓ FREE cancellation
                 </div>
             </div>
@@ -136,24 +136,24 @@ const BookingInfo = () => {
 
 const BookingActions = () => {
     return (
-        <div className="flex h-full w-full flex-col justify-between px-[18px] py-[12px] lg:w-auto">
-            <div className="flex flex-wrap gap-[10px]">
+        <div className="flex h-full w-full flex-col justify-between px-4.5 py-3 lg:w-auto">
+            <div className="flex flex-wrap gap-2.5">
                 <BookingStat icon={plainIcon} value="Kyiv" />
                 <BookingStat icon={calendarIcon} value="Apr 9-11" />
                 <BookingStat icon={profile2userIcon} value="2 ad. 1 ch." />
             </div>
 
-            <div className="mt-[10px] flex flex-col gap-[10px] sm:flex-row">
-                <button className="h-[56px] w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] sm:h-[96px] sm:w-[176px]">
+            <div className="mt-2.5 flex flex-col gap-2.5 sm:flex-row">
+                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] sm:h-24 sm:w-44">
                     HOTEL PAGE
                 </button>
 
-                <button className="h-[56px] w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] sm:h-[96px] sm:w-[176px]">
+                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] sm:h-24 sm:w-44">
                     BOOKING INFO
                 </button>
             </div>
 
-            <div className="mt-[12px] flex flex-col gap-[6px] text-[11px] sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-3 flex flex-col gap-1.5 text-[11px] sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-[#6B46FF] text-[16px] font-normal font-nunito-sans">
                     Want to cancel?
                 </span>
@@ -167,7 +167,7 @@ const BookingActions = () => {
 
 const BookingCard = () => {
     return (
-        <div className="flex w-full flex-col overflow-hidden rounded-[12px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:flex-row">
+        <div className="flex w-full flex-col overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:flex-row">
             <BookingInfo />
 
             <div className="border-t border-[#E5E5E5] xl:border-l xl:border-t-0">
@@ -196,15 +196,15 @@ const ReviewsEmpty = () => {
 
 const Account = () => {
     return (
-        <div className="mt-[40px] font-nunito-sans">
-            <div className="mx-auto w-full max-w-[1140px] px-[16px] sm:px-0">
-                <h1 className="mb-[14px] text-[28px] font-bold text-[#5A35F2] sm:text-[36px]">
+        <div className="mt-10 font-nunito-sans">
+            <div className="mx-auto w-full max-w-285 px-4 sm:px-0">
+                <h1 className="mb-3.5 text-[28px] font-bold text-[#5A35F2] sm:text-[36px]">
                     Your Account
                 </h1>
 
-                <div className="mb-[16px] flex flex-col gap-[18px] xl:flex-row">
-                    <div className="flex w-full flex-col overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] md:flex-row xl:max-w-[800px]">
-                        <div className="flex h-[220px] w-full items-center justify-center bg-[#E9E9E9] md:h-[248px] md:w-[248px]">
+                <div className="mb-4 flex flex-col gap-4.5 xl:flex-row">
+                    <div className="flex w-full flex-col overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] md:flex-row xl:max-w-200">
+                        <div className="flex h-55 w-full items-center justify-center bg-[#E9E9E9] md:h-62 md:w-62">
                             <img
                                 src={userPlaceholder}
                                 alt="user"
@@ -212,8 +212,8 @@ const Account = () => {
                             />
                         </div>
 
-                        <div className="flex flex-1 flex-col justify-start px-[16px] py-[12px]">
-                            <div className="mb-[12px] flex items-center gap-[8px]">
+                        <div className="flex flex-1 flex-col justify-start px-4 py-3">
+                            <div className="mb-3 flex items-center gap-2">
                                 <span className="text-[20px] font-bold text-[#1E1E1E]">
                                     Your Name
                                 </span>
@@ -221,25 +221,25 @@ const Account = () => {
                                 <img
                                     src={editIcon}
                                     alt="edit"
-                                    className="h-[24px] w-[24px] object-contain opacity-70"
+                                    className="h-6 w-6 object-contain opacity-70"
                                 />
                             </div>
 
-                            <button className="flex h-[44px] w-full max-w-[192px] items-center justify-center gap-[8px] rounded-full border border-[#D9D9D9] bg-white text-[11px] text-[#8F8F8F] sm:h-[32px]">
+                            <button className="flex h-11 w-full max-w-48 items-center justify-center gap-2 rounded-full border border-[#D9D9D9] bg-white text-[11px] text-[#8F8F8F] sm:h-8">
                                 <span className="text-[16px] font-normal text-[#717171]">
                                     Change the photo
                                 </span>
                                 <img
                                     src={cameraIcon}
                                     alt="camera"
-                                    className="h-[24px] w-[24px] object-contain"
+                                    className="h-6 w-6 object-contain"
                                 />
                             </button>
                         </div>
                     </div>
 
-                    <div className="w-full rounded-[10px] border border-[#E5E5E5] bg-white px-[16px] py-[18px] text-[12px] leading-[1.45] text-[#A1A1A1] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:max-w-[325px]">
-                        <p className="mb-[18px] text-[#717171]">
+                    <div className="w-full rounded-[10px] border border-[#E5E5E5] bg-white px-4 py-4.5 text-[12px] leading-[1.45] text-[#A1A1A1] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:max-w-81.25">
+                        <p className="mb-4.5 text-[#717171]">
                             Your name will be the only visible information to other users.
                         </p>
 
@@ -249,9 +249,9 @@ const Account = () => {
                     </div>
                 </div>
 
-                <div className="rounded-[10px] border border-[#E5E5E5] bg-white px-[18px] py-[18px] shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                    <div className="flex flex-col justify-between gap-[20px] lg:flex-row lg:gap-[30px]">
-                        <div className="flex w-full flex-col gap-[14px]">
+                <div className="rounded-[10px] border border-[#E5E5E5] bg-white px-4.5 py-4.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+                    <div className="flex flex-col justify-between gap-5 lg:flex-row lg:gap-7.5">
+                        <div className="flex w-full flex-col gap-3.5">
                             <FieldInput
                                 placeholder="Your phone number"
                                 note="*Has to be confirmed"
@@ -269,7 +269,7 @@ const Account = () => {
                             />
                         </div>
 
-                        <div className="flex w-full flex-col gap-[14px]">
+                        <div className="flex w-full flex-col gap-3.5">
                             <FieldSelect placeholder="Country" />
                             <FieldSelect placeholder="Ampthill" />
                             <FieldSelect placeholder="Preferred currency" />
@@ -277,16 +277,16 @@ const Account = () => {
                     </div>
                 </div>
 
-                <div className="mt-[20px]">
-                    <h2 className="mb-[10px] text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
+                <div className="mt-5">
+                    <h2 className="mb-2.5 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
                         Your Bookings
                     </h2>
 
                     <BookingCard />
                 </div>
 
-                <div className="mt-[20px]">
-                    <h2 className="mb-[10px] text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
+                <div className="mt-5">
+                    <h2 className="mb-2.5 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
                         Your Reviews
                     </h2>
 
