@@ -32,14 +32,16 @@ const Search = () => {
     };
 
     return (
-        <div className="-mt-[32px] relative z-50 flex justify-center">
-            <div className="relative h-[64px] w-full max-w-[1104px]">
-
-                <div className="flex h-full w-full items-center rounded-[60px] border border-gray bg-white shadow-[0px_4px_69px_rgba(0,0,0,0.05),0px_1px_8px_rgba(0,0,0,0.08)] pl-[20px] lg:pl-[59px] pr-[70px]">
-
-                    {/* 1 location (always visible) */}
-                    <div className="flex items-center gap-[12px] flex-1 min-w-0">
-                        <img src={plainIcon} className="w-[24px] h-[24px] shrink-0" alt="" />
+        <div className="relative z-50 flex justify-center -mt-[22px] sm:-mt-[28px] lg:-mt-[32px] px-3 sm:px-4">
+            <div className="relative h-[54px] w-full max-w-[1104px] sm:h-[58px] lg:h-[64px]">
+                <div className="flex h-full w-full items-center rounded-[40px] border border-gray bg-white pl-[16px] pr-[62px] shadow-[0px_4px_69px_rgba(0,0,0,0.05),0px_1px_8px_rgba(0,0,0,0.08)] sm:pl-[18px] sm:pr-[66px] lg:rounded-[60px] lg:pl-[59px] lg:pr-[70px]">
+                    {/* Location field */}
+                    <div className="flex min-w-0 flex-1 items-center gap-[10px] sm:gap-[12px]">
+                        <img
+                            src={plainIcon}
+                            className="h-[20px] w-[20px] shrink-0 sm:h-[22px] sm:w-[22px] lg:h-[24px] lg:w-[24px]"
+                            alt=""
+                        />
 
                         <input
                             type="text"
@@ -48,16 +50,16 @@ const Search = () => {
                             onChange={(e) =>
                                 setSearchData({ ...searchData, location: e.target.value })
                             }
-                            className="flex-1 min-w-0 outline-none bg-transparent text-[14px] placeholder:text-[#222]"
+                            className="min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-[#222] sm:text-[14px]"
                         />
                     </div>
 
-                    {/* divider */}
-                    <div className="hidden lg:block w-[1px] h-[39px] bg-[#DDDDDD] mx-[30px]" />
+                    {/* Divider */}
+                    <div className="mx-[30px] hidden h-[39px] w-[1px] bg-[#DDDDDD] lg:block" />
 
-                    {/* 2 dates */}
-                    <div className="hidden lg:flex items-center gap-[12px] flex-none">
-                        <img src={calendar} className="w-[24px] h-[24px]" alt="" />
+                    {/* Dates */}
+                    <div className="hidden flex-none items-center gap-[12px] lg:flex">
+                        <img src={calendar} className="h-[24px] w-[24px]" alt="" />
 
                         <input
                             type="text"
@@ -71,43 +73,43 @@ const Search = () => {
                                     checkOut: value[1] || ""
                                 });
                             }}
-                            className="outline-none bg-transparent text-[14px]"
+                            className="bg-transparent text-[14px] outline-none"
                         />
                     </div>
 
-                    {/* divider */}
-                    <div className="hidden lg:block w-[1px] h-[39px] bg-[#DDDDDD] mx-[30px]" />
+                    {/* Divider */}
+                    <div className="mx-[30px] hidden h-[39px] w-[1px] bg-[#DDDDDD] lg:block" />
 
-                    {/* 3 guests */}
-                    <div className="hidden lg:flex items-center gap-[12px] flex-none">
-                        <img src={profile2Users} className="w-[24px] h-[24px]" alt="" />
+                    {/* Guests */}
+                    <div className="hidden flex-none items-center gap-[12px] lg:flex">
+                        <img src={profile2Users} className="h-[24px] w-[24px]" alt="" />
 
                         <input
                             type="text"
                             readOnly
                             value={`${searchData.adults} adults · ${searchData.children} children · ${searchData.rooms} room`}
-                            className="w-[214px] outline-none bg-transparent text-[14px]"
+                            className="w-[214px] bg-transparent text-[14px] outline-none"
                         />
 
                         <img
                             src={arrowsIcon}
-                            className="w-[20px] h-[20px]"
+                            className="h-[20px] w-[20px]"
                             alt=""
                         />
                     </div>
                 </div>
 
-                {/* 🔹 mobile icon (settings) */}
+                {/* Mobile settings icon */}
                 <img
                     src={blueSettingIcon}
-                    className="lg:hidden absolute right-[10px] top-1/2 -translate-y-1/2 w-[48px] h-[48px] cursor-pointer"
+                    className="absolute right-[6px] top-1/2 h-[42px] w-[42px] -translate-y-1/2 cursor-pointer sm:right-[8px] sm:h-[44px] sm:w-[44px] lg:hidden"
                     alt=""
                 />
 
-                {/* 🔹 desktop icon (search) */}
+                {/* Desktop search icon */}
                 <img
                     src={searchButton}
-                    className="hidden lg:block h-[36px] w-[36px] absolute right-[20px] top-1/2 -translate-y-1/2 cursor-pointer"
+                    className="absolute right-[20px] top-1/2 hidden h-[36px] w-[36px] -translate-y-1/2 cursor-pointer lg:block"
                     alt=""
                     onClick={handleSearch}
                 />
