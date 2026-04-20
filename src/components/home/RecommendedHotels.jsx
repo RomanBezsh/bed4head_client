@@ -11,7 +11,7 @@ const RecommendedHotels = () => {
     ];
 
     return (
-        <div className="mx-auto flex w-full max-w-[1400px] flex-wrap justify-center gap-8 ">
+        <div className="mx-auto flex w-full max-w-350 flex-wrap justify-center gap-8 ">
             <HotelCard images={images} />
             <HotelCard images={images} />
             <HotelCard images={images} />

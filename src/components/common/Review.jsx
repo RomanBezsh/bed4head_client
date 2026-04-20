@@ -3,7 +3,7 @@
 const Review = ({ name, data, hotelName, photo, text, borderColor = "#DDDDDD" }) => {
     return (
         <div
-            className="flex flex-col border rounded-[13px] w-[368px] h-[208px] gap-8 px-8 py-6"
+            className="flex flex-col border rounded-[13px] w-[368px] h-[208px] gap-8 px-8 py-6 shadow-[0px_4px_69px_0px_rgba(0,0,0,0.05),0px_1px_8px_0px_rgba(0,0,0,0.08)]"
             style={{ borderColor: borderColor }}
         >
             <div className="flex flex-row justify-between">

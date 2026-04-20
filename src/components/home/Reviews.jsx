@@ -12,7 +12,7 @@ const Reviews = ({ reviews }) => {
             data: "12 days ago",
             hotelName: "Hotel Name",
             text: "Lorem ipsum dolor sit amet consectetur. Viverra ultricies enim interdum fermentu tor. Facilisis nulla eun. Ac netus tincidunt arcu er sed.",
-            color: "#DDDDDD",
+            color: "#94D0B4",
         },
         {
             photo: avatar,
@@ -20,7 +20,7 @@ const Reviews = ({ reviews }) => {
             data: "19 days ago",
             hotelName: "Hotel Name",
             text: "Lorem ipsum dolor sit amet consectetur. Facilisis nulla eun. Ac netus tincidunt sed.",
-            color: "#DDDDDD",
+            color: "#94D0B4",
         },
         {
             photo: avatar,
@@ -28,12 +28,12 @@ const Reviews = ({ reviews }) => {
             data: "12 days ago",
             hotelName: "Hotel Name",
             text: "Viverra ultricies enim interdum fermentu tor. Facilisis nulla eun. Ac netus tincidunt.",
-            color: "#DDDDDD",
+            color: "#94D0B4",
         },
     ]).slice(0, 3); // Show only the first 3 reviews
 
     return (
-        <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-4 sm:px-6 lg:px-8 ">
             {/* Section title */}
             <h2 className="mb-8 text-center text-[16px] font-normal uppercase tracking-widest text-[#717171] sm:mb-10 lg:mb-12">
                 Reviews

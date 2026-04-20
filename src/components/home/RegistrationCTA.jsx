@@ -8,7 +8,7 @@ const RegistrationCTA = () => {
         <div className="flex flex-row items-center justify-center gap-4 w-full">
             <img src={leftFlagIcon} className="w-6 h-6" alt="" />
 
-            <button className="bg-[#581ADB] w-64 h-16 text-white font-[16px] font-bold rounded-[60px]">
+            <button className="bg-[#581ADB] w-64 h-16 text-white font-[16px] rounded-[60px] shadow-[0px_0px_43px_0px_#581ADB5E,0px_0px_10px_0px_#581ADB59]">
                 Register an account
             </button>
 
