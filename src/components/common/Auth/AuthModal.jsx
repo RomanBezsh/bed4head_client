@@ -5,6 +5,10 @@ import closerIcon from "../../../assets/icons/common/closer_icon.svg";
 
 import checkmarkIcon from "../../../assets/icons/big_check_purple_icon.svg";
 
+
+import {AuthService} from "../../../api/authApi";
+
+
 import {useState} from "react";
 import { useNavigate } from 'react-router-dom';
 
@@ -25,7 +29,16 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         } else if (step === "code") {
             setStep("success");
         } else {
-            onClose(); // Если уже успех — закрываем
+            onClose(); 
+        }
+    };
+
+    const handleLogin = async (email, password) => {
+        try {
+            const data = await AuthService.login(email, password);
+            console.log("Login successful:", data);
+        } catch (error) {
+            console.error("Login failed:", error);
         }
     };
 
