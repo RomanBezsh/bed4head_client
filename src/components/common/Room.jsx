@@ -1,4 +1,3 @@
-
 import room from "../../assets/room.jpg";
 import bedIcon from "../../assets/icons/bedroom_icon.svg";
 import guestsIcon from "../../assets/icons/common/profile2user.svg";
@@ -6,80 +5,123 @@ import wifiIcon from "../../assets/icons/wifi_connection_icon.svg";
 import bathIcon from "../../assets/icons/bath_icon.svg";
 import poolIcon from "../../assets/icons/pool_icon.svg";
 
-
-
 import checkIcon from "../../assets/icons/сheck_purple_icon.svg";
 
+// Tag icons map
 const TAG_ICONS = {
     "free wi-fi": wifiIcon,
     "bath": bathIcon,
     "private pool": poolIcon,
 };
 
-
 const Room = ({ tags, isBooked = false }) => {
     return (
-        <div className={`flex flex-row ${isBooked? "w-200" : "w-296"} h-58 border border-gray rounded-[13px] overflow-hidden shadow-[0px_4px_69px_0px_rgba(0,0,0,0.05)]`}>
+        <div
+            className="
+                w-full
+                flex flex-col lg:flex-row
+                border border-gray rounded-[13px]
+                overflow-hidden
+                shadow-[0px_4px_69px_0px_rgba(0,0,0,0.05)]
+            "
+        >
+            {/* Room image */}
             <img
-                className="h-58 w-80 rounded-l-[13px] object-cover"
+                className="
+                    w-full lg:w-[320px]
+                    h-[220px] sm:h-[260px] lg:h-auto
+                    object-cover
+                "
                 src={room}
                 alt="Room"
             />
-            <div className="flex flex-row justify-between flex-1">
-                <div className="flex flex-col pt-[26.88px] pl-[24.88px]">
-                    <h2 className="text-[20px] font-bold">Suite with a queen-size bed</h2>
 
-                    <div className="flex flex-col mt-6 gap-2">
-                        <div className="flex flex-row items-center gap-8.5">
-                            <div className="flex flex-row items-center gap-2">
-                                <img className="w-[24.06px] h-[23.9px] grayscale opacity-60" src={bedIcon} alt="bed" />
-                                <span className="text-[#717171]">Bed: </span>
+            {/* Content */}
+            <div className="flex flex-col lg:flex-row justify-between flex-1">
+                {/* Left side info */}
+                <div className="flex flex-col p-4 sm:p-6">
+                    {/* Title */}
+                    <h2 className="text-[18px] sm:text-[20px] font-bold">
+                        Suite with a queen-size bed
+                    </h2>
+
+                    {/* Bed and guests info */}
+                    <div className="flex flex-col mt-4 sm:mt-6 gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                            <div className="flex items-center gap-2">
+                                <img className="w-5 h-5 opacity-60" src={bedIcon} alt="bed" />
+                                <span className="text-[#717171]">Bed:</span>
                             </div>
-                            <span className="text-[#717171]">queen-sized bed 1 | double bed 1</span>
+                            <span className="text-[#717171] text-[14px] sm:text-[16px]">
+                                queen-sized bed 1 | double bed 1
+                            </span>
                         </div>
 
-                        <div className="flex flex-row items-center gap-3.25 mt-2">
-                            <div className="flex flex-row items-center gap-2">
-                                <img className="w-[24.06px] h-[23.9px] grayscale opacity-60" src={guestsIcon} alt="guests" />
-                                <span className="text-[#717171]">Guests: </span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                            <div className="flex items-center gap-2">
+                                <img className="w-5 h-5 opacity-60" src={guestsIcon} alt="guests" />
+                                <span className="text-[#717171]">Guests:</span>
                             </div>
-                            <span className="text-[#717171]">maximum 3</span>
+                            <span className="text-[#717171] text-[14px] sm:text-[16px]">
+                                maximum 3
+                            </span>
                         </div>
                     </div>
 
-
-                    <div className="flex flex-row items-center gap-8 mt-7">
+                    {/* Room tags */}
+                    <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-5 sm:mt-7">
                         {tags.map((tag) => (
                             <div key={tag} className="flex items-center gap-2">
                                 <img
                                     src={TAG_ICONS[tag]}
                                     alt={tag}
-                                    className="w-6 h-6 grayscale"
+                                    className="w-5 h-5 sm:w-6 sm:h-6 grayscale"
                                 />
-                                <span className="text-[#717171] font-normal text-[16px]">
-                                            {tag}
-                                    </span>
+                                <span className="text-[#717171] text-[14px] sm:text-[16px]">
+                                    {tag}
+                                </span>
                             </div>
                         ))}
                     </div>
 
-                    <div className="flex flex-row mt-1 items-center gap-2">
-                        <img className="w-6 h-6" src={checkIcon} alt="check" />
-                        <span className="text-[16px] font-normal text-[#581ADB]">FREE cancellation</span>
+                    {/* Cancellation info */}
+                    <div className="flex items-center gap-2 mt-3">
+                        <img className="w-5 h-5 sm:w-6 sm:h-6" src={checkIcon} alt="check" />
+                        <span className="text-[14px] sm:text-[16px] text-[#581ADB]">
+                            FREE cancellation
+                        </span>
                     </div>
                 </div>
+
+                {/* Right side with price and buttons */}
                 {!isBooked && (
-                    <div className="flex flex-col w-36.5 items-center justify-center p-6 gap-3">
-                        <div className="text-[20px] font-bold text-[#581ADB]">85$</div>
-                        <button className="border-none rounded-full bg-[#581ADB] w-28 h-10 ">
-                            <span className="uppercase text-white text-[16px] font-bold">choose</span>
+                    <div
+                        className="
+                            flex flex-col items-center justify-center
+                            p-4 sm:p-6 gap-3
+                            w-full lg:w-[180px]
+                        "
+                    >
+                        {/* Price */}
+                        <div className="text-[18px] sm:text-[20px] font-bold text-[#581ADB]">
+                            85$
+                        </div>
+
+                        {/* Choose button */}
+                        <button className="rounded-full bg-[#581ADB] w-full lg:w-28 h-10">
+                            <span className="uppercase text-white text-[14px] sm:text-[16px] font-bold">
+                                choose
+                            </span>
                         </button>
-                        <button className="w-28 py-2 border border-[#581ADB] text-[#581ADB] rounded-full font-bold uppercase">
-                            <span className="uppercase border-[#581ADB] text-[16px] font-bold">+info</span>
+
+                        {/* Info button */}
+                        <button className="w-full lg:w-28 py-2 border border-[#581ADB] text-[#581ADB] rounded-full font-bold uppercase">
+                            <span className="text-[14px] sm:text-[16px] font-bold">
+                                +info
+                            </span>
                         </button>
                     </div>
                 )}
-
             </div>
         </div>
     );

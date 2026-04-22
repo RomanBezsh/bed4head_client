@@ -24,7 +24,7 @@ function Layout() {
                 <Route path="/" element={<Home />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/catalog" element={<Catalog />} />
-                <Route path="/hotel" element={<HotelPage />} />
+                <Route path="/hotel/:id" element={<HotelPage />} />
                 <Route path="/account" element={<AccountDashboard />} />
                 <Route path="/booking" element={<Booking />} />
             </Routes>
