@@ -4,41 +4,89 @@ import appleIcon from "../../../assets/icons/auth_icons/apple.svg";
 import closerIcon from "../../../assets/icons/common/closer_icon.svg";
 
 import checkmarkIcon from "../../../assets/icons/big_check_purple_icon.svg";
+import selectArrowIcon from "../../../assets/icons/common/select_arrow_icon.svg";
 
+import { AuthService } from "../../../api/authApi";
 
-import {AuthService} from "../../../api/authApi";
-
-
-import {useState} from "react";
+import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const isLogin = mode === "login";
 
-    const [password, setPassword] = useState("");
-    const [passwordRepeated, setPasswordRepeated] = useState("");
+    //register
+    const [registerState, setRegisterState] = useState({
+        email: "",
+        password: "",
+        passwordRepeated: "",
+        country: "",
+        city: "",
+        travelReason: "",
+        travellingWithPet: "no",
+    });
+
+    //login
+    const [loginState, setLoginState] = useState({
+        email: "",
+        password: "",
+    });
 
     const [step, setStep] = useState("form");
 
     const navigate = useNavigate();
+    const authService = new AuthService();
 
+    const isInfoFormComplete = registerState.country && registerState.city && registerState.travelReason;
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         if (step === "form") {
+            if (isLogin) {
+                const loginSuccess = await handleLogin(loginState.email, loginState.password);
+                if (!loginSuccess) {
+                    return;
+                }
+            }
             setStep("code");
         } else if (step === "code") {
+            // if (!isLogin) {
+            //     const registerSuccess = await handleRegister(registerState.email, registerState.password, registerState.country, registerState.city, registerState.travelReason, registerState.travellingWithPet);
+            //     if (!registerSuccess) {
+            //         return;
+            //     }
+            // }
+            setStep(isLogin ? "success" : "info");
+        } else if (step === "info") {
             setStep("success");
         } else {
-            onClose(); 
+            onClose();
         }
     };
 
+    // const continueVariant = step === "form" || step === "code" || (step === "info" && isInfoFormComplete)
+    //     ? "primary"
+    //     : "disabled";
+
+    const continueVariant = "primary";
+
     const handleLogin = async (email, password) => {
         try {
-            const data = await AuthService.login(email, password);
+            const data = await authService.login(email, password);
             console.log("Login successful:", data);
+            return true;
         } catch (error) {
             console.error("Login failed:", error);
+            return false;
+        }
+    };
+
+    const handleRegister = async (email, password, country, city, travelReason, travellingWithPet) => {
+        try {
+            const data = await authService.register(email, password, country, city, travelReason, travellingWithPet);
+            console.log("Registration successful:", data);
+            return true;
+        } catch (error) {
+            console.error("Registration failed:", error);
+            return false;
         }
     };
 
@@ -48,16 +96,16 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8"
             onClick={(e) => e.target === e.currentTarget && onClose()}
         >
-            <div className={`relative border-[#DDDDDD] border w-[528px] max-w-full bg-white rounded-[13px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)] pt-[31px] pb-[31px] flex flex-col box-border transition-all duration-300 ${
-                step === "success" ? "h-[448px]" : "min-h-[679px]"
-            }`}>
+            <div className={`relative border-[#DDDDDD] border w-[528px] max-w-full bg-white rounded-[13px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)] pt-[31px] pb-[31px] flex flex-col box-border transition-all duration-300 ${step === "success" ? "h-[448px]" : "min-h-[679px]"
+                }`}>
 
                 {/* Header */}
                 <div className="relative flex items-center justify-center">
                     <h2 className="text-[24px] font-extrabold text-[#581ADB]">
                         {step === "code" ? "Authentication" :
-                            step === "success" ? "All done!" :
-                                (isLogin ? "Sign In" : "Register")}
+                            step === "info" ? "Information" :
+                                step === "success" ? "All done!" :
+                                    (isLogin ? "Sign In" : "Register")}
                     </h2>
                     <button onClick={onClose} className="absolute right-[24px] top-1/2 -translate-y-2/3 flex w-[24px] h-[24px] items-center justify-center rounded-full bg-white p-0 hover:bg-gray-50 transition-colors">
                         <img src={closerIcon} alt="Close" className="w-[24px] h-[24px]" />
@@ -75,11 +123,15 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         type="email"
                                         placeholder="Email"
                                         className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                        value={loginState.email}
+                                        onChange={(e) => setLoginState(prev => ({ ...prev, email: e.target.value }))}
                                     />
                                     <AuthInput
                                         type="password"
                                         placeholder="Password"
                                         className="w-full h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none"
+                                        value={loginState.password}
+                                        onChange={(e) => setLoginState(prev => ({ ...prev, password: e.target.value }))}
                                     />
                                 </>
                             ) : (
@@ -89,6 +141,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                             type="email"
                                             placeholder="Email"
                                             className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                            value={registerState.email}
+                                            onChange={(e) => setRegisterState(prev => ({ ...prev, email: e.target.value }))}
                                         />
                                         <p className="text-[16px] mt-2 mx-[24px] text-[#717171] font-normal leading-[16px]">
                                             We will send you an email to confirm your email address
@@ -100,8 +154,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         placeholder="Password"
                                         className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
                                         showCounter
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        value={registerState.password}
+                                        onChange={(e) => setRegisterState(prev => ({ ...prev, password: e.target.value }))}
                                     />
 
                                     <AuthInput
@@ -109,8 +163,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         placeholder="Repeat password"
                                         className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
                                         showCounter
-                                        value={passwordRepeated}
-                                        onChange={(e) => setPasswordRepeated(e.target.value)}
+                                        value={registerState.passwordRepeated}
+                                        onChange={(e) => setRegisterState(prev => ({ ...prev, passwordRepeated: e.target.value }))}
                                     />
 
                                     <p className="text-[16px] text-[#717171] px-[24px]">
@@ -133,10 +187,109 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
                                 <p className="text-[16px] text-[#717171] px-[24px] leading-[22px]">
                                     We have sent you an email with the code.
-                                    Check your mail and enter the code for the authentication
+                                    Check your mail and enter the code for authentication.
                                 </p>
                             </div>
 
+                        </div>
+                    )}
+
+                    {step === "info" && (
+                        <div className="flex flex-col px-[12px] pt-5">
+                            <p className="text-[16px] text-[#717171] leading-[24px] ml-6">
+                                Tell us about yourself so we can better choose options for you :)
+                            </p>
+
+                            <div className="flex flex-col gap-4 mt-4.25">
+                                <div className="relative w-full">
+                                    <select
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none appearance-none"
+
+                                        value={registerState.country}
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, country: e.target.value }))}
+                                    >
+                                        <option value="" disabled>Country</option>
+                                        <option value="ukraine">Ukraine</option>
+                                        <option value="usa">USA</option>
+                                        <option value="poland">Poland</option>
+                                    </select>
+                                    <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
+                                </div>
+
+                                <div className="relative w-full">
+                                    <select
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none appearance-none"
+                                        value={registerState.city}
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, city: e.target.value }))}
+                                    >
+                                        <option value="" disabled>City</option>
+                                        <option value="kyiv">Kyiv</option>
+                                        <option value="lviv">Lviv</option>
+                                        <option value="odessa">Odesa</option>
+                                    </select>
+                                    <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
+                                </div>
+
+                                <div className="relative w-full">
+                                    <select
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none appearance-none"
+                                        value={registerState.travelReason}
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, travelReason: e.target.value }))}
+                                    >
+                                        <option value="" disabled>Why do you travel?</option>
+                                        <option value="business">Business</option>
+                                        <option value="vacation">Vacation</option>
+                                        <option value="family">Family</option>
+                                    </select>
+                                    <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
+                                </div>
+
+                                <div className="flex flex-col gap-3 mt-7 ml-6">
+                                    <span className="text-[16px] text-[#222222]">Travelling with a pet?</span>
+                                    <div className="flex items-center gap-8">
+                                        <label className="inline-flex items-center gap-3 text-[16px] text-[#222222]">
+                                            <input
+                                                type="radio"
+                                                name="travellingWithPet"
+                                                value="yes"
+                                                checked={registerState.travellingWithPet === "yes"}
+                                                onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
+                                                className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
+                                            />
+                                            Yes
+                                        </label>
+                                        <label className="inline-flex items-center gap-3 text-[16px] text-[#222222]">
+                                            <input
+                                                type="radio"
+                                                name="travellingWithPet"
+                                                value="no"
+                                                checked={registerState.travellingWithPet === "no"}
+                                                onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
+                                                className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
+                                            />
+                                            No
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-4 mt-7">
+                                <AuthPrimaryButton
+                                    variant={continueVariant}
+                                    disabled={continueVariant === "disabled"}
+                                    onClick={handleContinue}
+                                >
+                                    Continue
+                                </AuthPrimaryButton>
+
+                                <button
+                                    type="button"
+                                    className="w-full h-[56px] rounded-full border border-[#581ADB] bg-white text-[#581ADB] text-[16px] font-semibold hover:bg-purple-50 transition-colors"
+                                    onClick={onClose}
+                                >
+                                    Later
+                                </button>
+                            </div>
                         </div>
                     )}
 
@@ -173,10 +326,11 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 </div>
 
                 {/* Continue button */}
-                {step !== "success" && (
+                {step !== "success" && step !== "info" && (
                     <div className={`w-[432px] max-w-full mx-auto ${isLogin ? "mb-3" : "mb-8"}`}>
                         <AuthPrimaryButton
-                            variant={(isLogin && step === "form") ? "disabled" : "primary"}
+                            variant={continueVariant}
+                            disabled={continueVariant === "disabled"}
                             onClick={handleContinue}
                         >
                             Continue
@@ -252,6 +406,7 @@ const AuthPrimaryButton = ({ children, variant = "primary", onClick }) => {
         <button
             type="button"
             onClick={onClick}
+            disabled={variant === "disabled"}
             className={`${baseClasses} ${variantClasses}`}
         >
             {children}

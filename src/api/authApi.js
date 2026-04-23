@@ -12,6 +12,14 @@ export class AuthService {
         }
     };
 
+    async register(email, password, country, city, travelReason, travellingWithPet) {
+        try {
+            const response = await api.post('/auth/register', { email, password, country, city, travelReason, travellingWithPet });
+            return response.data;
+        } catch (error) {
+            throw new Error('Registration failed');
+        }
+    };
 
 }
 
