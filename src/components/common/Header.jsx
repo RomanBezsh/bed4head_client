@@ -20,7 +20,7 @@ const Header = () => {
 
     return (
         <header className="w-full h-[80px] flex items-center justify-center bg-white border-b border-gray">
-            <div className="w-full max-w-[1920px] px-4 md:px-20 flex items-center justify-between">
+            <div className="w-full max-w-480 px-4 md:px-20 flex items-center justify-between">
                 <NavLink to="/">
                     <img src={logo} alt="Logo" className="w-[167px] h-[33px]" />
                 </NavLink>
