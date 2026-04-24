@@ -31,6 +31,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         password: "",
     });
 
+    const [code, setCode] = useState("");
+
     const [step, setStep] = useState("form");
 
     const navigate = useNavigate();
@@ -39,24 +41,43 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const isInfoFormComplete = registerState.country && registerState.city && registerState.travelReason;
 
     const handleContinue = async () => {
-        if (step === "form") {
-            if (isLogin) {
-                const loginSuccess = await handleLogin(loginState);
-                if (!loginSuccess) {
+        try {
+            if (step === "form") {
+                if (isLogin) {
+                    await authService.login(loginState);
+                    setStep("success");
                     return;
                 }
-            }
-            setStep("code");
-        } else if (step === "code") {
-            setStep(isLogin ? "success" : "info");
-        } else if (step === "info") {
-            const registerSuccess = await handleRegister(registerState);
-            if (!registerSuccess) {
+
+                await authService.register({
+                    email: registerState.email,
+                    password: registerState.password,
+                });
+
+                setStep("code");
                 return;
             }
-            setStep("success");
-        } else {
+            if (step === "code") {
+                const email = isLogin ? loginState.email : registerState.email;
+
+                await authService.confirmEmail({ email, code });
+                setStep("info");
+                return;
+            }
+            if (step === "info") {
+                await authService.updateProfile({
+                    email: registerState.email,
+                    country: registerState.country,
+                    city: registerState.city,
+                    travelPurpose: registerState.travelReason,
+                });
+
+                setStep("success");
+                return;
+            }
             onClose();
+        } catch (e) {
+            console.error(e);
         }
     };
 
@@ -66,7 +87,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
     const continueVariant = "primary";
 
-    const handleLogin = async ( email, password ) => {
+    const handleLogin = async (email, password) => {
         try {
             const data = await authService.login(loginState);
             console.log("Login successful:", data);
@@ -192,10 +213,13 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                         <div className="flex flex-col justify-between h-full">
 
                             <div className="flex flex-col gap-4">
+
                                 <AuthInput
                                     type="text"
                                     placeholder="Code"
                                     className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                    value={code}
+                                    onChange={(e) => setCode(e.target.value)}
                                 />
 
                                 <p className="text-[16px] text-[#717171] px-[24px] leading-[22px]">
@@ -264,8 +288,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                             <input
                                                 type="radio"
                                                 name="travellingWithPet"
-                                                value={true}
-                                                checked={registerState.travellingWithPet === true}
+                                                value="true"
+                                                checked={registerState.travellingWithPet === "true"}
                                                 onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
                                                 className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
                                             />
@@ -275,8 +299,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                             <input
                                                 type="radio"
                                                 name="travellingWithPet"
-                                                value={false}
-                                                checked={registerState.travellingWithPet === false}
+                                                value="false"
+                                                checked={registerState.travellingWithPet === "false"}
                                                 onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
                                                 className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
                                             />

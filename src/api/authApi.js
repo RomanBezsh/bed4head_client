@@ -1,57 +1,27 @@
-import api from './client';
-
+import api from "./client";
 
 export class AuthService {
-
     async login({ email, password }) {
-        try {
-            const response = await api.post('/auth/login', { email, password });
-            return response.data;
-        } catch (error) {
-            const message =
-                error?.response?.data?.message ??
-                error?.response?.data ??
-                error?.message ??
-                'Unknown error';
+        return (await api.post("/auth/login", { email, password })).data;
+    }
 
-            throw new Error(`Login failed: ${message}`);
+    async register({ email, password }) {
+        try {
+            return (await api.post("/auth/register", { email, password })).data;
+        } catch (error) {
+            console.log("REGISTER status:", error?.response?.status);
+            console.log("REGISTER data:", error?.response?.data);
+            throw error; 
         }
     }
 
-    async register({ email, password, isTravellingWithPet }) {
-        try {
-            const response = await api.post('/auth/register', {
-                email,
-                password,
-                country,
-                city,
-                travelPurpose,
-                isTravellingWithPet
-            });
-            return response.data;
-        } catch (error) {
-            const message = error?.response?.data?.message ?? error?.message ?? 'Unknown error';
-            throw new Error('Registration failed: ' + message);
-        }
-    };
     async confirmEmail({ email, code }) {
-        const response = await api.post('/auth/confirm-email', { email, code });
-        return response.data;
+        return (await api.post("/auth/confirm-email", { email, code })).data;
     }
 
-    async updateProfile({ email, name, country, city, travelPurpose }) {
-        const response = await api.post('/auth/update-profile', {
-            email, name, country, city, travelPurpose
-        });
-        return response.data;
+    async updateProfile({ email, country, city, travelPurpose, isTravellingWithPet }) {
+        return (await api.post("/auth/update-profile", {
+            email, country, city, travelPurpose, isTravellingWithPet
+        })).data;
     }
 }
-
-
-
-
-
-
-
-
-
