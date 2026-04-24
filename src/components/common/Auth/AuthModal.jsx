@@ -22,7 +22,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         country: "",
         city: "",
         travelReason: "",
-        travellingWithPet: "no",
+        travellingWithPet: null,
     });
 
     //login
@@ -41,21 +41,19 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const handleContinue = async () => {
         if (step === "form") {
             if (isLogin) {
-                const loginSuccess = await handleLogin(loginState.email, loginState.password);
+                const loginSuccess = await handleLogin(loginState);
                 if (!loginSuccess) {
                     return;
                 }
             }
             setStep("code");
         } else if (step === "code") {
-            // if (!isLogin) {
-            //     const registerSuccess = await handleRegister(registerState.email, registerState.password, registerState.country, registerState.city, registerState.travelReason, registerState.travellingWithPet);
-            //     if (!registerSuccess) {
-            //         return;
-            //     }
-            // }
             setStep(isLogin ? "success" : "info");
         } else if (step === "info") {
+            const registerSuccess = await handleRegister(registerState);
+            if (!registerSuccess) {
+                return;
+            }
             setStep("success");
         } else {
             onClose();
@@ -68,9 +66,9 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
     const continueVariant = "primary";
 
-    const handleLogin = async (email, password) => {
+    const handleLogin = async ( email, password ) => {
         try {
-            const data = await authService.login(email, password);
+            const data = await authService.login(loginState);
             console.log("Login successful:", data);
             return true;
         } catch (error) {
@@ -79,9 +77,24 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         }
     };
 
-    const handleRegister = async (email, password, country, city, travelReason, travellingWithPet) => {
+    const handleRegister = async (registerData) => {
         try {
-            const data = await authService.register(email, password, country, city, travelReason, travellingWithPet);
+            console.log("Sending registration request with data:", {
+                email: registerData.email,
+                password: registerData.password,
+                country: registerData.country,
+                city: registerData.city,
+                travelPurpose: registerData.travelReason,
+                isTravellingWithPet: registerData.travellingWithPet
+            });
+            const data = await authService.register({
+                email: registerData.email,
+                password: registerData.password,
+                country: registerData.country,
+                city: registerData.city,
+                travelPurpose: registerData.travelReason,
+                isTravellingWithPet: registerData.travellingWithPet
+            });
             console.log("Registration successful:", data);
             return true;
         } catch (error) {
@@ -251,8 +264,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                             <input
                                                 type="radio"
                                                 name="travellingWithPet"
-                                                value="yes"
-                                                checked={registerState.travellingWithPet === "yes"}
+                                                value={true}
+                                                checked={registerState.travellingWithPet === true}
                                                 onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
                                                 className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
                                             />
@@ -262,8 +275,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                             <input
                                                 type="radio"
                                                 name="travellingWithPet"
-                                                value="no"
-                                                checked={registerState.travellingWithPet === "no"}
+                                                value={false}
+                                                checked={registerState.travellingWithPet === false}
                                                 onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
                                                 className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
                                             />
