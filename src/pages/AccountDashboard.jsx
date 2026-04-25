@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {UserService} from "../api/userApi.js";
+
 
 import ToMainPageButton from "../components/accountDashboard/ToMainPageButton.jsx";
 import DashboardNavigation from "../components/accountDashboard/DashboardNavigation.jsx";
@@ -10,20 +12,45 @@ import Newsletters from "../components/accountDashboard/Newsletters.jsx";
 import Security from "../components/accountDashboard/Security.jsx";
 
 
-const TABS_MAP = {
-    account: <Account />,
-    payment: <PaymentMethod />,
-    travel: <TravelInformation />,
-    newsletters: <Newsletters />,
-    security: <Security />,
-};
-
 function AccountDashboard() {
     const [activeTab, setActiveTab] = useState("account");
+    const [userData, setUserData] = useState(() => {
+        const stored = localStorage.getItem("user");
+        return stored ? JSON.parse(stored).user : null;
+    });
 
     const renderContent = () => {
-        return TABS_MAP[activeTab] || <Account />;
+        const components = {
+            account: <Account user={userData} />,
+            payment: <PaymentMethod user={userData} />,
+            travel: <TravelInformation user={userData} />,
+            newsletters: <Newsletters user={userData} />,
+            security: <Security user={userData} />,
+        };
+        return components[activeTab] || <Account user={userData} />;
     };
+
+    const userService = new UserService();
+
+    useEffect(() => {
+        const refreshUserData = async () => {
+            try {
+                const storedAuth = JSON.parse(localStorage.getItem("user"));
+                const userId = storedAuth?.user?.id;
+
+                if (userId) {
+                    const updatedUser = await userService.getUserProfile(userId);
+                    const newAuthData = { ...storedAuth, user: updatedUser };
+                    localStorage.setItem("user", JSON.stringify(newAuthData));
+                    setUserData(updatedUser);
+                }
+            } catch (error) {
+                console.error("Failed to refresh user data:", error);
+            }
+        };
+
+        refreshUserData();
+    }, []);
 
     return (
         <div className="min-h-screen bg-white pt-[24px]">

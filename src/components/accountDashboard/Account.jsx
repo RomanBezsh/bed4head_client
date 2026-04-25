@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import userPlaceholder from "../../assets/icons/common/user_placeholder.svg";
 import editIcon from "../../assets/icons/common/edit_icon.svg";
 import cameraIcon from "../../assets/icons/common/camera_icon.svg";
@@ -13,15 +14,18 @@ import plainIcon from "../../assets/icons/common/plain_icon.svg";
 import profile2userIcon from "../../assets/icons/common/profile2user.svg";
 import noReviewsIcon from "../../assets/icons/common/no_reviews_icon.svg";
 
+import { AuthService } from "../../api/authApi";
+
 import hotelRoomPhoto from "../../assets/independed_images/hotel_room_photo_example.png";
 
-const FieldInput = ({ placeholder, note = "", smallNote = "" }) => {
+const FieldInput = ({ placeholder, note = "", smallNote = "", value = "" }) => {
     return (
         <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <input
                     type="text"
                     placeholder={placeholder}
+                    defaultValue={value}
                     className="h-14 w-full rounded-full border border-[#D9D9D9] bg-white px-4.5 text-[16px] font-normal font-nunito-sans text-[#717171] placeholder:text-[#717171] outline-none md:max-w-62"
                 />
 
@@ -194,7 +198,56 @@ const ReviewsEmpty = () => {
     );
 };
 
-const Account = () => {
+const Account = ({ user }) => {
+    const fileInputRef = useRef(null);
+    const authService = new AuthService();
+
+    const handleImageError = (e) => {
+        e.target.src = userPlaceholder;
+        e.target.classList.remove("object-cover");
+        e.target.classList.add("object-contain", "opacity-70");
+    };
+
+    const handleUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!user?.id) {
+            console.error("Cannot upload avatar: User ID is missing. Check if you are logged in correctly.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file); 
+
+        try {
+            const response = await authService.uploadAvatar(user.id, formData);
+            console.log("Avatar uploaded:", response);
+            
+            // Обновляем данные в localStorage сразу, чтобы после перезагрузки аватарка подтянулась
+            const storedAuth = JSON.parse(localStorage.getItem("user"));
+            if (storedAuth && storedAuth.user) {
+                storedAuth.user.avatarUrl = response.url;
+                // Убеждаемся, что мы сохраняем объект, а не строку
+                const updatedUser = { 
+                    ...storedAuth.user, 
+                    avatarUrl: response.url 
+                };
+                
+                storedAuth.user = updatedUser;
+                localStorage.setItem("user", JSON.stringify(storedAuth));
+            }
+
+            window.location.reload(); 
+        } catch (error) {
+            console.error("Failed to upload avatar:", error);
+        }
+    };
+
     return (
         <div className="mt-10 font-nunito-sans">
             <div className="mx-auto w-full max-w-285 px-4 sm:px-0">
@@ -204,18 +257,19 @@ const Account = () => {
 
                 <div className="mb-4 flex flex-col gap-4.5 xl:flex-row">
                     <div className="flex w-full flex-col overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] md:flex-row xl:max-w-200">
-                        <div className="flex h-55 w-full items-center justify-center bg-[#E9E9E9] md:h-62 md:w-62">
+                        <div className="flex h-55 w-full items-center justify-center bg-[#E9E9E9] md:h-62 md:w-62 overflow-hidden">
                             <img
-                                src={userPlaceholder}
+                                src={user?.avatarUrl || userPlaceholder}
                                 alt="user"
-                                className="h-full w-full object-contain opacity-70"
+                                onError={handleImageError}
+                                className={`h-full w-full ${user?.avatarUrl ? "object-cover" : "object-contain opacity-70"}`}
                             />
                         </div>
 
                         <div className="flex flex-1 flex-col justify-start px-4 py-3">
                             <div className="mb-3 flex items-center gap-2">
                                 <span className="text-[20px] font-bold text-[#1E1E1E]">
-                                    Your Name
+                                    {user?.displayName || "Your Name"}
                                 </span>
 
                                 <img
@@ -225,7 +279,18 @@ const Account = () => {
                                 />
                             </div>
 
-                            <button className="flex h-11 w-full max-w-48 items-center justify-center gap-2 rounded-full border border-[#D9D9D9] bg-white text-[11px] text-[#8F8F8F] sm:h-8">
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                                accept="image/*"
+                            />
+
+                            <button 
+                                onClick={handleUploadClick}
+                                className="flex h-11 w-full max-w-48 items-center justify-center gap-2 rounded-full border border-[#D9D9D9] bg-white text-[11px] text-[#8F8F8F] sm:h-8"
+                            >
                                 <span className="text-[16px] font-normal text-[#717171]">
                                     Change the photo
                                 </span>
@@ -254,11 +319,13 @@ const Account = () => {
                         <div className="flex w-full flex-col gap-3.5">
                             <FieldInput
                                 placeholder="Your phone number"
+                                value={user?.phone || ""}
                                 note="*Has to be confirmed"
                             />
 
                             <FieldInput
                                 placeholder="Your email"
+                                value={user?.email || ""}
                                 note="*Has to be confirmed"
                             />
 
@@ -270,8 +337,8 @@ const Account = () => {
                         </div>
 
                         <div className="flex w-full flex-col gap-3.5">
-                            <FieldSelect placeholder="Country" />
-                            <FieldSelect placeholder="Ampthill" />
+                            <FieldSelect placeholder={user?.country || "Country"} />
+                            <FieldSelect placeholder={user?.city || "City"} />
                             <FieldSelect placeholder="Preferred currency" />
                         </div>
                     </div>

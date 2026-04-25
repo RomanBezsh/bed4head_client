@@ -19,9 +19,15 @@ export class AuthService {
         return (await api.post("/auth/confirm-email", { email, code })).data;
     }
 
-    async updateProfile({ email, country, city, travelPurpose, isTravellingWithPet }) {
+    async updateProfile({ id, email, country, city, travelPurpose, isTravellingWithPet }) {
         return (await api.post("/auth/update-profile", {
-            email, country, city, travelPurpose, isTravellingWithPet
+            id, email, country, city, travelPurpose, isTravellingWithPet
+        })).data;
+    }
+
+    async uploadAvatar(userId, formData) {
+        return (await api.post(`/user/${userId}/upload-avatar`, formData, {
+            headers: { "Content-Type": "multipart/form-data" }
         })).data;
     }
 }
