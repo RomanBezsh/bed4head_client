@@ -4,28 +4,41 @@ import FormInput from "./FormInput.jsx";
 // Add room form component
 export default function AddRoomForm({ hotels, onAddRoom }) {
     const [hotelName, setHotelName] = useState(hotels[0]?.name || "");
-    const [roomType, setRoomType] = useState("");
+    const [name, setName] = useState("");
+    const [photo, setPhoto] = useState(null);
+    const [beds, setBeds] = useState("");
     const [capacity, setCapacity] = useState("");
-    const [price, setPrice] = useState("");
+    const [wifi, setWifi] = useState(false);
+    const [bathroom, setBathroom] = useState(false);
+    const [pool, setPool] = useState(false);
+    const [freeCancellation, setFreeCancellation] = useState(false);
 
     // Handle room form submission
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!hotelName.trim() || !roomType.trim() || !capacity.trim() || !price.trim()) {
+        if (!hotelName.trim() || !name.trim() || !capacity.trim()) {
             return;
         }
 
         onAddRoom({
             hotelName,
-            roomType,
+            name,
+            photo,
+            beds,
             capacity: Number(capacity),
-            price: `$${price}`,
+            amenities: { wifi, bathroom, pool },
+            freeCancellation,
         });
 
-        setRoomType("");
+        setName("");
+        setPhoto(null);
+        setBeds("");
         setCapacity("");
-        setPrice("");
+        setWifi(false);
+        setBathroom(false);
+        setPool(false);
+        setFreeCancellation(false);
     };
 
     return (
@@ -54,10 +67,27 @@ export default function AddRoomForm({ hotels, onAddRoom }) {
                 </div>
 
                 <FormInput
-                    label="Room type"
-                    value={roomType}
-                    onChange={(e) => setRoomType(e.target.value)}
-                    placeholder="Standard, Luxury, Family..."
+                    label="Room name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Luxury Suite"
+                />
+
+                <div className="flex flex-col gap-2">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">Room Photo</label>
+                    <input
+                        type="file"
+                        onChange={(e) => setPhoto(e.target.files[0])}
+                        className="flex h-[48px] w-full items-center rounded-[16px] border border-[#D9D9D9] px-4 py-2 text-[14px] outline-none"
+                        accept="image/*"
+                    />
+                </div>
+
+                <FormInput
+                    label="Beds"
+                    value={beds}
+                    onChange={(e) => setBeds(e.target.value)}
+                    placeholder="e.g. queen-sized bed 1 | double bed 1"
                 />
 
                 <FormInput
@@ -68,13 +98,27 @@ export default function AddRoomForm({ hotels, onAddRoom }) {
                     type="number"
                 />
 
-                <FormInput
-                    label="Price per night"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="Enter price"
-                    type="number"
-                />
+                <div className="flex flex-col gap-3 md:col-span-2">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">Room Features</label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <label className="flex items-center gap-2 text-[14px]">
+                            <input type="checkbox" checked={wifi} onChange={(e) => setWifi(e.target.checked)} />
+                            Free WiFi
+                        </label>
+                        <label className="flex items-center gap-2 text-[14px]">
+                            <input type="checkbox" checked={bathroom} onChange={(e) => setBathroom(e.target.checked)} />
+                            Bathroom
+                        </label>
+                        <label className="flex items-center gap-2 text-[14px]">
+                            <input type="checkbox" checked={pool} onChange={(e) => setPool(e.target.checked)} />
+                            Private Pool
+                        </label>
+                        <label className="flex items-center gap-2 text-[14px]">
+                            <input type="checkbox" checked={freeCancellation} onChange={(e) => setFreeCancellation(e.target.checked)} />
+                            Free Cancellation
+                        </label>
+                    </div>
+                </div>
 
                 <div className="md:col-span-2">
                     <button

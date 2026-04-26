@@ -3,29 +3,53 @@ import FormInput from "./FormInput.jsx";
 
 // Add hotel form component
 export default function AddHotelForm({ onAddHotel }) {
-    const [hotelName, setHotelName] = useState("");
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [stars, setStars] = useState("5");
+    const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
-    const [price, setPrice] = useState("");
+    const [country, setCountry] = useState("");
+    const [photos, setPhotos] = useState([]);
+    const [facilities, setFacilities] = useState("");
+    const [importantInfo, setImportantInfo] = useState("");
+    const [coordinates, setCoordinates] = useState("");
+    const [nearbyPlaces, setNearbyPlaces] = useState("");
     const [status, setStatus] = useState("Active");
 
     // Handle hotel form submission
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!hotelName.trim() || !city.trim() || !price.trim()) {
+        if (!name.trim() || !city.trim() || !address.trim()) {
             return;
         }
 
         onAddHotel({
-            name: hotelName,
+            name,
+            description,
+            stars: Number(stars),
+            address,
             city,
-            price: `$${price}`,
+            country,
+            photos,
+            facilities,
+            importantInfo,
+            coordinates,
+            nearbyPlaces,
             status,
         });
 
-        setHotelName("");
+        setName("");
+        setDescription("");
+        setStars("5");
+        setAddress("");
         setCity("");
-        setPrice("");
+        setCountry("");
+        setPhotos([]);
+        setFacilities("");
+        setImportantInfo("");
+        setCoordinates("");
+        setNearbyPlaces("");
         setStatus("Active");
     };
 
@@ -41,9 +65,35 @@ export default function AddHotelForm({ onAddHotel }) {
             <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormInput
                     label="Hotel name"
-                    value={hotelName}
-                    onChange={(e) => setHotelName(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Enter hotel name"
+                />
+
+                <FormInput
+                    label="Stars (1-5)"
+                    value={stars}
+                    onChange={(e) => setStars(e.target.value)}
+                    placeholder="5"
+                    type="number"
+                />
+
+                <div className="md:col-span-2">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">Description</label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Enter hotel description"
+                        className="mt-2 w-full rounded-[16px] border border-[#D9D9D9] p-4 outline-none text-[14px]"
+                        rows="3"
+                    />
+                </div>
+
+                <FormInput
+                    label="Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Enter full address"
                 />
 
                 <FormInput
@@ -54,12 +104,62 @@ export default function AddHotelForm({ onAddHotel }) {
                 />
 
                 <FormInput
-                    label="Price per night"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="Enter price"
-                    type="number"
+                    label="Country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    placeholder="Enter country"
                 />
+
+                <div className="flex flex-col gap-2">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">Hotel Photos</label>
+                    <input
+                        type="file"
+                        multiple
+                        onChange={(e) => setPhotos(Array.from(e.target.files))}
+                        className="flex h-[48px] w-full items-center rounded-[16px] border border-[#D9D9D9] px-4 py-2 text-[14px] outline-none"
+                        accept="image/*"
+                    />
+                </div>
+
+                <FormInput
+                    label="Geo Coordinates (lat, lng)"
+                    value={coordinates}
+                    onChange={(e) => setCoordinates(e.target.value)}
+                    placeholder="e.g. 50.4501, 30.5234"
+                />
+
+                <div className="md:col-span-2">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">Facilities (Amenities)</label>
+                    <textarea
+                        value={facilities}
+                        onChange={(e) => setFacilities(e.target.value)}
+                        placeholder="WiFi, Spa, Gym, Parking..."
+                        className="mt-2 w-full rounded-[16px] border border-[#D9D9D9] p-4 outline-none text-[14px]"
+                        rows="2"
+                    />
+                </div>
+
+                <div className="md:col-span-2">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">Important Information</label>
+                    <textarea
+                        value={importantInfo}
+                        onChange={(e) => setImportantInfo(e.target.value)}
+                        placeholder="Check-in policy, rules..."
+                        className="mt-2 w-full rounded-[16px] border border-[#D9D9D9] p-4 outline-none text-[14px]"
+                        rows="2"
+                    />
+                </div>
+
+                <div className="md:col-span-2">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">What's nearby (Category, Name, Distance)</label>
+                    <textarea
+                        value={nearbyPlaces}
+                        onChange={(e) => setNearbyPlaces(e.target.value)}
+                        placeholder="Restaurant, KFC, 0.5km; Park, Central Park, 1.2km..."
+                        className="mt-2 w-full rounded-[16px] border border-[#D9D9D9] p-4 outline-none text-[14px]"
+                        rows="2"
+                    />
+                </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="text-[14px] font-semibold text-[#1A1A1A]">Status</label>
