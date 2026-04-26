@@ -1,22 +1,33 @@
-
-
 const Review = ({ name, data, hotelName, photo, text, borderColor = "#DDDDDD" }) => {
     return (
         <div
-            className="flex flex-col border rounded-[13px] w-92 h-52 gap-8 px-8 py-6 shadow-[0px_4px_69px_0px_rgba(0,0,0,0.05),0px_1px_8px_0px_rgba(0,0,0,0.08)]"
+            className="fade-up flex h-52 w-92 flex-col gap-8 rounded-[13px] border px-8 py-6 shadow-[0px_4px_69px_0px_rgba(0,0,0,0.05),0px_1px_8px_0px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-[6px] hover:shadow-[0px_12px_30px_rgba(0,0,0,0.10)]"
             style={{ borderColor: borderColor }}
         >
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-4">
-                    <img className="w-12 h-12 rounded-full" src={photo} alt={name} />
+                    <img
+                        className="h-12 w-12 rounded-full transition-transform duration-300 hover:scale-110"
+                        src={photo}
+                        alt={name}
+                    />
+
                     <div className="flex flex-col content-center justify-center">
                         <h2 className="text-[16px] font-bold">{name}</h2>
-                        <span className="text-[16px] font-normal text-[#717171]">{hotelName}</span>
+                        <span className="text-[16px] font-normal text-[#717171]">
+                            {hotelName}
+                        </span>
                     </div>
                 </div>
-                <span className="text-[16px] font-normal text-[#717171]">{data}</span>
+
+                <span className="text-[16px] font-normal text-[#717171]">
+                    {data}
+                </span>
             </div>
-            <p className="w-76 h-19.25 overflow-hidden text-ellipsis">{text}</p>
+
+            <p className="h-19.25 w-76 overflow-hidden text-ellipsis text-[#717171]">
+                {text}
+            </p>
         </div>
     );
 };

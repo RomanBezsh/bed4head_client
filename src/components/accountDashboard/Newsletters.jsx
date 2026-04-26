@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import Pic1 from "../../assets/independed_images/news_letters_images/first_picture.png";
 import Pic2 from "../../assets/independed_images/news_letters_images/second_picture.png";
 import Pic3 from "../../assets/independed_images/news_letters_images/third_picture.png";
@@ -10,11 +11,11 @@ const TopicCard = ({ image, title, text, selectedTopic, onSelect }) => {
     const isSelected = selectedTopic === title;
 
     return (
-        <div className="w-full overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="fade-up w-full overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]">
             <img
                 src={image}
                 alt={title}
-                className="h-37.5 w-full object-cover"
+                className="h-37.5 w-full object-cover transition-transform duration-300 hover:scale-105"
             />
 
             <div className="flex min-h-57.5 flex-col px-4 py-4">
@@ -26,13 +27,13 @@ const TopicCard = ({ image, title, text, selectedTopic, onSelect }) => {
                     {text}
                 </p>
 
-                <label className="mt-auto flex cursor-pointer items-center gap-2">
+                <label className="mt-auto flex cursor-pointer items-center gap-2 rounded-[6px] px-2 py-1 transition-all duration-200 hover:bg-[#F6F2FF]">
                     <input
                         type="radio"
                         name="newsletter-topic"
                         checked={isSelected}
                         onChange={() => onSelect(title)}
-                        className="h-5 w-5 cursor-pointer appearance-none rounded-full border border-[#B3B3B3] checked:bg-[#581ADB] sm:h-6 sm:w-6"
+                        className="h-5 w-5 cursor-pointer appearance-none rounded-full border border-[#B3B3B3] transition-all duration-200 checked:scale-110 checked:border-[#581ADB] checked:bg-[#581ADB] sm:h-6 sm:w-6"
                     />
                     <span className="font-nunito-sans text-[14px] font-normal leading-6 text-[#717171] sm:text-[16px]">
                         Choose this topic
@@ -49,31 +50,31 @@ const Newsletters = () => {
     return (
         <div className="mt-10 font-nunito-sans">
             <div className="mx-auto w-full max-w-285 px-4 sm:px-0">
-                <h1 className="mb-4.5 text-[28px] font-bold text-[#5A35F2] sm:text-[36px]">
+                <h1 className="fade-up mb-4.5 text-[28px] font-bold text-[#5A35F2] sm:text-[36px]">
                     Newsletters
                 </h1>
 
                 <div className="mb-5 flex flex-col gap-5 xl:flex-row">
-                    <div className="h-50 w-full overflow-hidden rounded-[10px] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] sm:h-58 xl:max-w-200">
+                    <div className="fade-up h-50 w-full overflow-hidden rounded-[10px] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] sm:h-58 xl:max-w-200">
                         <img
                             src={Pic1}
                             alt="newsletter"
-                            className="h-full w-full object-cover object-center"
+                            className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-105"
                         />
                     </div>
 
-                    <div className="flex w-full flex-col justify-center rounded-[10px] border border-[#E5E5E5] bg-white px-6 py-5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:max-w-[320px]">
+                    <div className="fade-up flex w-full flex-col justify-center rounded-[10px] border border-[#E5E5E5] bg-white px-6 py-5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] xl:max-w-[320px]">
                         <p className="mb-5 font-nunito-sans text-[14px] font-normal leading-6 text-[#717171] sm:text-[16px]">
                             We curate a daily selection of topics based on your interests and send them straight to your email address.
                         </p>
 
-                        <button className="flex h-10 w-full items-center justify-center rounded-[100px] bg-[#581ADB] px-6 py-2.5 text-[14px] font-bold uppercase text-white sm:w-fit sm:text-[16px]">
+                        <button className="flex h-10 w-full items-center justify-center rounded-[100px] bg-[#581ADB] px-6 py-2.5 text-[14px] font-bold uppercase text-white transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 sm:w-fit sm:text-[16px]">
                             SUBSCRIBE
                         </button>
                     </div>
                 </div>
 
-                <h2 className="mb-3 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
+                <h2 className="fade-up mb-3 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
                     Choose topics
                 </h2>
 
@@ -111,12 +112,12 @@ const Newsletters = () => {
                     />
                 </div>
 
-                <h2 className="mb-3 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
+                <h2 className="fade-up mb-3 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
                     Info
                 </h2>
 
                 <div className="flex flex-col gap-5 lg:flex-row">
-                    <div className="w-full rounded-[10px] border border-[#E5E5E5] bg-white px-5 py-5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] lg:max-w-xl">
+                    <div className="fade-up w-full rounded-[10px] border border-[#E5E5E5] bg-white px-5 py-5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] lg:max-w-xl">
                         <p className="font-nunito-sans text-[14px] font-normal leading-6 text-[#717171] sm:text-[16px]">
                             Discover captivating travel articles crafted by our expert team. Each week, we curate the most relevant and fascinating texts on selected topics, ensuring our site users enjoy a captivating reading experience.
                         </p>
@@ -125,7 +126,7 @@ const Newsletters = () => {
                     <img
                         src={Pic6}
                         alt="airport"
-                        className="h-46 w-full rounded-[10px] object-cover shadow-[0px_2px_8px_rgba(0,0,0,0.04)] lg:max-w-130"
+                        className="fade-up h-46 w-full rounded-[10px] object-cover shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-transform duration-500 hover:scale-105 lg:max-w-130"
                     />
                 </div>
             </div>

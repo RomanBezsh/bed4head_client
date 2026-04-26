@@ -30,19 +30,15 @@ const Reviews = ({ reviews }) => {
             text: "Viverra ultricies enim interdum fermentu tor. Facilisis nulla eun. Ac netus tincidunt.",
             color: "#94D0B4",
         },
-    ]).slice(0, 3); // Show only the first 3 reviews
+    ]).slice(0, 3);
 
     return (
-        <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-4 sm:px-6 lg:px-8 ">
+        <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-4 sm:px-6 lg:px-8">
             {/* Section title */}
-            <h2 className="mb-8 text-center text-[16px] font-normal uppercase tracking-widest text-[#717171] sm:mb-10 lg:mb-12">
+            <h2 className="fade-up mb-8 text-center text-[16px] font-normal uppercase tracking-widest text-[#717171] sm:mb-10 lg:mb-12">
                 Reviews
             </h2>
 
-            {/* Responsive grid:
-                1 column on mobile,
-                2 columns on small screens,
-                3 columns on large screens */}
             <div className="grid w-full grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
                 {displayReviews.map((rev, idx) => (
                     <Review

@@ -8,13 +8,14 @@ import selectArrowIcon from "../../../assets/icons/common/select_arrow_icon.svg"
 
 import { AuthService } from "../../../api/authApi";
 
-import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const isLogin = mode === "login";
 
-    //register
+    const [isVisible, setIsVisible] = useState(false);
+
     const [registerState, setRegisterState] = useState({
         email: "",
         password: "",
@@ -25,20 +26,34 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         travellingWithPet: null,
     });
 
-    //login
     const [loginState, setLoginState] = useState({
         email: "",
         password: "",
     });
 
     const [code, setCode] = useState("");
-
     const [step, setStep] = useState("form");
 
     const navigate = useNavigate();
     const authService = new AuthService();
 
     const isInfoFormComplete = registerState.country && registerState.city && registerState.travelReason;
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsVisible(true);
+        }, 10);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    const handleClose = () => {
+        setIsVisible(false);
+
+        setTimeout(() => {
+            onClose();
+        }, 200);
+    };
 
     const handleContinue = async () => {
         try {
@@ -57,6 +72,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 setStep("code");
                 return;
             }
+
             if (step === "code") {
                 const email = isLogin ? loginState.email : registerState.email;
 
@@ -64,6 +80,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 setStep("info");
                 return;
             }
+
             if (step === "info") {
                 await authService.updateProfile({
                     email: registerState.email,
@@ -75,15 +92,12 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 setStep("success");
                 return;
             }
-            onClose();
+
+            handleClose();
         } catch (e) {
             console.error(e);
         }
     };
-
-    // const continueVariant = step === "form" || step === "code" || (step === "info" && isInfoFormComplete)
-    //     ? "primary"
-    //     : "disabled";
 
     const continueVariant = "primary";
 
@@ -106,16 +120,18 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 country: registerData.country,
                 city: registerData.city,
                 travelPurpose: registerData.travelReason,
-                isTravellingWithPet: registerData.travellingWithPet
+                isTravellingWithPet: registerData.travellingWithPet,
             });
+
             const data = await authService.register({
                 email: registerData.email,
                 password: registerData.password,
                 country: registerData.country,
                 city: registerData.city,
                 travelPurpose: registerData.travelReason,
-                isTravellingWithPet: registerData.travellingWithPet
+                isTravellingWithPet: registerData.travellingWithPet,
             });
+
             console.log("Registration successful:", data);
             return true;
         } catch (error) {
@@ -125,30 +141,46 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     };
 
     return (
-        /* Overlay */
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8"
-            onClick={(e) => e.target === e.currentTarget && onClose()}
+            className={`
+                fixed inset-0 z-[100] flex items-center justify-center px-4 py-8
+                transition-all duration-200
+                ${isVisible ? "bg-black/40 opacity-100" : "bg-black/0 opacity-0"}
+            `}
+            onClick={(e) => e.target === e.currentTarget && handleClose()}
         >
-            <div className={`relative border-[#DDDDDD] border w-[528px] max-w-full bg-white rounded-[13px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)] pt-[31px] pb-[31px] flex flex-col box-border transition-all duration-300 ${step === "success" ? "h-[448px]" : "min-h-[679px]"
-                }`}>
-
-                {/* Header */}
+            <div
+                className={`
+                    relative w-[528px] max-w-full rounded-[13px] border border-[#DDDDDD] bg-white
+                    pt-[31px] pb-[31px] shadow-[0px_1px_8px_rgba(0,0,0,0.08),0px_4px_69px_rgba(0,0,0,0.05)]
+                    flex flex-col box-border
+                    transition-all duration-300
+                    ${isVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-4"}
+                    ${step === "success" ? "h-[448px]" : "min-h-[679px]"}
+                `}
+            >
                 <div className="relative flex items-center justify-center">
                     <h2 className="text-[24px] font-extrabold text-[#581ADB]">
-                        {step === "code" ? "Authentication" :
-                            step === "info" ? "Information" :
-                                step === "success" ? "All done!" :
-                                    (isLogin ? "Sign In" : "Register")}
+                        {step === "code"
+                            ? "Authentication"
+                            : step === "info"
+                                ? "Information"
+                                : step === "success"
+                                    ? "All done!"
+                                    : isLogin
+                                        ? "Sign In"
+                                        : "Register"}
                     </h2>
-                    <button onClick={onClose} className="absolute right-[24px] top-1/2 -translate-y-2/3 flex w-[24px] h-[24px] items-center justify-center rounded-full bg-white p-0 hover:bg-gray-50 transition-colors">
-                        <img src={closerIcon} alt="Close" className="w-[24px] h-[24px]" />
+
+                    <button
+                        onClick={handleClose}
+                        className="absolute right-[24px] top-1/2 flex h-[24px] w-[24px] -translate-y-2/3 items-center justify-center rounded-full bg-white p-0 transition-colors hover:bg-gray-50"
+                    >
+                        <img src={closerIcon} alt="Close" className="h-[24px] w-[24px]" />
                     </button>
                 </div>
 
-                {/* Fields Area */}
-                <div className="flex flex-col gap-4 mt-[22px] mb-8 w-[432px] max-w-full mx-auto flex-1">
-
+                <div className="mx-auto mt-[22px] mb-8 flex w-[432px] max-w-full flex-1 flex-col gap-4">
                     {step === "form" && (
                         <>
                             {isLogin ? (
@@ -156,16 +188,17 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                     <AuthInput
                                         type="email"
                                         placeholder="Email"
-                                        className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                        className="h-[56px] rounded-full border border-[#DDDDDD] px-[24px] outline-none focus:border-[#581ADB]"
                                         value={loginState.email}
-                                        onChange={(e) => setLoginState(prev => ({ ...prev, email: e.target.value }))}
+                                        onChange={(e) => setLoginState((prev) => ({ ...prev, email: e.target.value }))}
                                     />
+
                                     <AuthInput
                                         type="password"
                                         placeholder="Password"
-                                        className="w-full h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none"
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] outline-none"
                                         value={loginState.password}
-                                        onChange={(e) => setLoginState(prev => ({ ...prev, password: e.target.value }))}
+                                        onChange={(e) => setLoginState((prev) => ({ ...prev, password: e.target.value }))}
                                     />
                                 </>
                             ) : (
@@ -174,11 +207,12 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         <AuthInput
                                             type="email"
                                             placeholder="Email"
-                                            className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                            className="h-[56px] rounded-full border border-[#DDDDDD] px-[24px] outline-none focus:border-[#581ADB]"
                                             value={registerState.email}
-                                            onChange={(e) => setRegisterState(prev => ({ ...prev, email: e.target.value }))}
+                                            onChange={(e) => setRegisterState((prev) => ({ ...prev, email: e.target.value }))}
                                         />
-                                        <p className="text-[16px] mt-2 mx-[24px] text-[#717171] font-normal leading-[16px]">
+
+                                        <p className="mx-[24px] mt-2 text-[16px] font-normal leading-[16px] text-[#717171]">
                                             We will send you an email to confirm your email address
                                         </p>
                                     </div>
@@ -186,23 +220,26 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                     <AuthInput
                                         type="password"
                                         placeholder="Password"
-                                        className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] pr-[72px] outline-none"
                                         showCounter
                                         value={registerState.password}
-                                        onChange={(e) => setRegisterState(prev => ({ ...prev, password: e.target.value }))}
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, password: e.target.value }))}
                                     />
 
                                     <AuthInput
                                         type="password"
                                         placeholder="Repeat password"
-                                        className="w-full h-[56px] px-[24px] pr-[72px] border border-[#DDDDDD] rounded-full outline-none"
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] pr-[72px] outline-none"
                                         showCounter
                                         value={registerState.passwordRepeated}
-                                        onChange={(e) => setRegisterState(prev => ({ ...prev, passwordRepeated: e.target.value }))}
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, passwordRepeated: e.target.value }))}
                                     />
 
-                                    <p className="text-[16px] text-[#717171] px-[24px]">
-                                        *Get acquainted with our <a href="#" className="text-[#581ADB]">Privacy policy</a>
+                                    <p className="px-[24px] text-[16px] text-[#717171]">
+                                        *Get acquainted with our{" "}
+                                        <a href="#" className="text-[#581ADB]">
+                                            Privacy policy
+                                        </a>
                                     </p>
                                 </>
                             )}
@@ -210,38 +247,34 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                     )}
 
                     {step === "code" && (
-                        <div className="flex flex-col justify-between h-full">
-
+                        <div className="flex h-full flex-col justify-between">
                             <div className="flex flex-col gap-4">
-
                                 <AuthInput
                                     type="text"
                                     placeholder="Code"
-                                    className="h-[56px] px-[24px] border border-[#DDDDDD] rounded-full outline-none focus:border-[#581ADB]"
+                                    className="h-[56px] rounded-full border border-[#DDDDDD] px-[24px] outline-none focus:border-[#581ADB]"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}
                                 />
 
-                                <p className="text-[16px] text-[#717171] px-[24px] leading-[22px]">
+                                <p className="px-[24px] text-[16px] leading-[22px] text-[#717171]">
                                     We have sent you an email with the code.
                                     Check your mail and enter the code for authentication.
                                 </p>
                             </div>
-
                         </div>
                     )}
 
                     {step === "info" && (
                         <div className="flex flex-col px-[12px] pt-5">
-                            <p className="text-[16px] text-[#717171] leading-[24px] ml-6">
+                            <p className="ml-6 text-[16px] leading-[24px] text-[#717171]">
                                 Tell us about yourself so we can better choose options for you :)
                             </p>
 
-                            <div className="flex flex-col gap-4 mt-4.25">
+                            <div className="mt-4.25 flex flex-col gap-4">
                                 <div className="relative w-full">
                                     <select
-                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none appearance-none"
-
+                                        className="h-[56px] w-full appearance-none rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none"
                                         value={registerState.country}
                                         onChange={(e) => setRegisterState((prev) => ({ ...prev, country: e.target.value }))}
                                     >
@@ -250,12 +283,13 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         <option value="usa">USA</option>
                                         <option value="poland">Poland</option>
                                     </select>
+
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
                                 </div>
 
                                 <div className="relative w-full">
                                     <select
-                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none appearance-none"
+                                        className="h-[56px] w-full appearance-none rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none"
                                         value={registerState.city}
                                         onChange={(e) => setRegisterState((prev) => ({ ...prev, city: e.target.value }))}
                                     >
@@ -264,12 +298,13 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         <option value="lviv">Lviv</option>
                                         <option value="odessa">Odesa</option>
                                     </select>
+
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
                                 </div>
 
                                 <div className="relative w-full">
                                     <select
-                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none appearance-none"
+                                        className="h-[56px] w-full appearance-none rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none"
                                         value={registerState.travelReason}
                                         onChange={(e) => setRegisterState((prev) => ({ ...prev, travelReason: e.target.value }))}
                                     >
@@ -278,11 +313,15 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         <option value="vacation">Vacation</option>
                                         <option value="family">Family</option>
                                     </select>
+
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
                                 </div>
 
-                                <div className="flex flex-col gap-3 mt-7 ml-6">
-                                    <span className="text-[16px] text-[#222222]">Travelling with a pet?</span>
+                                <div className="mt-7 ml-6 flex flex-col gap-3">
+                                    <span className="text-[16px] text-[#222222]">
+                                        Travelling with a pet?
+                                    </span>
+
                                     <div className="flex items-center gap-8">
                                         <label className="inline-flex items-center gap-3 text-[16px] text-[#222222]">
                                             <input
@@ -295,6 +334,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                             />
                                             Yes
                                         </label>
+
                                         <label className="inline-flex items-center gap-3 text-[16px] text-[#222222]">
                                             <input
                                                 type="radio"
@@ -310,7 +350,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-4 mt-7">
+                            <div className="mt-7 flex flex-col gap-4">
                                 <AuthPrimaryButton
                                     variant={continueVariant}
                                     disabled={continueVariant === "disabled"}
@@ -321,8 +361,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
                                 <button
                                     type="button"
-                                    className="w-full h-[56px] rounded-full border border-[#581ADB] bg-white text-[#581ADB] text-[16px] font-semibold hover:bg-purple-50 transition-colors"
-                                    onClick={onClose}
+                                    className="h-[56px] w-full rounded-full border border-[#581ADB] bg-white text-[16px] font-semibold text-[#581ADB] transition-colors hover:bg-purple-50"
+                                    onClick={handleClose}
                                 >
                                     Later
                                 </button>
@@ -331,19 +371,18 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                     )}
 
                     {step === "success" && (
-                        <div className="flex flex-col items-center text-center h-full px-[24px]">
-                            <div className="w-[93.62px] h-[93.62px] mt-14 border-[4px] border-[#581ADB] rounded-full flex items-center justify-center">
+                        <div className="flex h-full flex-col items-center px-[24px] text-center">
+                            <div className="mt-14 flex h-[93.62px] w-[93.62px] items-center justify-center rounded-full border-[4px] border-[#581ADB]">
                                 <img className="w-15" src={checkmarkIcon} alt="check" />
                             </div>
 
-                            {/* Кнопки как на макете */}
-                            <div className="flex flex-col gap-4 mt-14 w-full">
+                            <div className="mt-14 flex w-full flex-col gap-4">
                                 <button
                                     type="button"
-                                    className="w-full h-[56px] bg-[#581ADB] text-white rounded-full font-bold text-[16px] hover:bg-[#4a15ba] transition-colors"
+                                    className="h-[56px] w-full rounded-full bg-[#581ADB] text-[16px] font-bold text-white transition-colors hover:bg-[#4a15ba]"
                                     onClick={() => {
-                                        navigate('/account');
-                                        onClose();
+                                        navigate("/account");
+                                        handleClose();
                                     }}
                                 >
                                     Check your profile!
@@ -351,20 +390,18 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
                                 <button
                                     type="button"
-                                    className="w-full h-[56px] bg-white text-[#581ADB] border border-[#581ADB] rounded-full font-bold text-[16px] hover:bg-purple-50 transition-colors"
-                                    onClick={onClose}
+                                    className="h-[56px] w-full rounded-full border border-[#581ADB] bg-white text-[16px] font-bold text-[#581ADB] transition-colors hover:bg-purple-50"
+                                    onClick={handleClose}
                                 >
                                     Continue booking
                                 </button>
                             </div>
                         </div>
                     )}
-
                 </div>
 
-                {/* Continue button */}
                 {step !== "success" && step !== "info" && (
-                    <div className={`w-[432px] max-w-full mx-auto ${isLogin ? "mb-3" : "mb-8"}`}>
+                    <div className={`mx-auto w-[432px] max-w-full ${isLogin ? "mb-3" : "mb-8"}`}>
                         <AuthPrimaryButton
                             variant={continueVariant}
                             disabled={continueVariant === "disabled"}
@@ -376,7 +413,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 )}
 
                 {step === "form" && isLogin && (
-                    <p className="text-center text-[14px] text-[#717171] mb-6">
+                    <p className="mb-6 text-center text-[14px] text-[#717171]">
                         Do not have an account?{" "}
                         <button type="button" className="text-[#581ADB]" onClick={() => onSwitch("register")}>
                             Register
@@ -384,20 +421,17 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                     </p>
                 )}
 
-                {/* Social auth buttons */}
                 {step === "form" && (
-                    <div className="flex flex-col gap-[14px] w-[432px] max-w-full mx-auto mt-8">
+                    <div className="mx-auto mt-8 flex w-[432px] max-w-full flex-col gap-[14px]">
                         <SocialAuthButton name="Google" url={googleIcon} />
                         <SocialAuthButton name="Facebook" url={facebookIcon} />
                         <SocialAuthButton name="Apple" url={appleIcon} />
                     </div>
                 )}
-
             </div>
         </div>
     );
 };
-
 
 const AuthInput = ({ type = "text", placeholder, className = "", showCounter = false, value, onChange }) => {
     if (!showCounter) {
@@ -422,7 +456,8 @@ const AuthInput = ({ type = "text", placeholder, className = "", showCounter = f
                 value={value}
                 onChange={onChange}
             />
-            <span className="absolute right-[24px] top-1/3 -translate-y-1/2 text-[#C2C2C2] text-[12px]">
+
+            <span className="absolute right-[24px] top-1/3 -translate-y-1/2 text-[12px] text-[#C2C2C2]">
                 {value.length}/50
             </span>
         </div>
@@ -455,20 +490,14 @@ const SocialAuthButton = ({ name, url }) => {
     return (
         <button
             type="button"
-            className="
-                w-full h-[56px]
-                relative flex items-center justify-center
-                border border-[#DDDDDD]
-                bg-white rounded-full
-                text-[16px] font-medium text-[#222222]
-                hover:bg-gray-50 transition-colors
-            "
+            className="relative flex h-[56px] w-full items-center justify-center rounded-full border border-[#DDDDDD] bg-white text-[16px] font-medium text-[#222222] transition-colors hover:bg-gray-50"
         >
             <img
                 src={url}
                 alt={name}
-                className="absolute left-[24px] w-6 h-6"
+                className="absolute left-[24px] h-6 w-6"
             />
+
             <span className="text-center font-normal">
                 Sign In with {name}
             </span>

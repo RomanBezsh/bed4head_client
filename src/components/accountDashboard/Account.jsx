@@ -15,14 +15,15 @@ import noReviewsIcon from "../../assets/icons/common/no_reviews_icon.svg";
 
 import hotelRoomPhoto from "../../assets/independed_images/hotel_room_photo_example.png";
 
+/* INPUT */
 const FieldInput = ({ placeholder, note = "", smallNote = "" }) => {
     return (
-        <div className="flex flex-col gap-2 w-full">
+        <div className="fade-up flex flex-col gap-2 w-full">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3.5">
                 <input
                     type="text"
                     placeholder={placeholder}
-                    className="h-14 w-full rounded-full border border-[#D9D9D9] bg-white px-4.5 text-[16px] font-normal font-nunito-sans text-[#717171] placeholder:text-[#717171] outline-none md:max-w-62"
+                    className="h-14 w-full rounded-full border border-[#D9D9D9] bg-white px-4.5 text-[16px] text-[#717171] outline-none transition-all duration-200 focus:border-[#581ADB] focus:shadow-[0px_0px_0px_3px_rgba(88,26,219,0.1)] md:max-w-62"
                 />
 
                 {note && (
@@ -41,10 +42,11 @@ const FieldInput = ({ placeholder, note = "", smallNote = "" }) => {
     );
 };
 
+/* SELECT */
 const FieldSelect = ({ placeholder }) => {
     return (
-        <div className="relative w-full md:max-w-62">
-            <select className="h-14 w-full appearance-none rounded-full border border-[#D9D9D9] bg-white px-4.5 text-[16px] text-[#717171] font-nunito-sans outline-none">
+        <div className="fade-up relative w-full md:max-w-62">
+            <select className="h-14 w-full appearance-none rounded-full border border-[#D9D9D9] bg-white px-4.5 text-[16px] text-[#717171] outline-none transition-all duration-200 focus:border-[#581ADB]">
                 <option>{placeholder}</option>
             </select>
 
@@ -57,66 +59,57 @@ const FieldSelect = ({ placeholder }) => {
     );
 };
 
+/* BOOKING INFO ITEM */
 const BookingInfoItem = ({ icon, label, text }) => {
     return (
         <div className="flex items-center gap-1.5 text-[11px] text-[#8A8A8A]">
             <img src={icon} alt="" className="h-6 w-6 object-contain" />
             {label && (
-                <span className="text-[#717171] font-normal text-[16px]">
+                <span className="text-[#717171] text-[16px]">
                     {label}
                 </span>
             )}
-            <span className="text-[#717171] font-normal text-[16px]">
+            <span className="text-[#717171] text-[16px]">
                 {text}
             </span>
         </div>
     );
 };
 
+/* STAT */
 const BookingStat = ({ icon, value }) => {
     return (
-        <div className="flex h-22 min-w-28 flex-1 sm:flex-none sm:w-28 flex-col items-center justify-center rounded-[10px] border border-[#E5E5E5] bg-white">
-            <img
-                src={icon}
-                alt=""
-                className="mb-1.5 h-6 w-6 object-contain"
-            />
-            <span className="text-[16px] text-[#717171] font-normal font-nunito-sans text-center">
+        <div className="flex h-22 min-w-28 flex-1 sm:w-28 flex-col items-center justify-center rounded-[10px] border border-[#E5E5E5] bg-white transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0px_6px_16px_rgba(0,0,0,0.08)]">
+            <img src={icon} alt="" className="mb-1.5 h-6 w-6" />
+            <span className="text-[16px] text-[#717171] text-center">
                 {value}
             </span>
         </div>
     );
 };
 
+/* BOOKING INFO */
 const BookingInfo = () => {
     return (
         <div className="flex w-full flex-col lg:flex-row">
             <img
                 src={hotelRoomPhoto}
                 alt="hotel room"
-                className="h-55 w-full object-cover sm:h-58 lg:h-58 lg:w-[320px]"
+                className="h-55 w-full object-cover sm:h-58 lg:h-58 lg:w-[320px] transition-transform duration-500 hover:scale-105"
             />
 
             <div className="flex w-full flex-col justify-between px-3.5 py-2.5 lg:max-w-97.5">
                 <div>
-                    <h3 className="mb-2 font-bold text-[20px] font-nunito-sans text-[#222222]">
+                    <h3 className="mb-2 font-bold text-[20px] text-[#222222]">
                         Suite with a queen-size bed
                     </h3>
 
                     <div className="mt-2.5">
-                        <BookingInfoItem
-                            icon={bedIcon}
-                            label="Bed:"
-                            text="queen-sized bed 1 | double bed 1"
-                        />
+                        <BookingInfoItem icon={bedIcon} label="Bed:" text="queen-sized bed 1 | double bed 1" />
                     </div>
 
                     <div className="mt-3.75">
-                        <BookingInfoItem
-                            icon={profile2userIcon}
-                            label="Guests:"
-                            text="maximum 3"
-                        />
+                        <BookingInfoItem icon={profile2userIcon} label="Guests:" text="maximum 3" />
                     </div>
 
                     <div className="mt-6 flex flex-wrap gap-3 lg:mt-10">
@@ -126,7 +119,7 @@ const BookingInfo = () => {
                     </div>
                 </div>
 
-                <div className="mt-4.5 text-[16px] font-normal font-nunito-sans text-[#581ADB]">
+                <div className="mt-4.5 text-[16px] text-[#581ADB]">
                     ✓ FREE cancellation
                 </div>
             </div>
@@ -134,6 +127,7 @@ const BookingInfo = () => {
     );
 };
 
+/* BOOKING ACTIONS */
 const BookingActions = () => {
     return (
         <div className="flex h-full w-full flex-col justify-between px-4.5 py-3 lg:w-auto">
@@ -144,20 +138,20 @@ const BookingActions = () => {
             </div>
 
             <div className="mt-2.5 flex flex-col gap-2.5 sm:flex-row">
-                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] sm:h-24 sm:w-44">
+                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] transition-all duration-200 hover:bg-[#6B46FF] hover:text-white sm:h-24 sm:w-44">
                     HOTEL PAGE
                 </button>
 
-                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] sm:h-24 sm:w-44">
+                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] transition-all duration-200 hover:bg-[#6B46FF] hover:text-white sm:h-24 sm:w-44">
                     BOOKING INFO
                 </button>
             </div>
 
             <div className="mt-3 flex flex-col gap-1.5 text-[11px] sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-[#6B46FF] text-[16px] font-normal font-nunito-sans">
+                <span className="text-[#6B46FF] text-[16px]">
                     Want to cancel?
                 </span>
-                <span className="text-[#8A8A8A] text-[16px] font-normal font-nunito-sans">
+                <span className="text-[#8A8A8A] text-[16px]">
                     Time left: 4 days 16 hours
                 </span>
             </div>
@@ -165,9 +159,10 @@ const BookingActions = () => {
     );
 };
 
+/* CARD */
 const BookingCard = () => {
     return (
-        <div className="flex w-full flex-col overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:flex-row">
+        <div className="fade-up flex w-full flex-col overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] xl:flex-row">
             <BookingInfo />
 
             <div className="border-t border-[#E5E5E5] xl:border-l xl:border-t-0">
@@ -177,16 +172,13 @@ const BookingCard = () => {
     );
 };
 
+/* EMPTY */
 const ReviewsEmpty = () => {
     return (
-        <div className="flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="fade-up flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]">
             <div className="flex flex-col items-center justify-center">
-                <img
-                    src={noReviewsIcon}
-                    alt="no reviews"
-                    className="mb-2 h-6 w-6 object-contain"
-                />
-                <span className="text-[16px] font-normal font-nunito-sans text-[#717171]">
+                <img src={noReviewsIcon} alt="no reviews" className="mb-2 h-6 w-6" />
+                <span className="text-[16px] text-[#717171]">
                     You have no reviews
                 </span>
             </div>
@@ -198,75 +190,56 @@ const Account = () => {
     return (
         <div className="mt-10 font-nunito-sans">
             <div className="mx-auto w-full max-w-285 px-4 sm:px-0">
-                <h1 className="mb-3.5 text-[28px] font-bold text-[#5A35F2] sm:text-[36px]">
+
+                <h1 className="fade-up mb-3.5 text-[28px] font-bold text-[#5A35F2] sm:text-[36px]">
                     Your Account
                 </h1>
 
+                {/* PROFILE */}
                 <div className="mb-4 flex flex-col gap-4.5 xl:flex-row">
-                    <div className="flex w-full flex-col overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] md:flex-row xl:max-w-200">
+                    <div className="fade-up flex w-full flex-col overflow-hidden rounded-[10px] border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] md:flex-row xl:max-w-200 transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]">
+
                         <div className="flex h-55 w-full items-center justify-center bg-[#E9E9E9] md:h-62 md:w-62">
-                            <img
-                                src={userPlaceholder}
-                                alt="user"
-                                className="h-full w-full object-contain opacity-70"
-                            />
+                            <img src={userPlaceholder} alt="user" className="h-full w-full object-contain opacity-70" />
                         </div>
 
-                        <div className="flex flex-1 flex-col justify-start px-4 py-3">
+                        <div className="flex flex-1 flex-col px-4 py-3">
                             <div className="mb-3 flex items-center gap-2">
                                 <span className="text-[20px] font-bold text-[#1E1E1E]">
                                     Your Name
                                 </span>
 
-                                <img
-                                    src={editIcon}
-                                    alt="edit"
-                                    className="h-6 w-6 object-contain opacity-70"
-                                />
+                                <img src={editIcon} alt="edit" className="h-6 w-6 opacity-70 transition-transform duration-200 hover:scale-110" />
                             </div>
 
-                            <button className="flex h-11 w-full max-w-48 items-center justify-center gap-2 rounded-full border border-[#D9D9D9] bg-white text-[11px] text-[#8F8F8F] sm:h-8">
-                                <span className="text-[16px] font-normal text-[#717171]">
+                            <button className="flex h-11 w-full max-w-48 items-center justify-center gap-2 rounded-full border border-[#D9D9D9] text-[#717171] transition-all duration-200 hover:bg-[#F6F2FF]">
+                                <span className="text-[16px]">
                                     Change the photo
                                 </span>
-                                <img
-                                    src={cameraIcon}
-                                    alt="camera"
-                                    className="h-6 w-6 object-contain"
-                                />
+                                <img src={cameraIcon} alt="camera" className="h-6 w-6" />
                             </button>
                         </div>
                     </div>
 
-                    <div className="w-full rounded-[10px] border border-[#E5E5E5] bg-white px-4 py-4.5 text-[12px] leading-[1.45] text-[#A1A1A1] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:max-w-81.25">
-                        <p className="mb-4.5 text-[#717171]">
+                    <div className="fade-up w-full rounded-[10px] border border-[#E5E5E5] bg-white px-4 py-4.5 text-[#717171] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] xl:max-w-81.25">
+                        <p className="mb-4.5">
                             Your name will be the only visible information to other users.
                         </p>
 
-                        <p className="text-[#717171]">
+                        <p>
                             All other details will remain private and will be utilized to suggest the best offers for you and simplify the booking process.
                         </p>
                     </div>
                 </div>
 
-                <div className="rounded-[10px] border border-[#E5E5E5] bg-white px-4.5 py-4.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
-                    <div className="flex flex-col justify-between gap-5 lg:flex-row lg:gap-7.5">
+                {/* FORM */}
+                <div className="fade-up rounded-[10px] border border-[#E5E5E5] bg-white px-4.5 py-4.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]">
+                    <div className="flex flex-col gap-5 lg:flex-row lg:gap-7.5">
+
                         <div className="flex w-full flex-col gap-3.5">
-                            <FieldInput
-                                placeholder="Your phone number"
-                                note="*Has to be confirmed"
-                            />
-
-                            <FieldInput
-                                placeholder="Your email"
-                                note="*Has to be confirmed"
-                            />
-
-                            <FieldInput
-                                placeholder="Month  |  Date  |  Year"
-                                note="Enter your date of birth"
-                                smallNote="You will not be able to change your birthday date after confirmation"
-                            />
+                            <FieldInput placeholder="Your phone number" note="*Has to be confirmed" />
+                            <FieldInput placeholder="Your email" note="*Has to be confirmed" />
+                            <FieldInput placeholder="Month  |  Date  |  Year" note="Enter your date of birth" smallNote="You will not be able to change your birthday date after confirmation" />
                         </div>
 
                         <div className="flex w-full flex-col gap-3.5">
@@ -274,24 +247,28 @@ const Account = () => {
                             <FieldSelect placeholder="Ampthill" />
                             <FieldSelect placeholder="Preferred currency" />
                         </div>
+
                     </div>
                 </div>
 
+                {/* BOOKINGS */}
                 <div className="mt-5">
-                    <h2 className="mb-2.5 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
+                    <h2 className="fade-up mb-2.5 text-[16px] uppercase tracking-[0.08em] text-[#717171]">
                         Your Bookings
                     </h2>
 
                     <BookingCard />
                 </div>
 
+                {/* REVIEWS */}
                 <div className="mt-5">
-                    <h2 className="mb-2.5 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
+                    <h2 className="fade-up mb-2.5 text-[16px] uppercase tracking-[0.08em] text-[#717171]">
                         Your Reviews
                     </h2>
 
                     <ReviewsEmpty />
                 </div>
+
             </div>
         </div>
     );

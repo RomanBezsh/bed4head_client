@@ -1,14 +1,43 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 @import url('./normalize.css');
+
 @import "tailwindcss";
 @tailwind utilities;
 
+/* ===== THEME ===== */
 @theme {
-    /* Custom font */
     --font-nunito-sans: "Nunito Sans", sans-serif;
 
-    /* Color */
     --color-gray: #DDDDDD;
     --color-white: #FFFFFF;
+}
+
+/* ===== ANIMATIONS ===== */
+
+/* Fade + slide up */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slight scale when checked */
+@keyframes pop {
+    0% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* Utility classes */
+.fade-up {
+    animation: fadeUp 0.35s ease-out;
+}
+
+.pop {
+    animation: pop 0.2s ease;
 }
 

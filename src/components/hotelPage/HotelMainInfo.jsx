@@ -44,55 +44,64 @@ const HotelMainInfo = ({ images, tags }) => {
     };
 
     return (
-        <section className="w-full max-w-[1400px] mx-auto mt-8 sm:mt-10 px-4 sm:px-6">
+        <section className="fade-up w-full max-w-[1400px] mx-auto mt-8 sm:mt-10 px-4 sm:px-6">
+
             <div className="flex flex-col xl:flex-row gap-8 lg:gap-10 xl:gap-8 items-start justify-center">
+
+                {/* LEFT */}
                 <div className="flex flex-col gap-4 sm:gap-6 lg:gap-8 w-full xl:w-[58%]">
-                    <div className="w-full h-[260px] sm:h-[360px] lg:h-[420px] rounded-[13px] overflow-hidden shadow-md relative">
+
+                    {/* MAIN IMAGE */}
+                    <div className="relative w-full h-[260px] sm:h-[360px] lg:h-[420px] rounded-[13px] overflow-hidden shadow-md group">
+
                         <img
                             src={activeImage}
                             alt="Main hotel view"
-                            className="object-cover transition-all duration-300 w-full h-full"
+                            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                         />
 
                         <button
                             onClick={handlePrev}
-                            className="w-8 h-8 sm:w-10 sm:h-10 bg-[#717171CC] rounded-full flex items-center justify-center z-10 absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 opacity-80 hover:opacity-100 transition-opacity"
+                            className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 bg-[#717171CC] rounded-full flex items-center justify-center opacity-80 transition-all duration-200 hover:scale-110 hover:opacity-100"
                         >
                             <img className="rotate-180 w-3.5 h-3.5" src={chevronWhiteIcon} alt="Previous" />
                         </button>
 
                         <button
                             onClick={handleNext}
-                            className="w-8 h-8 sm:w-10 sm:h-10 bg-[#717171CC] rounded-full flex items-center justify-center z-10 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 opacity-80 hover:opacity-100 transition-opacity"
+                            className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 bg-[#717171CC] rounded-full flex items-center justify-center opacity-80 transition-all duration-200 hover:scale-110 hover:opacity-100"
                         >
                             <img className="w-3.5 h-3.5" src={chevronWhiteIcon} alt="Next" />
                         </button>
                     </div>
 
+                    {/* THUMBNAILS */}
                     <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                         {images.slice(0, 3).map((img, index) => (
                             <div
                                 key={index}
                                 onClick={() => setCurrentImageIndex(index)}
-                                className={`w-full h-[90px] sm:h-[120px] lg:h-[160px] rounded-[13px] overflow-hidden cursor-pointer transition-all duration-200 border-2 ${
+                                className={`group w-full h-[90px] sm:h-[120px] lg:h-[160px] rounded-[13px] overflow-hidden cursor-pointer transition-all duration-200 border-2 ${
                                     currentImageIndex === index
                                         ? "border-[#581ADB]"
                                         : "border-transparent"
-                                }`}
+                                } hover:-translate-y-[4px] hover:shadow-md`}
                             >
                                 <img
                                     src={img}
                                     alt={`Thumbnail ${index + 1}`}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                 />
                             </div>
                         ))}
                     </div>
                 </div>
 
+                {/* RIGHT */}
                 <div className="flex flex-col w-full xl:w-[42%]">
                     <div>
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
+
                             <div className="w-full">
                                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                                     <span className="text-[#581ADB] text-[26px] sm:text-[30px] lg:text-[32px] font-bold">
@@ -104,14 +113,14 @@ const HotelMainInfo = ({ images, tags }) => {
                                 </div>
 
                                 <div className="flex flex-row items-center justify-start gap-2 mt-2">
-                                    <img className="w-5 h-5 sm:w-6 sm:h-6" src={mapPinIcon} alt="Map pin" />
+                                    <img className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-200 hover:scale-110" src={mapPinIcon} alt="Map pin" />
                                     <span className="text-[13px] sm:text-[15px] lg:text-[16px] text-[#717171] uppercase tracking-wide">
                                         Lviv Street 8 | Kyiv
                                     </span>
                                 </div>
                             </div>
 
-                            <button className="bg-[#581ADB] w-full sm:w-[180px] lg:w-[181px] h-14 sm:h-16 lg:h-[72px] rounded-full shadow-[0px_0px_43px_0px_#581ADB5E,0px_0px_10px_0px_#581ADB59] transition-transform hover:scale-105 active:scale-95 shrink-0">
+                            <button className="bg-[#581ADB] w-full sm:w-[180px] lg:w-[181px] h-14 sm:h-16 lg:h-[72px] rounded-full shadow-[0px_0px_43px_0px_#581ADB5E,0px_0px_10px_0px_#581ADB59] transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 shrink-0">
                                 <span className="text-[20px] sm:text-[22px] lg:text-[24px] font-bold text-white uppercase tracking-wide">
                                     Book
                                 </span>
@@ -124,11 +133,11 @@ const HotelMainInfo = ({ images, tags }) => {
 
                         <div className="flex flex-row items-center gap-4 sm:gap-6 mt-6 sm:mt-8 flex-wrap">
                             {tags.map((tag) => (
-                                <div key={tag} className="flex items-center gap-2 min-w-fit">
+                                <div key={tag} className="flex items-center gap-2 min-w-fit transition-all duration-200 hover:translate-x-[3px]">
                                     <img
                                         src={TAG_ICONS[tag]}
                                         alt={tag}
-                                        className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                                        className="w-5 h-5 sm:w-6 sm:h-6 object-contain transition-transform duration-200 hover:scale-110"
                                     />
                                     <span className="text-[#717171] text-[14px] sm:text-[15px] lg:text-[16px] font-normal whitespace-nowrap">
                                         {tag.replace("_", " ")}

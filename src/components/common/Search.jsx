@@ -32,14 +32,26 @@ const Search = () => {
     };
 
     return (
-        <div className="relative z-50 flex justify-center -mt-[22px] sm:-mt-[28px] lg:-mt-[32px] px-3 sm:px-4">
+        <div className="fade-up relative z-50 flex justify-center -mt-[22px] sm:-mt-[28px] lg:-mt-[32px] px-3 sm:px-4">
+
             <div className="relative h-[54px] w-full max-w-[1104px] sm:h-[58px] lg:h-[64px]">
-                <div className="flex h-full w-full items-center rounded-[40px] border border-gray bg-white pl-[16px] pr-[62px] shadow-[0px_4px_69px_rgba(0,0,0,0.05),0px_1px_8px_rgba(0,0,0,0.08)] sm:pl-[18px] sm:pr-[66px] lg:rounded-[60px] lg:pl-[59px] lg:pr-[70px]">
-                    {/* Location field */}
+
+                {/* MAIN SEARCH BAR */}
+                <div className="
+                    flex h-full w-full items-center rounded-[40px] border border-gray bg-white
+                    pl-[16px] pr-[62px]
+                    shadow-[0px_4px_69px_rgba(0,0,0,0.05),0px_1px_8px_rgba(0,0,0,0.08)]
+                    transition-all duration-300
+                    hover:shadow-[0px_10px_30px_rgba(0,0,0,0.10)]
+                    sm:pl-[18px] sm:pr-[66px]
+                    lg:rounded-[60px] lg:pl-[59px] lg:pr-[70px]
+                ">
+
+                    {/* LOCATION */}
                     <div className="flex min-w-0 flex-1 items-center gap-[10px] sm:gap-[12px]">
                         <img
                             src={plainIcon}
-                            className="h-[20px] w-[20px] shrink-0 sm:h-[22px] sm:w-[22px] lg:h-[24px] lg:w-[24px]"
+                            className="h-[20px] w-[20px] shrink-0 transition-transform duration-200 hover:scale-110 sm:h-[22px] sm:w-[22px] lg:h-[24px] lg:w-[24px]"
                             alt=""
                         />
 
@@ -54,12 +66,16 @@ const Search = () => {
                         />
                     </div>
 
-                    {/* Divider */}
+                    {/* DIVIDER */}
                     <div className="mx-[30px] hidden h-[39px] w-[1px] bg-[#DDDDDD] lg:block" />
 
-                    {/* Dates */}
+                    {/* DATES */}
                     <div className="hidden flex-none items-center gap-[12px] lg:flex">
-                        <img src={calendar} className="h-[24px] w-[24px]" alt="" />
+                        <img
+                            src={calendar}
+                            className="h-[24px] w-[24px] transition-transform duration-200 hover:scale-110"
+                            alt=""
+                        />
 
                         <input
                             type="text"
@@ -77,12 +93,16 @@ const Search = () => {
                         />
                     </div>
 
-                    {/* Divider */}
+                    {/* DIVIDER */}
                     <div className="mx-[30px] hidden h-[39px] w-[1px] bg-[#DDDDDD] lg:block" />
 
-                    {/* Guests */}
+                    {/* GUESTS */}
                     <div className="hidden flex-none items-center gap-[12px] lg:flex">
-                        <img src={profile2Users} className="h-[24px] w-[24px]" alt="" />
+                        <img
+                            src={profile2Users}
+                            className="h-[24px] w-[24px] transition-transform duration-200 hover:scale-110"
+                            alt=""
+                        />
 
                         <input
                             type="text"
@@ -93,23 +113,24 @@ const Search = () => {
 
                         <img
                             src={arrowsIcon}
-                            className="h-[20px] w-[20px]"
+                            className="h-[20px] w-[20px] transition-transform duration-200 hover:rotate-90"
                             alt=""
                         />
                     </div>
                 </div>
 
-                {/* Mobile settings icon */}
+                {/* MOBILE SETTINGS */}
                 <img
                     src={blueSettingIcon}
-                    className="absolute right-[6px] top-1/2 h-[42px] w-[42px] -translate-y-1/2 cursor-pointer sm:right-[8px] sm:h-[44px] sm:w-[44px] lg:hidden"
+                    className="absolute right-[6px] top-1/2 h-[42px] w-[42px] -translate-y-1/2 cursor-pointer transition-all duration-200 hover:scale-110 active:scale-95 sm:right-[8px] sm:h-[44px] sm:w-[44px] lg:hidden"
                     alt=""
+                    onClick={handleSearch}
                 />
 
-                {/* Desktop search icon */}
+                {/* SEARCH BUTTON */}
                 <img
                     src={searchButton}
-                    className="absolute right-[20px] top-1/2 hidden h-[36px] w-[36px] -translate-y-1/2 cursor-pointer lg:block"
+                    className="absolute right-[20px] top-1/2 hidden h-[36px] w-[36px] -translate-y-1/2 cursor-pointer transition-all duration-200 hover:scale-110 active:scale-95 lg:block"
                     alt=""
                     onClick={handleSearch}
                 />
