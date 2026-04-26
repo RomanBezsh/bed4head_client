@@ -59,7 +59,9 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         try {
             if (step === "form") {
                 if (isLogin) {
-                    await authService.login(loginState);
+                    const data = await authService.login(loginState);
+                    localStorage.setItem("user", JSON.stringify(data));
+                    window.dispatchEvent(new Event("auth-change"));
                     setStep("success");
                     return;
                 }
@@ -76,18 +78,41 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
             if (step === "code") {
                 const email = isLogin ? loginState.email : registerState.email;
 
-                await authService.confirmEmail({ email, code });
+                const data = await authService.confirmEmail({ email, code });
+                localStorage.setItem("user", JSON.stringify(data));
+                window.dispatchEvent(new Event("auth-change"));
                 setStep("info");
                 return;
             }
 
             if (step === "info") {
-                await authService.updateProfile({
+                const storedAuth = JSON.parse(localStorage.getItem("user"));
+
+                const formatValue = (str) => {
+                    if (!str) return str;
+                    if (str.toLowerCase() === "usa") return "USA";
+                    return str.charAt(0).toUpperCase() + str.slice(1);
+                };
+
+                const updatePayload = {
+                    id: storedAuth?.user?.id,
                     email: registerState.email,
-                    country: registerState.country,
-                    city: registerState.city,
-                    travelPurpose: registerState.travelReason,
-                });
+                    country: formatValue(registerState.country),
+                    city: formatValue(registerState.city),
+                    travelPurpose: formatValue(registerState.travelReason),
+                    isTravellingWithPet: registerState.travellingWithPet === "true",
+                };
+
+                const response = await authService.updateProfile(updatePayload);
+
+                if (storedAuth) {
+                    const newUser = (response && typeof response === 'object' && response.id)
+                        ? response
+                        : { ...storedAuth.user, ...updatePayload };
+
+                    localStorage.setItem("user", JSON.stringify({ ...storedAuth, user: newUser }));
+                    window.dispatchEvent(new Event("auth-change"));
+                }
 
                 setStep("success");
                 return;
@@ -279,9 +304,9 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         onChange={(e) => setRegisterState((prev) => ({ ...prev, country: e.target.value }))}
                                     >
                                         <option value="" disabled>Country</option>
-                                        <option value="ukraine">Ukraine</option>
-                                        <option value="usa">USA</option>
-                                        <option value="poland">Poland</option>
+                                        <option value="Ukraine">Ukraine</option>
+                                        <option value="USA">USA</option>
+                                        <option value="Poland">Poland</option>
                                     </select>
 
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
@@ -294,9 +319,9 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         onChange={(e) => setRegisterState((prev) => ({ ...prev, city: e.target.value }))}
                                     >
                                         <option value="" disabled>City</option>
-                                        <option value="kyiv">Kyiv</option>
-                                        <option value="lviv">Lviv</option>
-                                        <option value="odessa">Odesa</option>
+                                        <option value="Kyiv">Kyiv</option>
+                                        <option value="Lviv">Lviv</option>
+                                        <option value="Odesa">Odesa</option>
                                     </select>
 
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
@@ -309,9 +334,9 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         onChange={(e) => setRegisterState((prev) => ({ ...prev, travelReason: e.target.value }))}
                                     >
                                         <option value="" disabled>Why do you travel?</option>
-                                        <option value="business">Business</option>
-                                        <option value="vacation">Vacation</option>
-                                        <option value="family">Family</option>
+                                        <option value="Business">Business</option>
+                                        <option value="Vacation">Vacation</option>
+                                        <option value="Family">Family</option>
                                     </select>
 
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
