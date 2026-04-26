@@ -46,6 +46,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 if (isLogin) {
                     const data = await authService.login(loginState);
                     localStorage.setItem("user", JSON.stringify(data));
+                    window.dispatchEvent(new Event("auth-change"));
                     setStep("success");
                     return;
                 }
@@ -63,6 +64,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
                 const data = await authService.confirmEmail({ email, code });
                 localStorage.setItem("user", JSON.stringify(data));
+                window.dispatchEvent(new Event("auth-change"));
                 setStep("info");
                 return;
             }
@@ -92,6 +94,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                         : { ...storedAuth.user, ...updatePayload };
 
                     localStorage.setItem("user", JSON.stringify({ ...storedAuth, user: newUser }));
+                    window.dispatchEvent(new Event("auth-change"));
                 }
 
                 setStep("success");
