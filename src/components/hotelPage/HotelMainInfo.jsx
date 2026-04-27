@@ -5,6 +5,7 @@ import popularIcon from "../../assets/icons/common/popular_icon.svg";
 import cityIcon from "../../assets/icons/common/city_centre_icon.svg";
 import comfortIcon from "../../assets/icons/common/comfortable.svg";
 import avatar from "../../assets/avatar.png";
+import image from "../../assets/independed_images/head_image.jpg";
 import ReviewSlider from "./ReviewSlider.jsx";
 
 const TAG_ICONS = {
@@ -13,7 +14,7 @@ const TAG_ICONS = {
     comfortable: comfortIcon,
 };
 
-const HotelMainInfo = ({ images, tags }) => {
+const HotelMainInfo = ({ images, tags, description, address, city, coordinates }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const reviewsData = [
@@ -33,7 +34,31 @@ const HotelMainInfo = ({ images, tags }) => {
         },
     ];
 
-    const activeImage = images[currentImageIndex];
+    const API_ORIGIN = "https://localhost:7090";
+
+    const getImageUrl = (img) => {
+        const raw =
+            typeof img === "string"
+                ? img
+                : (img?.url ?? img?.Url ?? img?.src ?? img?.Src ?? "");
+
+        if (!raw) return "";
+
+        // уже абсолютный
+        if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+
+        // это локальный путь фронта (Vite) или public-asset
+        if (raw.startsWith("/src/") || raw.startsWith("/assets/")) return raw;
+
+        // это файл с бэка
+        if (raw.startsWith("/uploads/")) return `${API_ORIGIN}${raw}`;
+        if (raw.startsWith("uploads/")) return `${API_ORIGIN}/${raw}`;
+
+        // иначе не трогаем
+        return raw;
+    };
+
+    const activeImage = getImageUrl(images[currentImageIndex]);
 
     const handlePrev = () => {
         setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -76,21 +101,21 @@ const HotelMainInfo = ({ images, tags }) => {
                     </div>
 
                     {/* THUMBNAILS */}
-                    <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                        {images.slice(0, 3).map((img, index) => (
+                    <div className="grid grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+                        {images.map((img, index) => (
                             <div
                                 key={index}
                                 onClick={() => setCurrentImageIndex(index)}
-                                className={`group w-full h-[90px] sm:h-[120px] lg:h-[160px] rounded-[13px] overflow-hidden cursor-pointer transition-all duration-200 border-2 ${
-                                    currentImageIndex === index
-                                        ? "border-[#581ADB]"
-                                        : "border-transparent"
-                                } hover:-translate-y-[4px] hover:shadow-md`}
+                                className={`group w-full h-[90px] sm:h-[120px] lg:h-[160px] rounded-[13px] overflow-hidden cursor-pointer transition-all duration-200 border-2 ${currentImageIndex === index
+                                    ? "border-[#581ADB]"
+                                    : "border-transparent"
+                                    } hover:-translate-y-[4px] hover:shadow-md`}
                             >
                                 <img
-                                    src={img}
+                                    src={getImageUrl(img)}
                                     alt={`Thumbnail ${index + 1}`}
                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                    onError={(e) => { e.target.src = image; }} // Если фото не загрузилось, ставим заглушку
                                 />
                             </div>
                         ))}
@@ -115,9 +140,16 @@ const HotelMainInfo = ({ images, tags }) => {
                                 <div className="flex flex-row items-center justify-start gap-2 mt-2">
                                     <img className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-200 hover:scale-110" src={mapPinIcon} alt="Map pin" />
                                     <span className="text-[13px] sm:text-[15px] lg:text-[16px] text-[#717171] uppercase tracking-wide">
-                                        Lviv Street 8 | Kyiv
+                                        {address}, {city}
                                     </span>
                                 </div>
+                                {coordinates && (
+                                    <div className="flex flex-row items-center justify-start gap-2 mt-1">
+                                        <span className="text-[12px] sm:text-[13px] lg:text-[14px] text-[#8A8A8A]">
+                                            Coordinates: {coordinates}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             <button className="bg-[#581ADB] w-full sm:w-[180px] lg:w-[181px] h-14 sm:h-16 lg:h-[72px] rounded-full shadow-[0px_0px_43px_0px_#581ADB5E,0px_0px_10px_0px_#581ADB59] transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 shrink-0">
@@ -127,9 +159,7 @@ const HotelMainInfo = ({ images, tags }) => {
                             </button>
                         </div>
 
-                        <p className="mt-5 sm:mt-6 text-[#717171] text-[14px] sm:text-[15px] lg:text-[16px] leading-relaxed pr-0 sm:pr-2">
-                            Located in the heart of Kiev, our hotel offers a prime location for exploring the city's rich history and culture. With luxurious accommodations and top-notch amenities, we provide a comfortable and relaxing stay for all our guests. Whether you're traveling for business or leisure, our attentive staff is always on hand to assist with any needs you may have.
-                        </p>
+                        <p className="mt-5 sm:mt-6 text-[#717171] text-[14px] sm:text-[15px] lg:text-[16px] leading-relaxed pr-0 sm:pr-2">{description}</p>
 
                         <div className="flex flex-row items-center gap-4 sm:gap-6 mt-6 sm:mt-8 flex-wrap">
                             {tags.map((tag) => (

@@ -60,7 +60,13 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
             if (step === "form") {
                 if (isLogin) {
                     const data = await authService.login(loginState);
+
+                    // ✅ СОХРАНЯЕМ ТОКЕН
+                    localStorage.setItem("token", data.token);
+
+                    // ✅ СОХРАНЯЕМ ПОЛЬЗОВАТЕЛЯ
                     localStorage.setItem("user", JSON.stringify(data));
+
                     window.dispatchEvent(new Event("auth-change"));
                     setStep("success");
                     return;
@@ -79,6 +85,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 const email = isLogin ? loginState.email : registerState.email;
 
                 const data = await authService.confirmEmail({ email, code });
+
+                localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data));
                 window.dispatchEvent(new Event("auth-change"));
                 setStep("info");

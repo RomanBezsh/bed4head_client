@@ -1,18 +1,17 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BED4HEAD_API + '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+    baseURL: "https://localhost:7090/api",
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user?.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+    }
+
+    return config;
 });
 
 export default api;

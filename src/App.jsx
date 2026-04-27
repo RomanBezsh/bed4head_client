@@ -27,8 +27,8 @@ const Layout = ({ user }) => {
                     <Route path="/admin" element={<AdminDashboard />} />
                 </Route>
 
-                <Route path="/catalog" element={<Catalog />} />
-                <Route path="/hotel" element={<HotelPage />} />
+                <Route path="/catalog" element={<Catalog />} /> {/* Keep this for the main catalog page */}
+                <Route path="/hotel/:id" element={<HotelPage />} /> {/* Dynamic route for individual hotel pages */}
                 <Route path="/account" element={<AccountDashboard />} />
                 <Route path="/booking" element={<Booking />} />
             </Routes>
