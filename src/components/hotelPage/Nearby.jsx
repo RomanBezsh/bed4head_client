@@ -20,7 +20,7 @@ const NEARBY_ICONS = {
     beaches: beachIcon,
 };
 
-const Nearby = ({ places }) => {
+const Nearby = ({ places, hotelCoordinates }) => {
     return (
         <section className="flex flex-col items-center gap-6 sm:gap-8 mt-14 sm:mt-16 lg:mt-20 mb-14 sm:mb-16 lg:mb-20 w-full max-w-[1200px] mx-auto px-4 sm:px-6">
             {/* Section title */}
@@ -65,7 +65,7 @@ const Nearby = ({ places }) => {
             </div>
 
             {/* Map block */}
-            <NearbyMap />
+            <NearbyMap hotelCoordinates={hotelCoordinates} />
         </section>
     );
 };
@@ -77,14 +77,23 @@ const customIcon = new L.Icon({
     iconAnchor: [20, 40],
 });
 
-const NearbyMap = () => {
-    const position = [46.4825, 30.7233];
+const NearbyMap = ({ hotelCoordinates }) => {
+    let position = [46.4825, 30.7233];
+    let zoom = 15;
+
+    // hotelCoordinates is already an array [lat, lng] or null from HotelPage.jsx
+    // We just need to check if it's not null and has two valid numbers
+    // The isNaN check for individual coordinates is now handled in HotelPage.jsx
+    if (hotelCoordinates && hotelCoordinates.length === 2) {
+        position = hotelCoordinates;
+        zoom = 16;
+    }
 
     return (
         <div className="w-full mt-8 sm:mt-12 lg:mt-16 h-[240px] sm:h-[300px] lg:h-[340px] rounded-[13px] overflow-hidden shadow-[0px_1px_8px_0px_rgba(0,0,0,0.08)] border border-[#E8E8E8]">
             <MapContainer
                 center={position}
-                zoom={15}
+                zoom={zoom}
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
             >

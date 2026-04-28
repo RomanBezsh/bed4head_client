@@ -83,6 +83,14 @@ export default function AddHotelForm({ onAddHotel }) {
     const [faqs, setFaqs] = useState([]);
     const [faqQuestion, setFaqQuestion] = useState("");
     const [faqAnswer, setFaqAnswer] = useState("");
+    const [checkInFrom, setCheckInFrom] = useState("15:00"); // HH:mm format
+    const [checkInTo, setCheckInTo] = useState("12:00"); // HH:mm format, not sent to backend yet
+    const [maxExtraBeds, setMaxExtraBeds] = useState(0); // Not sent to backend yet
+    const [distanceFromCenterKm, setDistanceFromCenterKm] = useState(0.0);
+    const [metroTransport, setMetroTransport] = useState({ name: "", value: "", unit: "km" });
+    const [airportTransport, setAirportTransport] = useState({ name: "", value: "", unit: "km" });
+    const [trainTransport, setTrainTransport] = useState({ name: "", value: "", unit: "km" });
+    const [petsAllowed, setPetsAllowed] = useState(false);
 
     // Adds or removes selected service
     const toggleFacility = (service) => {
@@ -159,12 +167,50 @@ export default function AddHotelForm({ onAddHotel }) {
         if (!name.trim() || !city.trim() || !address.trim()) {
             return;
         }
-
-        const facilitiesWithCategory = amenitySections.flatMap((section) =>
+        
+        let facilitiesToSend = amenitySections.flatMap((section) =>
             section.items
                 .filter((item) => facilities.includes(item))
                 .map((item) => `${section.title}|||${item}`)
         );
+
+        // Handle pets based on toggle
+        if (petsAllowed) {
+            if (!facilitiesToSend.includes("Pets|||Pets allowed")) {
+                facilitiesToSend.push("Pets|||Pets allowed");
+            }
+        } else {
+            facilitiesToSend = facilitiesToSend.filter(item => item !== "Pets|||Pets allowed");
+        }
+
+        // Process transport distances
+        const transportTypes = [
+            { type: "Metro", state: metroTransport },
+            { type: "Airport", state: airportTransport },
+            { type: "Train", state: trainTransport },
+        ];
+
+        const generatedTransportPlaces = transportTypes.map(({ type, state }) => {
+            const distanceValue = parseFloat(state.value);
+            if (isNaN(distanceValue) || distanceValue <= 0) {
+                return null; // Skip if distance is invalid
+            }
+            // Name is required if distance is filled
+            if (!state.name.trim()) {
+                return null; // Skip if name is empty when distance is provided
+            }
+            return `${type}, ${state.name.trim()}, ${distanceValue}${state.unit}`;
+        }).filter(Boolean); // Remove null entries
+
+        // Combine generated transport places with existing nearbyPlaces, filtering out old transport entries
+        const existingNearbyPlacesArray = nearbyPlaces.split(';').map(p => p.trim()).filter(Boolean);
+        const filteredExistingNearbyPlaces = existingNearbyPlacesArray.filter(place => {
+            const lowerCasePlace = place.toLowerCase();
+            return !(lowerCasePlace.startsWith("metro,") || lowerCasePlace.startsWith("airport,") || lowerCasePlace.startsWith("train,"));
+        });
+
+        const finalNearbyPlacesArray = [...generatedTransportPlaces, ...filteredExistingNearbyPlaces];
+        const finalNearbyPlacesString = finalNearbyPlacesArray.join('; ');
 
         const formData = new FormData();
         formData.append("name", name);
@@ -175,16 +221,28 @@ export default function AddHotelForm({ onAddHotel }) {
         formData.append("address", address);
         formData.append("city", city);
         formData.append("country", country);
-        formData.append("importantInfo", importantInfo);
-        formData.append("coordinates", coordinates);
-        formData.append("nearbyPlaces", nearbyPlaces);
+        // formData.append("importantInfo", importantInfo); // As per instructions, do not send this field to backend
+        formData.append("coordinates", coordinates.trim());
+        formData.append("nearbyPlaces", finalNearbyPlacesString);
         formData.append("status", status);
-        
-        // Массивы и объекты нужно передавать либо по одному, либо как JSON-строку (зависит от бэкенда)
-        formData.append("facilities", JSON.stringify(facilitiesWithCategory));
-        formData.append("faqs", JSON.stringify(faqs));
+        formData.append("CheckInFrom", checkInFrom); // New field for backend
+        formData.append("DistanceFromCenterKm", String(distanceFromCenterKm)); // New field for backend
 
-        // Добавляем каждый файл отдельно
+        // Временные логи для проверки координат
+        console.log("coordinates before submit:", coordinates);
+        console.log("formData coordinates:", formData.get("coordinates"));
+
+        // Facilities: Добавляем каждое удобство как отдельное поле, как ожидает бэкенд
+        facilitiesToSend.forEach((item) => {
+            formData.append("facilities", item);
+        });
+
+        // FAQs: Добавляем каждый FAQ в формате "вопрос|||ответ", как ожидает бэкенд
+        faqs.forEach((faq) => {
+            formData.append("faqs", `${faq.question}|||${faq.answer}`);
+        });
+
+        // Photos: Добавляем каждый файл отдельно
         photos.forEach((file) => {
             formData.append("photos", file);
         });
@@ -209,6 +267,14 @@ export default function AddHotelForm({ onAddHotel }) {
             setNearbyPlaces("");
             setStatus("Active");
             setFaqs([]);
+            setCheckInFrom("15:00");
+            setCheckInTo("12:00");
+            setMaxExtraBeds(0);
+            setDistanceFromCenterKm(0.0);
+            setMetroTransport({ name: "", value: "", unit: "km" });
+            setAirportTransport({ name: "", value: "", unit: "km" });
+            setTrainTransport({ name: "", value: "", unit: "km" });
+            setPetsAllowed(false);
         } catch (error) {
             console.error("Error creating hotel:", error);
             alert("Failed to create hotel: " + error.message);
@@ -317,6 +383,148 @@ export default function AddHotelForm({ onAddHotel }) {
                     onChange={(e) => setCoordinates(e.target.value)}
                     placeholder="e.g. 50.4501, 30.5234"
                 />
+
+                {/* Important Information Block */}
+                <div className="md:col-span-2 mt-4">
+                    <h3 className="text-[16px] font-bold text-[#1A1A1A] mb-4">Important Information for Hotel Page Cards</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormInput
+                            label="Check-in time (From)"
+                            value={checkInFrom}
+                            onChange={(e) => setCheckInFrom(e.target.value)}
+                            type="time"
+                        />
+                        <FormInput
+                            label="Check-in time (To, for display only)"
+                            value={checkInTo}
+                            onChange={(e) => setCheckInTo(e.target.value)}
+                            type="time"
+                        />
+                        <FormInput
+                            label="Maximum extra beds (for display only)"
+                            value={maxExtraBeds}
+                            onChange={(e) => setMaxExtraBeds(Number(e.target.value))}
+                            type="number"
+                            min="0"
+                        />
+                        <FormInput
+                            label="Distance from City Center (km)"
+                            value={distanceFromCenterKm}
+                            onChange={(e) => setDistanceFromCenterKm(parseFloat(e.target.value))}
+                            type="number"
+                            step="0.1"
+                            min="0"
+                        />
+                        <div className="flex flex-col gap-2">
+                            <label className="text-[14px] font-semibold text-[#1A1A1A]">Pets Allowed</label>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    value=""
+                                    className="sr-only peer"
+                                    checked={petsAllowed}
+                                    onChange={(e) => setPetsAllowed(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    {petsAllowed ? "Yes" : "No"}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* Transport Distances UI */}
+                    <div className="mt-6">
+                        <h4 className="text-[15px] font-bold text-[#1A1A1A] mb-3">Transport distances</h4>
+                        {/* Metro */}
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-3 items-end">
+                            <label className="text-[14px] font-semibold text-[#1A1A1A] sm:col-span-1 flex items-center">Metro</label>
+                            <FormInput
+                                label="Name"
+                                value={metroTransport.name}
+                                onChange={(e) => setMetroTransport(prev => ({ ...prev, name: e.target.value }))}
+                                placeholder="e.g. Arsenalna"
+                            />
+                            <FormInput
+                                label="Distance"
+                                value={metroTransport.value}
+                                onChange={(e) => setMetroTransport(prev => ({ ...prev, value: e.target.value }))}
+                                type="number"
+                                min="0"
+                                step="0.1"
+                            />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[14px] font-semibold text-[#1A1A1A]">Unit</label>
+                                <select
+                                    value={metroTransport.unit}
+                                    onChange={(e) => setMetroTransport(prev => ({ ...prev, unit: e.target.value }))}
+                                    className="h-[48px] rounded-[16px] border border-[#D9D9D9] px-4 outline-none text-[14px]"
+                                >
+                                    <option value="km">km</option>
+                                    <option value="m">m</option>
+                                </select>
+                            </div>
+                        </div>
+                        {/* Airport */}
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-3 items-end">
+                            <label className="text-[14px] font-semibold text-[#1A1A1A] sm:col-span-1 flex items-center">Airport</label>
+                            <FormInput
+                                label="Name"
+                                value={airportTransport.name}
+                                onChange={(e) => setAirportTransport(prev => ({ ...prev, name: e.target.value }))}
+                                placeholder="e.g. Boryspil"
+                            />
+                            <FormInput
+                                label="Distance"
+                                value={airportTransport.value}
+                                onChange={(e) => setAirportTransport(prev => ({ ...prev, value: e.target.value }))}
+                                type="number"
+                                min="0"
+                                step="0.1"
+                            />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[14px] font-semibold text-[#1A1A1A]">Unit</label>
+                                <select
+                                    value={airportTransport.unit}
+                                    onChange={(e) => setAirportTransport(prev => ({ ...prev, unit: e.target.value }))}
+                                    className="h-[48px] rounded-[16px] border border-[#D9D9D9] px-4 outline-none text-[14px]"
+                                >
+                                    <option value="km">km</option>
+                                    <option value="m">m</option>
+                                </select>
+                            </div>
+                        </div>
+                        {/* Train station */}
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                            <label className="text-[14px] font-semibold text-[#1A1A1A] sm:col-span-1 flex items-center">Train station</label>
+                            <FormInput
+                                label="Name"
+                                value={trainTransport.name}
+                                onChange={(e) => setTrainTransport(prev => ({ ...prev, name: e.target.value }))}
+                                placeholder="e.g. Odessa-Mala"
+                            />
+                            <FormInput
+                                label="Distance"
+                                value={trainTransport.value}
+                                onChange={(e) => setTrainTransport(prev => ({ ...prev, value: e.target.value }))}
+                                type="number"
+                                min="0"
+                                step="0.1"
+                            />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[14px] font-semibold text-[#1A1A1A]">Unit</label>
+                                <select
+                                    value={trainTransport.unit}
+                                    onChange={(e) => setTrainTransport(prev => ({ ...prev, unit: e.target.value }))}
+                                    className="h-[48px] rounded-[16px] border border-[#D9D9D9] px-4 outline-none text-[14px]"
+                                >
+                                    <option value="km">km</option>
+                                    <option value="m">m</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div className="md:col-span-2">
                     <label className="text-[14px] font-semibold text-[#1A1A1A]">Facilities (Amenities)</label>

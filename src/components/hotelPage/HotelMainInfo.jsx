@@ -143,13 +143,6 @@ const HotelMainInfo = ({ images, tags, description, address, city, coordinates }
                                         {address}, {city}
                                     </span>
                                 </div>
-                                {coordinates && (
-                                    <div className="flex flex-row items-center justify-start gap-2 mt-1">
-                                        <span className="text-[12px] sm:text-[13px] lg:text-[14px] text-[#8A8A8A]">
-                                            Coordinates: {coordinates}
-                                        </span>
-                                    </div>
-                                )}
                             </div>
 
                             <button className="bg-[#581ADB] w-full sm:w-[180px] lg:w-[181px] h-14 sm:h-16 lg:h-[72px] rounded-full shadow-[0px_0px_43px_0px_#581ADB5E,0px_0px_10px_0px_#581ADB59] transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 shrink-0">

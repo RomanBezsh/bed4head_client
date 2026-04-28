@@ -9,38 +9,23 @@ export class HotelService {
         return (await api.get(`/hotels/${id}`)).data;
     }
 
+    async getHotelFacilities(id) {
+        return (await api.get(`/hotels/${id}/facilities`)).data;
+    }
+
+    async getHotelFaqs(id) {
+        return (await api.get(`/hotels/${id}/faqs`)).data;
+    }
+
+    async getHotelPhotos(id) {
+        return (await api.get(`/hotels/${id}/photos`)).data;
+    }
+
     async getHotelsByChainId(chainId) {
         return (await api.get(`/hotels/chain/${chainId}`)).data;
     }
 
-    async createHotel(hotel) {
-        const formData = new FormData();
-
-        formData.append("name", hotel.name);
-        formData.append("description", hotel.description || "");
-        formData.append("stars", String(hotel.stars));
-        formData.append("type", hotel.type || "Hotel");
-        formData.append("phone", hotel.phone || "");
-        formData.append("address", hotel.address);
-        formData.append("city", hotel.city);
-        formData.append("country", hotel.country || "");
-        formData.append("coordinates", hotel.coordinates || "");
-        formData.append("nearbyPlaces", hotel.nearbyPlaces || "");
-        formData.append("importantInfo", hotel.importantInfo || "");
-        formData.append("status", hotel.status || "Active");
-
-        (hotel.facilities || []).forEach((item) => {
-            formData.append("facilities", item);
-        });
-
-        (hotel.photos || []).forEach((file) => {
-            formData.append("photos", file);
-        });
-
-        (hotel.faqs || []).forEach((faq) => {
-            formData.append("faqs", `${faq.question}|||${faq.answer}`);
-        });
-
+    async createHotel(formData) {
         return (
             await api.post("/hotels/admin", formData, {
                 headers: {

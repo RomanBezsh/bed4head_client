@@ -24,53 +24,96 @@ const HotelPage = () => {
     const { id } = useParams();
     const hotelService = new HotelService();
 
-    const [hotel, setHotel] = useState(location.state?.hotel || null);
+    const [hotel, setHotel] = useState(location.state?.hotel ?? null);
     const [loading, setLoading] = useState(!hotel);
-
     useEffect(() => {
-        const fetchHotel = async () => {
-            if (!hotel && id) {
-                try {
-                    const data = await hotelService.getHotelById(id);
-                    setHotel(data);
-                } catch (error) {
-                    console.error("Error fetching hotel:", error);
-                } finally {
-                    setLoading(false);
-                }
+
+        const fetchAllHotelData = async () => {
+            if (!id) return;
+            try {
+                // Загружаем всё параллельно
+                const [basicInfo, facilities, faqs, photos] = await Promise.all([
+                    hotelService.getHotelById(id),
+                    hotelService.getHotelFacilities(id),
+                    hotelService.getHotelFaqs(id),
+                    hotelService.getHotelPhotos(id)
+                ]);
+
+                // Объединяем старые данные (из поиска) с новыми данными из БД
+                setHotel(prev => ({ ...prev, ...basicInfo, facilities, faqs, photos }));
+            } catch (error) {
+                console.error("Error fetching full hotel details:", error);
+            } finally {
+                setLoading(false);
             }
         };
-        fetchHotel();
-    }, [id]);
+        fetchAllHotelData();
+    }, [id]); // Убираем !hotel, чтобы запрос шел всегда при загрузке страницы
 
     if (loading) return <div className="py-20 text-center">Loading hotel details...</div>;
     if (!hotel) return <div className="py-20 text-center">Hotel not found</div>;
 
     // Helper to map category names to icon keys for Facilities component
-    const getIconKey = (categoryName) => {
+    const getIconKey = (categoryName = "") => {
+        const normalized = categoryName.trim().toLowerCase();
+
         const mapping = {
-            "General": "general",
-            "Accessibility": "accessibility",
-            "Languages spoken": "languages",
-            "Parking": "parking",
-            "Reception services": "reception",
-            "Cleaning services": "cleaning",
-            "Entertainment and family services": "entertainment",
-            "Safety & security": "security",
-            "Bathroom": "bathroom",
-            "Bedroom": "bedroom",
-            "Kitchen": "kitchen",
-            "Room Amenities": "amenities",
-            "Pets": "pets",
-            "Media & Technology": "media",
-            "Food & Drinks": "food",
-            "Internet": "internet"
+            "general": "general",
+            "accessibility": "accessibility",
+            "languages spoken": "languages",
+            "parking": "parking",
+            "reception services": "reception",
+            "cleaning services": "cleaning",
+            "entertainment and family services": "entertainment",
+            "safety & security": "security",
+            "bathroom": "bathroom",
+            "bedroom": "bedroom",
+            "kitchen": "kitchen",
+            "room amenities": "amenities",
+            "amenity": "amenities",
+            "amenities": "amenities",
+            "pets": "pets",
+            "media & technology": "media",
+            "food & drinks": "food",
+            "internet": "internet"
         };
-        return mapping[categoryName] || "general";
+        return mapping[normalized] || "general";
     };
 
     // Transform flat facilities (Category|||Item) back to structured objects
-    const structuredFacilities = hotel.facilities?.reduce((acc, facilityStr) => {
+    const rawFacilities =
+        hotel.facilities ||
+        hotel.Facilities ||
+        hotel.amenities ||
+        hotel.Amenities ||
+        [];
+    const facilitiesSource = Array.isArray(rawFacilities) ? rawFacilities : [];
+
+    const structuredFacilities = facilitiesSource.reduce((acc, facility) => {
+        if (typeof facility === "object" && facility !== null) {
+            // Поддержка нового формата { category, name }
+            const category = facility.category || facility.Category || "General";
+            const item = facility.name || facility.Name || facility.item || "";
+
+            if (!item) return acc;
+
+            const existing = acc.find(f => f.name === category);
+            if (existing) {
+                existing.items.push(item);
+            } else {
+                acc.push({
+                    name: category,
+                    iconKey: getIconKey(category),
+                    items: [item],
+                });
+            }
+
+            return acc;
+        }
+
+        const facilityStr = String(facility || "").trim();
+        if (!facilityStr) return acc;
+
         const [category, item] = facilityStr.includes("|||")
             ? facilityStr.split("|||")
             : ["General", facilityStr];
@@ -82,14 +125,16 @@ const HotelPage = () => {
             acc.push({
                 name: category,
                 iconKey: getIconKey(category),
-                items: [item]
+                items: [item],
             });
         }
+
         return acc;
-    }, []) || [];
+    }, []);
 
     // Parse nearby places string (Restaurant, KFC, 0.5km; ...)
-    const structuredNearby = hotel.nearbyPlaces?.split(';').reduce((acc, place) => {
+    const rawNearby = hotel.nearbyPlaces || hotel.NearbyPlaces || "";
+    const structuredNearby = rawNearby.split(';').reduce((acc, place) => {
         const parts = place.split(',').map(p => p.trim());
         if (parts.length < 3) return acc;
         const [category, name, dist] = parts;
@@ -111,10 +156,11 @@ const HotelPage = () => {
 
     // Important hotel info cards
     // If hotel.importantInfo exists, we split it by lines or use a generic mapping
+    const rawImportant = hotel.importantInfo || hotel.ImportantInfo || "";
     const importantData = [
         {
             iconKey: "Clock",
-            text: hotel.importantInfo || "Check-in time from 15:00",
+            text: rawImportant || "Check-in time from 15:00",
         },
         {
             iconKey: "Bed",
@@ -130,17 +176,35 @@ const HotelPage = () => {
         },
         {
             iconKey: "Pets",
-            text: hotel.facilities?.some(f => f.toLowerCase().includes('pets'))
+            text: rawFacilities.some(f => String(f).toLowerCase().includes("pets"))
                 ? "Pets are allowed"
                 : "Check with management about pets",
         },
     ];
+
+    // Parse FAQs
+    const rawFaqs = hotel.faqs || hotel.Faqs || [];
+    const structuredFaqs = rawFaqs.map(faqStr => {
+        if (typeof faqStr === 'object') {
+            return { q: faqStr.question || faqStr.q, a: faqStr.answer || faqStr.a };
+        }
+        const [q, a] = String(faqStr).includes("|||") ? faqStr.split("|||") : [faqStr, ""];
+        return { q, a };
+    });
 
     const images =
         hotel.photos && hotel.photos.length > 0
             ? hotel.photos.map(p => p.url ?? p.Url ?? p)   // <-- важно
             : (hotel.image || hotel.img ? [hotel.image || hotel.img] : [image, image, image, image]);
 
+    // Parse hotel.coordinates string into an array [latitude, longitude]
+    let hotelCoordinates = hotel.coordinates
+        ? hotel.coordinates.split(',').map(coord => parseFloat(coord.trim()))
+        : null;
+    // Ensure both parts are valid numbers
+    if (hotelCoordinates && (isNaN(hotelCoordinates[0]) || isNaN(hotelCoordinates[1]))) {
+        hotelCoordinates = null;
+    }
 
     return (
         <div className="w-full relative overflow-x-hidden">
@@ -159,19 +223,23 @@ const HotelPage = () => {
                 images={images}
                 address={hotel.address}
                 city={hotel.city}
-                coordinates={hotel.coordinates}
+                coordinates={hotelCoordinates}
                 tags={["popular", "city_centre", "comfortable"]}
                 description={hotel.description}
             />
+
 
             {/* Hotel page sections */}
             <ReviewStats />
             <Facilities facilities={structuredFacilities} />
             <ImportantInfo info={importantData} />
             <Book />
-            <Nearby places={structuredNearby.length > 0 ? structuredNearby : []} />
+            <Nearby
+                places={structuredNearby.length > 0 ? structuredNearby : []}
+                hotelCoordinates={hotelCoordinates}
+            />
             <Comments />
-            <Faq faqs={hotel.faqs} />
+            <Faq questions={structuredFaqs} />
             <HotelsNearby />
             <Footer />
             <ScrollToTop />
