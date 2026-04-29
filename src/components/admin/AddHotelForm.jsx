@@ -87,9 +87,9 @@ export default function AddHotelForm({ onAddHotel }) {
     const [checkInTo, setCheckInTo] = useState("12:00"); // HH:mm format, not sent to backend yet
     const [maxExtraBeds, setMaxExtraBeds] = useState(0); // Not sent to backend yet
     const [distanceFromCenterKm, setDistanceFromCenterKm] = useState(0.0);
-    const [metroTransport, setMetroTransport] = useState({ name: "", value: "", unit: "km" });
-    const [airportTransport, setAirportTransport] = useState({ name: "", value: "", unit: "km" });
-    const [trainTransport, setTrainTransport] = useState({ name: "", value: "", unit: "km" });
+    const [metroTransport, setMetroTransport] = useState({ value: "", unit: "km" });
+    const [airportTransport, setAirportTransport] = useState({ value: "", unit: "km" });
+    const [trainTransport, setTrainTransport] = useState({ value: "", unit: "km" });
     const [petsAllowed, setPetsAllowed] = useState(false);
 
     // Adds or removes selected service
@@ -195,11 +195,7 @@ export default function AddHotelForm({ onAddHotel }) {
             if (isNaN(distanceValue) || distanceValue <= 0) {
                 return null; // Skip if distance is invalid
             }
-            // Name is required if distance is filled
-            if (!state.name.trim()) {
-                return null; // Skip if name is empty when distance is provided
-            }
-            return `${type}, ${state.name.trim()}, ${distanceValue}${state.unit}`;
+            return `${type}, , ${distanceValue}${state.unit}`;
         }).filter(Boolean); // Remove null entries
 
         // Combine generated transport places with existing nearbyPlaces, filtering out old transport entries
@@ -221,12 +217,48 @@ export default function AddHotelForm({ onAddHotel }) {
         formData.append("address", address);
         formData.append("city", city);
         formData.append("country", country);
-        // formData.append("importantInfo", importantInfo); // As per instructions, do not send this field to backend
+
+        const customImportantInfo = importantInfo
+            .split(/\r?\n|\|\|\|/)
+            .map(text => text.trim())
+            .filter(Boolean)
+            .map(text => ({
+                iconKey: "Info",
+                text,
+            }));
+
+        const importantInfoToSend = [
+            {
+                iconKey: "Clock",
+                text: checkInFrom && checkInTo
+                    ? `Check-in time from ${checkInFrom} to ${checkInTo}`
+                    : `Check-in time from ${checkInFrom || "15:00"}`,
+            },
+            {
+                iconKey: "Bed",
+                text: `Maximum number of extra beds ${maxExtraBeds}`,
+            },
+            {
+                iconKey: "Center",
+                text: Number(distanceFromCenterKm) > 0
+                    ? `City center ${distanceFromCenterKm} km`
+                    : "City center information unavailable",
+            },
+            {
+                iconKey: "Transit",
+                text: `Train station ${trainTransport.value} m\nMetro station ${metroTransport.value} m\nAirport ${airportTransport.value} m`,
+            },
+            {
+                iconKey: "Pets",
+                text: petsAllowed ? "Pets are allowed" : "Pets are not allowed",
+            },
+            ...customImportantInfo,
+        ];
+
+        formData.append("importantInfo", JSON.stringify(importantInfoToSend));
         formData.append("coordinates", coordinates.trim());
         formData.append("nearbyPlaces", finalNearbyPlacesString);
         formData.append("status", status);
-        formData.append("CheckInFrom", checkInFrom); // New field for backend
-        formData.append("DistanceFromCenterKm", String(distanceFromCenterKm)); // New field for backend
 
         // Временные логи для проверки координат
         console.log("coordinates before submit:", coordinates);
@@ -271,9 +303,9 @@ export default function AddHotelForm({ onAddHotel }) {
             setCheckInTo("12:00");
             setMaxExtraBeds(0);
             setDistanceFromCenterKm(0.0);
-            setMetroTransport({ name: "", value: "", unit: "km" });
-            setAirportTransport({ name: "", value: "", unit: "km" });
-            setTrainTransport({ name: "", value: "", unit: "km" });
+            setMetroTransport({ value: "", unit: "km" });
+            setAirportTransport({ value: "", unit: "km" });
+            setTrainTransport({ value: "", unit: "km" });
             setPetsAllowed(false);
         } catch (error) {
             console.error("Error creating hotel:", error);
@@ -437,14 +469,8 @@ export default function AddHotelForm({ onAddHotel }) {
                     <div className="mt-6">
                         <h4 className="text-[15px] font-bold text-[#1A1A1A] mb-3">Transport distances</h4>
                         {/* Metro */}
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-3 items-end">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3 items-end">
                             <label className="text-[14px] font-semibold text-[#1A1A1A] sm:col-span-1 flex items-center">Metro</label>
-                            <FormInput
-                                label="Name"
-                                value={metroTransport.name}
-                                onChange={(e) => setMetroTransport(prev => ({ ...prev, name: e.target.value }))}
-                                placeholder="e.g. Arsenalna"
-                            />
                             <FormInput
                                 label="Distance"
                                 value={metroTransport.value}
@@ -466,14 +492,8 @@ export default function AddHotelForm({ onAddHotel }) {
                             </div>
                         </div>
                         {/* Airport */}
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-3 items-end">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3 items-end">
                             <label className="text-[14px] font-semibold text-[#1A1A1A] sm:col-span-1 flex items-center">Airport</label>
-                            <FormInput
-                                label="Name"
-                                value={airportTransport.name}
-                                onChange={(e) => setAirportTransport(prev => ({ ...prev, name: e.target.value }))}
-                                placeholder="e.g. Boryspil"
-                            />
                             <FormInput
                                 label="Distance"
                                 value={airportTransport.value}
@@ -495,14 +515,8 @@ export default function AddHotelForm({ onAddHotel }) {
                             </div>
                         </div>
                         {/* Train station */}
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                             <label className="text-[14px] font-semibold text-[#1A1A1A] sm:col-span-1 flex items-center">Train station</label>
-                            <FormInput
-                                label="Name"
-                                value={trainTransport.name}
-                                onChange={(e) => setTrainTransport(prev => ({ ...prev, name: e.target.value }))}
-                                placeholder="e.g. Odessa-Mala"
-                            />
                             <FormInput
                                 label="Distance"
                                 value={trainTransport.value}

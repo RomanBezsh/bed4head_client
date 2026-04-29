@@ -7,6 +7,7 @@ import transitIcon from "../../assets/icons/transit_station_train_train.svg";
 import petsIcon from "../../assets/icons/pets_icon.svg";
 
 const INFO_ICONS = {
+    Info: clockIcon,
     Clock: clockIcon,
     Bed: bedIcon,
     Center: centerIcon,
@@ -25,7 +26,7 @@ const ImportantInfo = ({ info }) => {
 
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
                 {info.map((item, index) => {
-                    const iconUrl = INFO_ICONS[item.iconKey];
+                    const iconUrl = INFO_ICONS[item.iconKey] || INFO_ICONS.Info;
 
                     return (
                         <AdvantageCard

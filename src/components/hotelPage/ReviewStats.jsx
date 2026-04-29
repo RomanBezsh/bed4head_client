@@ -1,13 +1,28 @@
-const ReviewStats = () => {
-    // Data for each rating category
-    const stats = [
-        { label: "Facilities", score: 9.8 },
-        { label: "Staff", score: 7.9 },
-        { label: "Cleanliness", score: 9.2 },
-        { label: "Comfort", score: 9.5 },
-        { label: "Location", score: 9.2 },
-        { label: "Value for money", score: 9.8 },
-    ];
+const ratingFields = [
+    { label: "Facilities", key: "facilities" },
+    { label: "Staff", key: "staff" },
+    { label: "Cleanliness", key: "cleanliness" },
+    { label: "Comfort", key: "comfort" },
+    { label: "Location", key: "location" },
+    { label: "Value for money", key: "valueForMoney" },
+];
+
+const getAverageScore = (reviews, key) => {
+    const scores = reviews
+        .map((review) => Number(review?.[key]))
+        .filter((score) => Number.isFinite(score));
+
+    if (scores.length === 0) return 0;
+
+    const average = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    return Number(average.toFixed(1));
+};
+
+const ReviewStats = ({ reviews = [] }) => {
+    const stats = ratingFields.map(({ label, key }) => ({
+        label,
+        score: getAverageScore(reviews, key),
+    }));
 
     return (
         // Main section container with fade-in animation
@@ -84,7 +99,7 @@ const CircularRating = ({ label, score }) => {
 
                 {/* Score text inside the circle */}
                 <span className="absolute text-[24px] text-[#581ADB] transition-transform duration-300 group-hover:scale-110 sm:text-[28px] lg:text-[32px]">
-                    {score}
+                    {score.toFixed(1)}
                 </span>
             </div>
 

@@ -4,15 +4,16 @@ import chevronLeftIcon from "../assets/icons/common/chevron_left_icon.svg";
 import checkIcon from "../assets/icons/check_mark.svg"
 import crossIcon from "../assets/icons/cross_icon.svg";
 import fileIcon from "../assets/icons/file_icon.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Booking = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const selectedRoom = location.state?.room;
+
     const [step, setStep] = useState(1);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [name, setName] = useState(""); // Lifted state to pass to success screen
-    const navigate = useNavigate();
-
-    const currentTags = ["free wi-fi", "bath", "private pool"];
 
     if (isSubmitted) {
         return <BookingSuccess userName={name || "Guest"} />;
@@ -31,7 +32,7 @@ const Booking = () => {
                     </button>
                 )}
 
-                <Room tags={currentTags} isBooked />
+                <Room room={selectedRoom} isBooked />
 
                 {/* Cancel/Exit button */}
                 <button

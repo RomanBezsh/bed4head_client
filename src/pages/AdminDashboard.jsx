@@ -116,7 +116,7 @@ export default function AdminDashboard() {
         if (activeSection === "Add Room") {
             return (
                 <div className="space-y-6">
-                    <AddRoomForm hotels={hotels} onAddRoom={handleAddRoom} />
+                    <AddRoomForm onAddRoom={handleAddRoom} />
                     <RoomsTable rooms={rooms} />
                 </div>
             );

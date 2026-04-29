@@ -1,9 +1,28 @@
 import React from "react";
 import Room from "../common/Room.jsx";
 
-const Book = () => {
-    // Room tags passed into every room card
-    const currentTags = ["free wi-fi", "bath", "private pool"];
+const Book = ({ rooms, loading }) => {
+    if (loading) {
+        return (
+            <section className="flex flex-col items-center gap-6 sm:gap-8 mt-14 sm:mt-16 lg:mt-20 mb-14 sm:mb-16 lg:mb-20 px-4 sm:px-6">
+                <h2 className="text-[14px] sm:text-[16px] text-[#717171] font-normal uppercase text-center">
+                    Book
+                </h2>
+                <p className="text-[#717171]">Loading rooms...</p>
+            </section>
+        );
+    }
+
+    if (!rooms || rooms.length === 0) {
+        return (
+            <section className="flex flex-col items-center gap-6 sm:gap-8 mt-14 sm:mt-16 lg:mt-20 mb-14 sm:mb-16 lg:mb-20 px-4 sm:px-6">
+                <h2 className="text-[14px] sm:text-[16px] text-[#717171] font-normal uppercase text-center">
+                    Book
+                </h2>
+                <p className="text-[#717171]">No rooms available for this hotel.</p>
+            </section>
+        );
+    }
 
     return (
         <section className="flex flex-col items-center gap-6 sm:gap-8 mt-14 sm:mt-16 lg:mt-20 mb-14 sm:mb-16 lg:mb-20 px-4 sm:px-6">
@@ -14,10 +33,9 @@ const Book = () => {
 
             {/* Rooms list */}
             <div className="w-full max-w-[1200px] flex flex-col gap-6 sm:gap-8">
-                <Room tags={currentTags} />
-                <Room tags={currentTags} />
-                <Room tags={currentTags} />
-                <Room tags={currentTags} />
+                {rooms.map((room) => (
+                    <Room key={room.id} room={room} />
+                ))}
             </div>
         </section>
     );

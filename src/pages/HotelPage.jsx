@@ -4,8 +4,10 @@ import profile2Users from "../assets/icons/common/profile2user.svg";
 import image from "../assets/independed_images/head_image.jpg";
 import chevronLeftIcon from "../assets/icons/common/chevron_left_icon.svg";
 import { HotelService } from "../api/hotelApi";
+import { ReviewService } from "../api/reviewApi";
+import { RoomService } from "../api/roomApi";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import ReviewStats from "../components/hotelPage/ReviewStats.jsx";
 import HotelMainInfo from "../components/hotelPage/HotelMainInfo.jsx";
@@ -22,33 +24,71 @@ import Footer from "../components/common/Footer.jsx";
 const HotelPage = () => {
     const location = useLocation();
     const { id } = useParams();
-    const hotelService = new HotelService();
+    const hotelService = useMemo(() => new HotelService(), []);
+    const roomService = useMemo(() => new RoomService(), []);
+    const reviewService = useMemo(() => new ReviewService(), []);
 
     const [hotel, setHotel] = useState(location.state?.hotel ?? null);
     const [loading, setLoading] = useState(!hotel);
-    useEffect(() => {
+    const [rooms, setRooms] = useState([]);
+    const [reviews, setReviews] = useState([]);
+    const [ratingInfo, setRatingInfo] = useState(null);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
 
+    const fetchReviewsAndRating = useCallback(async () => {
+        if (!id) return;
+
+        setReviewsLoading(true);
+        try {
+            const [reviewsResult, ratingResult] = await Promise.allSettled([
+                reviewService.getHotelReviews(id),
+                reviewService.getHotelRating(id),
+            ]);
+
+            if (reviewsResult.status === "fulfilled") {
+                setReviews(Array.isArray(reviewsResult.value) ? reviewsResult.value : []);
+            } else {
+                console.error("Error fetching hotel reviews:", reviewsResult.reason);
+            }
+
+            if (ratingResult.status === "fulfilled") {
+                setRatingInfo(ratingResult.value);
+            } else {
+                console.error("Error fetching hotel rating:", ratingResult.reason);
+            }
+        } finally {
+            setReviewsLoading(false);
+        }
+    }, [id, reviewService]);
+
+    useEffect(() => {
         const fetchAllHotelData = async () => {
             if (!id) return;
             try {
+                setLoading(true);
                 // Загружаем всё параллельно
-                const [basicInfo, facilities, faqs, photos] = await Promise.all([
+                const [basicInfo, facilities, faqs, photos, roomsData] = await Promise.all([
                     hotelService.getHotelById(id),
                     hotelService.getHotelFacilities(id),
                     hotelService.getHotelFaqs(id),
-                    hotelService.getHotelPhotos(id)
+                    hotelService.getHotelPhotos(id),
+                    roomService.getRoomsByHotelId(id)
                 ]);
 
                 // Объединяем старые данные (из поиска) с новыми данными из БД
                 setHotel(prev => ({ ...prev, ...basicInfo, facilities, faqs, photos }));
+                setRooms(roomsData);
             } catch (error) {
                 console.error("Error fetching full hotel details:", error);
+                // Если отель не найден, устанавливаем hotel в null, чтобы отобразить сообщение "Hotel not found"
+                setHotel(null);
             } finally {
                 setLoading(false);
             }
         };
         fetchAllHotelData();
-    }, [id]); // Убираем !hotel, чтобы запрос шел всегда при загрузке страницы
+        fetchReviewsAndRating();
+    }, [fetchReviewsAndRating, hotelService, roomService, id]); // Убираем !hotel, чтобы запрос шел всегда при загрузке страницы
 
     if (loading) return <div className="py-20 text-center">Loading hotel details...</div>;
     if (!hotel) return <div className="py-20 text-center">Hotel not found</div>;
@@ -128,7 +168,7 @@ const HotelPage = () => {
                 items: [item],
             });
         }
-
+        console.log("Review", reviewService.getHotelReviews(hotelId));
         return acc;
     }, []);
 
@@ -155,20 +195,64 @@ const HotelPage = () => {
     ];
 
     // Important hotel info cards
-    // If hotel.importantInfo exists, we split it by lines or use a generic mapping
-    const rawImportant = hotel.importantInfo || hotel.ImportantInfo || "";
-    const importantData = [
+    const checkInTime = hotel.checkInFrom || hotel.CheckInFrom;
+    const distance = hotel.distanceFromCenterKm ?? hotel.DistanceFromCenterKm;
+
+    const petsAllowed =
+        structuredFacilities.some(cat => cat.name.toLowerCase().includes("pets")) ||
+        (hotel.facilities && hotel.facilities.some(f => String(f).toLowerCase().includes("pets")));
+
+    const normalizeImportantInfo = (rawInfo) => {
+        if (!rawInfo) return [];
+
+        if (Array.isArray(rawInfo)) {
+            return rawInfo
+                .map(item => ({
+                    iconKey: item.iconKey || item.IconKey || "Info",
+                    text: item.text || item.Text || item.title || "",
+                }))
+                .filter(item => item.text);
+        }
+
+        if (typeof rawInfo === "string") {
+            try {
+                const parsed = JSON.parse(rawInfo);
+                if (Array.isArray(parsed)) {
+                    return normalizeImportantInfo(parsed);
+                }
+            } catch {
+                // legacy text format
+            }
+
+            return rawInfo
+                .split(/\|\|\||\r?\n/)
+                .map(text => text.trim())
+                .filter(Boolean)
+                .map(text => ({
+                    iconKey: "Info",
+                    text,
+                }));
+        }
+
+        return [];
+    };
+
+    const fallbackImportantData = [
         {
             iconKey: "Clock",
-            text: rawImportant || "Check-in time from 15:00",
+            text: checkInTime ? `Check-in time from ${checkInTime}` : "Check-in time from 15:00",
         },
         {
             iconKey: "Bed",
-            text: "Maximum number of extra beds 1",
+            text: hotel.maxExtraBeds
+                ? `Maximum number of extra beds ${hotel.maxExtraBeds}`
+                : "Maximum number of extra beds 1",
         },
         {
             iconKey: "Center",
-            text: "City center 45 m",
+            text: distance !== undefined && distance !== null
+                ? `City center ${distance} km`
+                : "City center information unavailable",
         },
         {
             iconKey: "Transit",
@@ -176,11 +260,16 @@ const HotelPage = () => {
         },
         {
             iconKey: "Pets",
-            text: rawFacilities.some(f => String(f).toLowerCase().includes("pets"))
-                ? "Pets are allowed"
-                : "Check with management about pets",
+            text: petsAllowed ? "Pets are allowed" : "Pets are not allowed",
         },
     ];
+
+    const serverImportantData = normalizeImportantInfo(
+        hotel.importantInfo || hotel.ImportantInfo
+    );
+
+    const importantData =
+        serverImportantData.length > 0 ? serverImportantData : fallbackImportantData;
 
     // Parse FAQs
     const rawFaqs = hotel.faqs || hotel.Faqs || [];
@@ -198,13 +287,21 @@ const HotelPage = () => {
             : (hotel.image || hotel.img ? [hotel.image || hotel.img] : [image, image, image, image]);
 
     // Parse hotel.coordinates string into an array [latitude, longitude]
-    let hotelCoordinates = hotel.coordinates
-        ? hotel.coordinates.split(',').map(coord => parseFloat(coord.trim()))
-        : null;
+    let hotelCoordinates = null;
+    if (hotel.coordinates) {
+        hotelCoordinates = hotel.coordinates.split(',').map(coord => parseFloat(coord.trim()));
+    } else if (hotel.latitude && hotel.longitude) {
+        // If coordinates string is not available, use latitude and longitude fields
+        hotelCoordinates = [parseFloat(hotel.latitude), parseFloat(hotel.longitude)];
+    }
+
+
     // Ensure both parts are valid numbers
     if (hotelCoordinates && (isNaN(hotelCoordinates[0]) || isNaN(hotelCoordinates[1]))) {
         hotelCoordinates = null;
     }
+    console.log("Raw hotel.coordinates:", hotel.coordinates);
+    console.log("Parsed hotelCoordinates for map:", hotelCoordinates);
 
     return (
         <div className="w-full relative overflow-x-hidden">
@@ -212,8 +309,9 @@ const HotelPage = () => {
             <HotelHeader
                 name={hotel.name}
                 stars={hotel.stars}
-                rating={hotel.rating || 8.0}
-                reviewsCount={hotel.reviewsCount || 0}
+                rating={ratingInfo?.overallRating ?? hotel.rating ?? 0}
+                ratingLabel={ratingInfo?.ratingLabel}
+                reviewsCount={ratingInfo?.reviewsCount ?? hotel.reviewsCount ?? 0}
                 phone={hotel.phone}
                 searchData={searchData}
             />
@@ -230,15 +328,21 @@ const HotelPage = () => {
 
 
             {/* Hotel page sections */}
-            <ReviewStats />
+            <ReviewStats reviews={reviews} />
             <Facilities facilities={structuredFacilities} />
             <ImportantInfo info={importantData} />
-            <Book />
+            <Book rooms={rooms} loading={loading} />
             <Nearby
                 places={structuredNearby.length > 0 ? structuredNearby : []}
                 hotelCoordinates={hotelCoordinates}
             />
-            <Comments />
+            <Comments
+                hotelId={id}
+                hotelName={hotel.name}
+                reviews={reviews}
+                loading={reviewsLoading}
+                onReviewCreated={fetchReviewsAndRating}
+            />
             <Faq questions={structuredFaqs} />
             <HotelsNearby />
             <Footer />

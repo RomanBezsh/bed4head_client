@@ -3,7 +3,7 @@ import chevronLeftIcon from "../../assets/icons/common/chevron_left_icon.svg";
 import starIcon from "../../assets/icons/common/star_icon.svg";
 import chevronDownIcon from "../../assets/icons/common/chevron_down_icon.svg";
 
-const HotelHeader = ({ name, stars, rating, reviewsCount, phone, searchData }) => {
+const HotelHeader = ({ name, stars, rating, ratingLabel, reviewsCount, phone, searchData }) => {
     return (
         // Main section with fade animation
         <section className="fade-up relative w-full px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10">
@@ -113,7 +113,9 @@ const HotelHeader = ({ name, stars, rating, reviewsCount, phone, searchData }) =
                         </span>
 
                         <div className="flex flex-col items-start gap-1 text-[#717171]">
-                            <span className="text-[14px] leading-none sm:text-[16px]">reviews</span>
+                            <span className="text-[14px] leading-none sm:text-[16px]">
+                                {ratingLabel || "reviews"}
+                            </span>
                             <span className="text-[14px] leading-none sm:text-[16px]">{reviewsCount}</span>
                         </div>
                     </div>
