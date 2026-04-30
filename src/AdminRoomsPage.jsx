@@ -32,7 +32,11 @@ const AdminRoomsPage = () => {
         <div className="p-6">
             <h2 className="text-2xl font-bold mb-4">Manage Rooms</h2>
             <Link to="/admin/rooms/new" className="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Add New Room</Link>
+            {rooms.length === 0 && (
+                <p className="text-[#717171]">No rooms available yet.</p>
+            )}
             {/* Здесь будет таблица комнат */}
+            {rooms.length > 0 && (
             <ul className="list-disc pl-5">
                 {rooms.map(room => (
                     <li key={room.id} className="mb-2">
@@ -43,6 +47,7 @@ const AdminRoomsPage = () => {
                     </li>
                 ))}
             </ul>
+            )}
         </div>
     );
 };

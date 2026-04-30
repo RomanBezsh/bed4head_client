@@ -30,7 +30,11 @@ const AdminHotelsPage = () => {
         <div className="p-6">
             <h2 className="text-2xl font-bold mb-4">Manage Hotels</h2>
             <Link to="/admin/hotels/new" className="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Add New Hotel</Link>
+            {hotels.length === 0 && (
+                <p className="text-[#717171]">No hotels available yet.</p>
+            )}
             {/* Здесь будет таблица отелей */}
+            {hotels.length > 0 && (
             <ul className="list-disc pl-5">
                 {hotels.map(hotel => (
                     <li key={hotel.id} className="mb-2">
@@ -41,6 +45,7 @@ const AdminHotelsPage = () => {
                     </li>
                 ))}
             </ul>
+            )}
         </div>
     );
 };

@@ -32,7 +32,7 @@ export class UserService {
     }
 
     async updateUser(id, userData) {
-        return (await api.put(`/user/${id}`, userData)).data;
+        return (await api.put("/user/update", { ...userData, id })).data;
     }
 
     async deleteUser(id) {

@@ -1,116 +1,155 @@
-import loupeIcon from "../../assets/icons/catalog/loupe_icon.svg"
-import chevronDownIcon from "../../assets/icons/common/chevron_down_icon.svg"
-import {useState} from "react";
+import loupeIcon from "../../assets/icons/catalog/loupe_icon.svg";
+import chevronDownIcon from "../../assets/icons/common/chevron_down_icon.svg";
 
-const Filter = () => {
+const normalize = (value) => String(value || "").trim().toLowerCase();
 
+const countBy = (hotels, predicate) => hotels.filter(predicate).length;
 
-    const filtersData = [{
-        id: "rating",
-        title: "Rating",
-        type: "checkbox",
-        options: [{label: "9+", count: 99}, {label: "8+", count: 124}, {label: "7+", count: 198}, {
-            label: "6+",
-            count: 345
-        },],
-    }, {
-        id: "popular",
-        title: "Popular",
-        type: "checkbox",
-        options: [{label: "City centre", count: 435}, {label: "Popular places", count: 937}, {
+const uniqueOptions = (hotels, getValue) => {
+    const counts = new Map();
+
+    hotels.forEach((hotel) => {
+        const rawValue = getValue(hotel);
+        if (!rawValue) return;
+
+        const label = String(rawValue).trim();
+        if (!label) return;
+
+        counts.set(label, (counts.get(label) || 0) + 1);
+    });
+
+    return [...counts.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([label, count]) => ({ label, value: label, count }));
+};
+
+const createFilterSections = (hotels) => {
+    const ratingOptions = [9, 8, 7, 6]
+        .map((value) => ({
+            label: `${value}+`,
+            value,
+            count: countBy(hotels, (hotel) => Number(hotel.rating) >= value),
+        }))
+        .filter((option) => option.count > 0);
+
+    const popularOptions = [
+        {
+            label: "City centre",
+            value: "city_centre",
+            count: countBy(hotels, (hotel) => Number(hotel.distanceFromCenterKm) <= 1),
+        },
+        {
+            label: "Popular places",
+            value: "popular_places",
+            count: countBy(hotels, (hotel) => Boolean(hotel.isFeatured)),
+        },
+        {
             label: "Best rating",
-            count: 45
-        },],
-    }, {
-        id: "stars",
-        title: "Stars",
-        type: "checkbox",
-        options: [{label: "5 stars", count: 135, stars: 5}, {label: "4 stars", count: 37, stars: 4}, {
-            label: "3 stars",
-            count: 45,
-            stars: 3
-        }, {label: "2 stars", count: 89, stars: 2}, {label: "1 star", count: 112, stars: 1},],
-    }, {
-        id: "facilities",
-        title: "Facilities",
-        type: "checkbox",
-        hasMore: true,
-        options: [{label: "Wi-Fi", count: 1135}, {label: "Restaurants", count: 337}, {
-            label: "24/7",
-            count: 345
-        }, {label: "Food in the hotel", count: 589}, {label: "Bar", count: 112}, {
-            label: "Children's area",
-            count: 155
-        },],
-    }, {
-        id: "hotel_type",
-        title: "Type of hotel",
-        type: "checkbox",
-        hasMore: true,
-        options: [{label: "Motel", count: 135}, {label: "Resort", count: 37}, {
-            label: "Inn",
-            count: 45
-        }, {label: "All-suite", count: 89}, {label: "Conference center", count: 112},],
-    }, {
-        id: "chain_hotels",
-        title: "Chain hotels",
-        type: "checkbox",
-        options: [
-            { label: "Sapphire Suites", count: 1 },
-            { label: "Ocean View Hotel", count: 2 },
-            { label: "Sunflower Resort", count: 1 },
-            { label: "Starlight Lodge", count: 3 },
-            { label: "Paradise Plaza", count: 1 },
-            { label: "Golden Sands Inn", count: 1 },
-            { label: "Moonlight Manor", count: 1 },
-            { label: "Sunset Suites", count: 1 },
-            { label: "Skyline Hotel", count: 1 },
-        ],
-    },];
+            value: "best_rating",
+            count: countBy(hotels, (hotel) => Number(hotel.rating) >= 8),
+        },
+    ].filter((option) => option.count > 0);
 
-    // Struct: { rating: ["9+", "8+"], stars: ["5 stars"] }
-    const [selectedFilters, setSelectedFilters] = useState({});
+    const starOptions = [5, 4, 3, 2, 1]
+        .map((stars) => ({
+            label: `${stars} star${stars === 1 ? "" : "s"}`,
+            value: stars,
+            count: countBy(hotels, (hotel) => Number(hotel.stars) === stars),
+        }))
+        .filter((option) => option.count > 0);
 
-
-    const [price, setPrice] = useState(76);
-
-
-
-    const handleCheckboxChange = (sectionId, value) => {
-        setSelectedFilters((prev) => {
-            const currentSectionValues = prev[sectionId] || [];
-
-            // Если значение уже есть — удаляем, если нет — добавляем
-            const nextValues = currentSectionValues.includes(value)
-                ? currentSectionValues.filter((v) => v !== value)
-                : [...currentSectionValues, value];
-
-            return {
-                ...prev,
-                [sectionId]: nextValues,
-            };
+    const facilityCounts = new Map();
+    hotels.forEach((hotel) => {
+        (hotel.facilities || []).forEach((facility) => {
+            const label = typeof facility === "string"
+                ? facility.split("|||").at(-1).trim()
+                : String(facility?.name || facility?.Name || "").trim();
+            if (!label) return;
+            facilityCounts.set(label, (facilityCounts.get(label) || 0) + 1);
         });
-        //console.log(selectedFilters);
+    });
+
+    const facilityOptions = [...facilityCounts.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 8)
+        .map(([label, count]) => ({ label, value: label, count }));
+
+    const hotelTypeOptions = uniqueOptions(hotels, (hotel) => hotel.hotelType);
+    const cityOptions = uniqueOptions(hotels, (hotel) => hotel.city).slice(0, 8);
+
+    return [
+        { id: "rating", title: "Rating", options: ratingOptions },
+        { id: "popular", title: "Popular", options: popularOptions },
+        { id: "stars", title: "Stars", options: starOptions },
+        { id: "facilities", title: "Facilities", hasMore: facilityOptions.length > 5, options: facilityOptions },
+        { id: "hotelType", title: "Type of hotel", hasMore: hotelTypeOptions.length > 5, options: hotelTypeOptions },
+        { id: "cities", title: "Cities", options: cityOptions },
+    ].filter((section) => section.options.length > 0);
+};
+
+const getPriceBounds = (hotels) => {
+    const prices = hotels
+        .map((hotel) => Number(hotel.price))
+        .filter((price) => Number.isFinite(price) && price > 0);
+
+    if (prices.length === 0) {
+        return { min: 0, max: 0 };
+    }
+
+    return {
+        min: Math.floor(Math.min(...prices)),
+        max: Math.ceil(Math.max(...prices)),
+    };
+};
+
+const Filter = ({ hotels = [], filters, onFiltersChange }) => {
+    const selectedFilters = filters?.sections || {};
+    const landmark = filters?.landmark || "";
+    const { min, max } = getPriceBounds(hotels);
+    const price = filters?.maxPrice ?? max;
+    const sections = createFilterSections(hotels);
+
+    const updateFilters = (nextFilters) => {
+        onFiltersChange?.({
+            sections: selectedFilters,
+            landmark,
+            maxPrice: price,
+            ...filters,
+            ...nextFilters,
+        });
     };
 
+    const handleCheckboxChange = (sectionId, value) => {
+        const currentSectionValues = selectedFilters[sectionId] || [];
+        const nextValues = currentSectionValues.includes(value)
+            ? currentSectionValues.filter((item) => item !== value)
+            : [...currentSectionValues, value];
 
-    return (<div
-            className="flex flex-col border border-gray w-68 text-[#717171] bg-white rounded-lg gap-0 divide-y divide-gray">
-            {/* Price */}
+        updateFilters({
+            sections: {
+                ...selectedFilters,
+                [sectionId]: nextValues,
+            },
+        });
+    };
+
+    return (
+        <div className="flex flex-col border border-gray w-68 text-[#717171] bg-white rounded-lg gap-0 divide-y divide-gray">
             <div className="flex flex-col gap-3 p-6">
                 <h3 className="text-[16px] font-bold text-[#555555]">Price</h3>
                 <div className="flex flex-row justify-between text-[16px]">
-                    <span>{price}$ night</span>
-                    <span>100$ night</span>
+                    <span>{min}$ night</span>
+                    <span>{price || max}$ night</span>
                 </div>
                 <div className="relative w-[222.53875732421875px] h-6">
-                    <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#B3B3B3]"/>
+                    <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#B3B3B3]" />
                     <input
                         type="range"
-                        min={76}
-                        max={100}
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
+                        min={min}
+                        max={max || min}
+                        value={price || max || min}
+                        disabled={max <= min}
+                        onChange={(e) => updateFilters({ maxPrice: Number(e.target.value) })}
                         className="
                             absolute
                             inset-x-0
@@ -119,6 +158,7 @@ const Filter = () => {
                             h-6
                             bg-transparent
                             cursor-pointer
+                            disabled:cursor-not-allowed
                             [&::-webkit-slider-runnable-track]:h-0
                             [&::-webkit-slider-runnable-track]:bg-transparent
                             [&::-moz-range-track]:h-0
@@ -141,53 +181,121 @@ const Filter = () => {
                 </div>
             </div>
 
-            {/* Search by landmarks */}
-        <div className="relative px-6 py-6">
-            <input
-                type="text"
-                placeholder="Attractions near..."
-                className="
-                  w-56 h-10
-                  pr-9
-                  pl-4
-                  border border-gray
-                  rounded-[30px]
-                  text-sm
-                "
-            />
+            <div className="relative px-6 py-6">
+                <input
+                    type="text"
+                    value={landmark}
+                    onChange={(event) => updateFilters({ landmark: event.target.value })}
+                    placeholder="Attractions near..."
+                    className="
+                      w-56 h-10
+                      pr-9
+                      pl-4
+                      border border-gray
+                      rounded-[30px]
+                      text-sm
+                      outline-none
+                    "
+                />
 
-            <span className="absolute right-9 top-1/2 -translate-y-1/2">
-                <img src={loupeIcon} alt="loupe" className="w-6 h-6" />
-            </span>
-        </div>
+                <span className="absolute right-9 top-1/2 -translate-y-1/2">
+                    <img src={loupeIcon} alt="loupe" className="w-6 h-6" />
+                </span>
+            </div>
 
-            {/* Basic filters from the array */}
-            {filtersData.map((section) => (<div key={section.id} className="w-full flex flex-col gap-4 px-6 py-6">
+            {sections.map((section) => (
+                <div key={section.id} className="w-full flex flex-col gap-4 px-6 py-6">
                     <h4 className="font-bold ">{section.title}</h4>
 
                     <ul className="flex flex-col gap-3.25 ">
                         {section.options.map((option) => (
-                            <li className="flex flex-row justify-between w-56" key={option.label}>
+                            <li className="flex flex-row justify-between w-56" key={`${section.id}-${option.value}`}>
                                 <label className="flex items-center gap-2 cursor-pointer">
-
                                     <input
                                         type="checkbox"
-                                        checked={(selectedFilters[section.id] || []).includes(option.label)}
-                                        onChange={() => handleCheckboxChange(section.id, option.label)}
+                                        checked={(selectedFilters[section.id] || []).includes(option.value)}
+                                        onChange={() => handleCheckboxChange(section.id, option.value)}
                                         className="appearance-none w-4 h-4 border border-[#B3B3B3] rounded-full checked:bg-[#581ADB]"
                                     />
 
                                     <span className="text-[16px]">{option.label}</span>
                                 </label>
                                 <span>{option.count}</span>
-                            </li>))}
+                            </li>
+                        ))}
                     </ul>
 
-                    {section.hasMore && (<button type="button">
-                            <img src={chevronDownIcon} alt="chevron down"/>
-                        </button>)}
-                </div>))}
-        </div>);
-}
+                    {section.hasMore && (
+                        <button type="button">
+                            <img src={chevronDownIcon} alt="chevron down" />
+                        </button>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export const matchesCatalogFilters = (hotel, filters) => {
+    if (!filters) return true;
+
+    const price = Number(hotel.price);
+    const hasMaxPrice = filters.maxPrice !== null && filters.maxPrice !== undefined && filters.maxPrice !== "";
+    if (hasMaxPrice && Number.isFinite(Number(filters.maxPrice)) && Number.isFinite(price) && price > Number(filters.maxPrice)) {
+        return false;
+    }
+
+    if (filters.landmark) {
+        const query = normalize(filters.landmark);
+        const searchable = [
+            hotel.name,
+            hotel.city,
+            hotel.country,
+            hotel.description,
+            ...(hotel.facilities || []),
+        ].join(" ");
+        if (!normalize(searchable).includes(query)) {
+            return false;
+        }
+    }
+
+    const sections = filters.sections || {};
+
+    if (sections.rating?.length > 0 && !sections.rating.some((rating) => Number(hotel.rating) >= Number(rating))) {
+        return false;
+    }
+
+    if (sections.popular?.length > 0) {
+        const matchesPopular = sections.popular.some((value) => {
+            if (value === "city_centre") return Number(hotel.distanceFromCenterKm) <= 1;
+            if (value === "popular_places") return Boolean(hotel.isFeatured);
+            if (value === "best_rating") return Number(hotel.rating) >= 8;
+            return false;
+        });
+
+        if (!matchesPopular) return false;
+    }
+
+    if (sections.stars?.length > 0 && !sections.stars.includes(Number(hotel.stars))) {
+        return false;
+    }
+
+    if (sections.facilities?.length > 0) {
+        const hotelFacilities = (hotel.facilities || []).map((facility) => normalize(String(facility).split("|||").at(-1)));
+        if (!sections.facilities.every((facility) => hotelFacilities.includes(normalize(facility)))) {
+            return false;
+        }
+    }
+
+    if (sections.hotelType?.length > 0 && !sections.hotelType.includes(hotel.hotelType)) {
+        return false;
+    }
+
+    if (sections.cities?.length > 0 && !sections.cities.includes(hotel.city)) {
+        return false;
+    }
+
+    return true;
+};
 
 export default Filter;

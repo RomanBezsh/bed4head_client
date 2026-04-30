@@ -122,7 +122,11 @@ export default function AddHotelForm({ onAddHotel, editingHotel, onCancelEdit })
         setImportantInfo(Array.isArray(editingHotel.importantInfo)
             ? editingHotel.importantInfo.map((item) => item.text || item).join("\n")
             : editingHotel.importantInfo || "");
-        setCoordinates(editingHotel.coordinates || "");
+        setCoordinates(editingHotel.coordinates || (
+            Number.isFinite(Number(editingHotel.latitude)) && Number.isFinite(Number(editingHotel.longitude))
+                ? `${editingHotel.latitude}, ${editingHotel.longitude}`
+                : ""
+        ));
         setStatus(editingHotel.status || "Active");
         setDistanceFromCenterKm(editingHotel.distanceFromCenterKm || 0);
         setFacilities((editingHotel.amenities || editingHotel.facilities || []).map((item) => {
@@ -167,6 +171,18 @@ export default function AddHotelForm({ onAddHotel, editingHotel, onCancelEdit })
                 })
             )
             .join("; ");
+    };
+
+    const parseCoordinates = (rawCoordinates) => {
+        const parts = String(rawCoordinates || "")
+            .split(/[;,]/)
+            .map((part) => Number(part.trim().replace(",", ".")))
+            .filter((part) => Number.isFinite(part));
+
+        return {
+            latitude: parts[0] ?? editingHotel?.latitude ?? 0,
+            longitude: parts[1] ?? editingHotel?.longitude ?? 0,
+        };
     };
 
     // Adds or removes selected service
@@ -330,22 +346,25 @@ export default function AddHotelForm({ onAddHotel, editingHotel, onCancelEdit })
             formData.append("photos", file);
         });
 
+        const { latitude, longitude } = parseCoordinates(coordinates);
         const hotelPayload = {
             ...editingHotel,
             id: editingHotel?.id,
             name,
             description,
             stars: Number(stars),
-            type,
             hotelType: type,
             phone,
             address,
             city,
             country,
-            coordinates: coordinates.trim(),
-            nearbyPlaces: finalNearbyPlacesString,
+            latitude,
+            longitude,
+            nearbyPlaces: Array.isArray(editingHotel?.nearbyPlaces) ? editingHotel.nearbyPlaces : [],
             importantInfo: importantInfoToSend,
-            status,
+            isFeatured: status === "Active",
+            basePricePerNight: editingHotel?.basePricePerNight ?? 0,
+            currencyCode: editingHotel?.currencyCode || "USD",
             distanceFromCenterKm: Number(distanceFromCenterKm) || 0,
             facilities: facilitiesToSend,
             amenities: facilitiesToSend,

@@ -10,8 +10,15 @@ export class RoomService {
         return data;
     }
 
-    async getRoomsByHotelId(hotelId) {
-        return (await api.get("/rooms", { params: { hotelId } })).data;
+    async getRoomsByHotelId(hotelId, filters = {}) {
+        return (await api.get("/rooms", {
+            params: {
+                hotelId,
+                from: filters.from || undefined,
+                to: filters.to || undefined,
+                guests: filters.guests || undefined,
+            },
+        })).data;
     }
 
     async getAllRooms() {
@@ -23,7 +30,12 @@ export class RoomService {
     }
 
     async updateRoom(id, roomData) {
-        return (await api.put(`/rooms/${id}`, roomData)).data;
+        const { data } = await api.put(`/rooms/${id}`, roomData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return data;
     }
 
     async deleteRoom(id) {

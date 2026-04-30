@@ -6,15 +6,19 @@ import HotelCard from "../common/HotelCard.jsx";
 const HotelsNearby = () => {
     const { id } = useParams();
     const [hotels, setHotels] = useState([]);
+    const [loading, setLoading] = useState(true);
     const hotelService = new HotelService();
 
     useEffect(() => {
         const fetchNearby = async () => {
             try {
                 const data = await hotelService.getNearbyHotels(id);
-                setHotels(data);
+                setHotels(Array.isArray(data) ? data : []);
             } catch (e) {
                 console.error("Error fetching nearby hotels", e);
+                setHotels([]);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -27,6 +31,17 @@ const HotelsNearby = () => {
                 Hotels nearby
             </h2>
 
+            {loading && (
+                <p className="text-center text-[16px] text-[#717171]">Loading nearby hotels...</p>
+            )}
+
+            {!loading && hotels.length === 0 && (
+                <p className="text-center text-[16px] text-[#717171]">
+                    No nearby hotels available.
+                </p>
+            )}
+
+            {!loading && hotels.length > 0 && (
             <div className="w-full flex flex-wrap justify-center gap-8">
                 {hotels.map(hotel => (
                     <HotelCard
@@ -42,6 +57,7 @@ const HotelsNearby = () => {
                     />
                 ))}
             </div>
+            )}
         </section>
     );
 };

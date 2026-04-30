@@ -39,9 +39,6 @@ const FACILITY_ICONS = {
 };
 
 const Facilities = ({ facilities }) => {
-    // Do not render the section if there is no data
-    if (!facilities || facilities.length === 0) return null;
-
     return (
         <section className="w-full max-w-[1200px] mt-14 sm:mt-16 lg:mt-20 flex flex-col items-center mx-auto px-4 sm:px-6">
             {/* Section title */}
@@ -49,7 +46,14 @@ const Facilities = ({ facilities }) => {
                 Facilities
             </h2>
 
+            {(!facilities || facilities.length === 0) && (
+                <p className="text-center text-[16px] text-[#717171]">
+                    No facilities available for this hotel.
+                </p>
+            )}
+
             {/* Responsive masonry-like columns */}
+            {facilities?.length > 0 && (
             <div className="w-full columns-1 md:columns-2 xl:columns-3 gap-8 lg:gap-12">
                 {facilities.map((category, index) => (
                     <div
@@ -86,6 +90,7 @@ const Facilities = ({ facilities }) => {
                     </div>
                 ))}
             </div>
+            )}
         </section>
     );
 };

@@ -20,7 +20,9 @@ const NEARBY_ICONS = {
     beaches: beachIcon,
 };
 
-const Nearby = ({ places, hotelCoordinates }) => {
+const Nearby = ({ places = [], hotelCoordinates }) => {
+    const hasPlaces = places.length > 0;
+
     return (
         <section className="flex flex-col items-center gap-6 sm:gap-8 mt-14 sm:mt-16 lg:mt-20 mb-14 sm:mb-16 lg:mb-20 w-full max-w-[1200px] mx-auto px-4 sm:px-6">
             {/* Section title */}
@@ -28,7 +30,14 @@ const Nearby = ({ places, hotelCoordinates }) => {
                 What's Nearby
             </h2>
 
+            {!hasPlaces && (
+                <p className="text-center text-[16px] text-[#717171]">
+                    No nearby places available for this hotel.
+                </p>
+            )}
+
             {/* Responsive masonry-like columns */}
+            {hasPlaces && (
             <div className="w-full columns-1 md:columns-2 xl:columns-3 gap-8 lg:gap-12">
                 {places.map((category, idx) => (
                     <div key={idx} className="break-inside-avoid mb-8 lg:mb-10">
@@ -63,6 +72,7 @@ const Nearby = ({ places, hotelCoordinates }) => {
                     </div>
                 ))}
             </div>
+            )}
 
             {/* Map block */}
             <NearbyMap hotelCoordinates={hotelCoordinates} />

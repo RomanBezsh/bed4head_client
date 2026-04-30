@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import userPlaceholder from "../../assets/icons/common/user_placeholder.svg";
 import editIcon from "../../assets/icons/common/edit_icon.svg";
@@ -16,17 +16,20 @@ import profile2userIcon from "../../assets/icons/common/profile2user.svg";
 import noReviewsIcon from "../../assets/icons/common/no_reviews_icon.svg";
 
 import { AuthService } from "../../api/authApi";
+import { UserService } from "../../api/userApi";
 
 import hotelRoomPhoto from "../../assets/independed_images/hotel_room_photo_example.png";
 
-const FieldInput = ({ placeholder, note = "", smallNote = "", value = "" }) => {
+const FieldInput = ({ placeholder, note = "", smallNote = "", value = "", onChange, type = "text", disabled = false }) => {
     return (
         <div className="fade-up flex w-full flex-col gap-2">
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:gap-3.5">
                 <input
-                    type="text"
+                    type={type}
                     placeholder={placeholder}
-                    defaultValue={value}
+                    value={value}
+                    disabled={disabled}
+                    onChange={onChange}
                     className="h-14 w-full rounded-full border border-[#D9D9D9] bg-white px-4.5 font-nunito-sans text-[16px] font-normal text-[#717171] outline-none placeholder:text-[#717171] transition-all duration-200 focus:border-[#581ADB] focus:shadow-[0px_0px_0px_3px_rgba(88,26,219,0.1)] md:max-w-62"
                 />
 
@@ -46,11 +49,20 @@ const FieldInput = ({ placeholder, note = "", smallNote = "", value = "" }) => {
     );
 };
 
-const FieldSelect = ({ placeholder }) => {
+const FieldSelect = ({ placeholder, value = "", onChange, options = [] }) => {
     return (
         <div className="fade-up relative w-full md:max-w-62">
-            <select className="h-14 w-full appearance-none rounded-full border border-[#D9D9D9] bg-white px-4.5 font-nunito-sans text-[16px] text-[#717171] outline-none transition-all duration-200 focus:border-[#581ADB]">
-                <option>{placeholder}</option>
+            <select
+                value={value}
+                onChange={onChange}
+                className="h-14 w-full appearance-none rounded-full border border-[#D9D9D9] bg-white px-4.5 font-nunito-sans text-[16px] text-[#717171] outline-none transition-all duration-200 focus:border-[#581ADB]"
+            >
+                <option value="">{placeholder}</option>
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
             </select>
 
             <img
@@ -204,9 +216,56 @@ const ReviewsEmpty = () => {
     );
 };
 
-const Account = ({ user }) => {
+const formatDateInput = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toISOString().slice(0, 10);
+};
+
+const buildInitialForm = (user) => ({
+    displayName: user?.displayName || "",
+    phone: user?.phone || "",
+    email: user?.email || "",
+    birthDate: formatDateInput(user?.birthDate),
+    country: user?.country || "",
+    city: user?.city || "",
+    preferredCurrencyCode: user?.preferredCurrencyCode || "",
+});
+
+const updateStoredUser = (updatedUser) => {
+    const stored = localStorage.getItem("user");
+    if (!stored) return;
+
+    try {
+        const parsed = JSON.parse(stored);
+        const nextStored = parsed?.user
+            ? { ...parsed, user: { ...parsed.user, ...updatedUser } }
+            : { ...parsed, ...updatedUser };
+
+        localStorage.setItem("user", JSON.stringify(nextStored));
+        window.dispatchEvent(new Event("auth-change"));
+    } catch (error) {
+        console.error("Failed to update user in localStorage", error);
+    }
+};
+
+const Account = ({ user, onUserUpdated }) => {
     const fileInputRef = useRef(null);
-    const authService = new AuthService();
+    const authService = useMemo(() => new AuthService(), []);
+    const userService = useMemo(() => new UserService(), []);
+    const [form, setForm] = useState(() => buildInitialForm(user));
+    const [saving, setSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState("");
+
+    useEffect(() => {
+        setForm(buildInitialForm(user));
+    }, [user]);
+
+    const updateForm = (field, value) => {
+        setForm((prev) => ({ ...prev, [field]: value }));
+        setSaveMessage("");
+    };
 
     const handleImageError = (e) => {
         e.target.src = userPlaceholder;
@@ -244,11 +303,49 @@ const Account = ({ user }) => {
 
                 storedAuth.user = updatedUser;
                 localStorage.setItem("user", JSON.stringify(storedAuth));
+                onUserUpdated?.(updatedUser);
             }
 
             window.location.reload();
         } catch (error) {
             console.error("Failed to upload avatar:", error);
+        }
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!user?.id) {
+            setSaveMessage("You need to log in before saving account data.");
+            return;
+        }
+
+        setSaving(true);
+        setSaveMessage("");
+
+        const payload = {
+            ...user,
+            displayName: form.displayName.trim(),
+            phone: form.phone.trim(),
+            email: form.email.trim() || user.email,
+            birthDate: form.birthDate || null,
+            country: form.country,
+            city: form.city,
+            preferredCurrencyCode: form.preferredCurrencyCode,
+            avatarUrl: user.avatarUrl,
+        };
+
+        try {
+            await userService.updateUser(user.id, payload);
+            const refreshedUser = await userService.getUserProfile(user.id);
+            updateStoredUser(refreshedUser);
+            onUserUpdated?.(refreshedUser);
+            setSaveMessage("Account information saved.");
+        } catch (error) {
+            console.error("Failed to save account information:", error);
+            setSaveMessage(error.response?.data?.message || "Failed to save account information.");
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -273,9 +370,13 @@ const Account = ({ user }) => {
 
                         <div className="flex flex-1 flex-col px-4 py-3">
                             <div className="mb-3 flex items-center gap-2">
-                                <span className="text-[20px] font-bold text-[#1E1E1E]">
-                                    {user?.displayName || "Your Name"}
-                                </span>
+                                <input
+                                    type="text"
+                                    value={form.displayName}
+                                    onChange={(event) => updateForm("displayName", event.target.value)}
+                                    placeholder="Your Name"
+                                    className="min-w-0 flex-1 rounded-full border border-transparent bg-transparent px-2 py-1 text-[20px] font-bold text-[#1E1E1E] outline-none transition-all focus:border-[#D9D9D9] focus:bg-white"
+                                />
 
                                 <img
                                     src={editIcon}
@@ -321,35 +422,73 @@ const Account = ({ user }) => {
                 </div>
 
                 {/* FORM */}
-                <div className="fade-up rounded-[10px] border border-[#E5E5E5] bg-white px-4.5 py-4.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]">
+                <form onSubmit={handleSubmit} className="fade-up rounded-[10px] border border-[#E5E5E5] bg-white px-4.5 py-4.5 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]">
                     <div className="flex flex-col gap-5 lg:flex-row lg:gap-7.5">
                         <div className="flex w-full flex-col gap-3.5">
                             <FieldInput
                                 placeholder="Your phone number"
-                                value={user?.phone || ""}
+                                value={form.phone}
+                                onChange={(event) => updateForm("phone", event.target.value)}
                                 note="*Has to be confirmed"
                             />
 
                             <FieldInput
                                 placeholder="Your email"
-                                value={user?.email || ""}
+                                value={form.email}
+                                onChange={(event) => updateForm("email", event.target.value)}
                                 note="*Has to be confirmed"
                             />
 
                             <FieldInput
                                 placeholder="Month  |  Date  |  Year"
+                                type="date"
+                                value={form.birthDate}
+                                onChange={(event) => updateForm("birthDate", event.target.value)}
                                 note="Enter your date of birth"
                                 smallNote="You will not be able to change your birthday date after confirmation"
                             />
                         </div>
 
                         <div className="flex w-full flex-col gap-3.5">
-                            <FieldSelect placeholder={user?.country || "Country"} />
-                            <FieldSelect placeholder={user?.city || "City"} />
-                            <FieldSelect placeholder="Preferred currency" />
+                            <FieldInput
+                                placeholder="Country"
+                                value={form.country}
+                                onChange={(event) => updateForm("country", event.target.value)}
+                            />
+                            <FieldInput
+                                placeholder="City"
+                                value={form.city}
+                                onChange={(event) => updateForm("city", event.target.value)}
+                            />
+                            <FieldSelect
+                                placeholder="Preferred currency"
+                                value={form.preferredCurrencyCode}
+                                onChange={(event) => updateForm("preferredCurrencyCode", event.target.value)}
+                                options={[
+                                    { value: "USD", label: "USD" },
+                                    { value: "EUR", label: "EUR" },
+                                    { value: "UAH", label: "UAH" },
+                                ]}
+                            />
                         </div>
                     </div>
-                </div>
+
+                    <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <button
+                            type="submit"
+                            disabled={saving || !user?.id}
+                            className="h-12 w-full rounded-full bg-[#581ADB] px-6 font-bold text-white transition-all duration-200 hover:bg-[#6A2BFF] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                        >
+                            {saving ? "Saving..." : "Save changes"}
+                        </button>
+
+                        {saveMessage && (
+                            <span className={`text-[14px] ${saveMessage.includes("saved") ? "text-green-600" : "text-red-500"}`}>
+                                {saveMessage}
+                            </span>
+                        )}
+                    </div>
+                </form>
 
                 {/* BOOKINGS */}
                 <div className="mt-5">

@@ -16,18 +16,20 @@ const HotelCard = ({
     img,
     name,
     stars,
-    tags,
-    distances,
-    description,
+    tags = [],
+    distances = [],
+    description = "",
     rating,
     reviewsCount,
     price,
     onChoose
 }) => {
     // Limit description length for better card layout
-    const descriptionToShow = description.length > 100
-        ? description.substring(0, 100) + "..."
-        : description;
+    const safeDescription = description || "No description provided.";
+    const descriptionToShow = safeDescription.length > 100
+        ? safeDescription.substring(0, 100) + "..."
+        : safeDescription;
+    const starCount = Number(stars) || 0;
 
     return (
         <div
@@ -72,7 +74,7 @@ const HotelCard = ({
 
                         {/* Hotel stars */}
                         <div className="mt-2 flex flex-row items-center">
-                            {[...Array(stars)].map((_, i) => (
+                            {[...Array(starCount)].map((_, i) => (
                                 <img
                                     key={i}
                                     src={starIcon}

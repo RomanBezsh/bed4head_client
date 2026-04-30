@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://localhost:7090/api",
+    baseURL: `${import.meta.env.VITE_BED4HEAD_API || "https://localhost:7090"}/api`,
 });
 
 api.interceptors.request.use((config) => {

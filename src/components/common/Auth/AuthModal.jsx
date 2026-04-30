@@ -33,6 +33,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
     const [code, setCode] = useState("");
     const [step, setStep] = useState("form");
+    const [authError, setAuthError] = useState("");
 
     const navigate = useNavigate();
     const authService = new AuthService();
@@ -57,6 +58,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
     const handleContinue = async () => {
         try {
+            setAuthError("");
+
             if (step === "form") {
                 if (isLogin) {
                     const data = await authService.login(loginState);
@@ -131,6 +134,12 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
             handleClose();
         } catch (e) {
             console.error(e);
+            const responseText = e?.response?.data;
+            setAuthError(
+                typeof responseText === "string"
+                    ? responseText
+                    : "Something went wrong. Please try again."
+            );
         }
     };
 
@@ -398,6 +407,12 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
                 {step !== "success" && step !== "info" && (
                     <div className={`mx-auto w-[432px] max-w-full ${isLogin ? "mb-3" : "mb-8"}`}>
+                        {authError && (
+                            <p className="mb-3 px-2 text-center text-[14px] font-medium text-red-600">
+                                {authError}
+                            </p>
+                        )}
+
                         <AuthPrimaryButton
                             variant={continueVariant}
                             disabled={continueVariant === "disabled"}

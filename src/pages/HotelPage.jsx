@@ -84,16 +84,27 @@ const HotelPage = () => {
             if (!id) return;
             try {
                 setLoading(true);
-                // Загружаем всё параллельно
-                const [basicInfo, facilities, faqs, photos, roomsData] = await Promise.all([
-                    hotelService.getHotelById(id),
+                const basicInfo = await hotelService.getHotelById(id);
+                const [facilitiesResult, faqsResult, photosResult, roomsResult] = await Promise.allSettled([
                     hotelService.getHotelFacilities(id),
                     hotelService.getHotelFaqs(id),
                     hotelService.getHotelPhotos(id),
-                    roomService.getRoomsByHotelId(id)
+                    roomService.getRoomsByHotelId(id),
                 ]);
 
-                // Объединяем старые данные (из поиска) с новыми данными из БД
+                const facilities = facilitiesResult.status === "fulfilled" && Array.isArray(facilitiesResult.value)
+                    ? facilitiesResult.value
+                    : [];
+                const faqs = faqsResult.status === "fulfilled" && Array.isArray(faqsResult.value)
+                    ? faqsResult.value
+                    : [];
+                const photos = photosResult.status === "fulfilled" && Array.isArray(photosResult.value)
+                    ? photosResult.value
+                    : [];
+                const roomsData = roomsResult.status === "fulfilled" && Array.isArray(roomsResult.value)
+                    ? roomsResult.value
+                    : [];
+
                 setHotel(prev => ({
                     ...(prev || {}),
                     ...basicInfo,
@@ -104,7 +115,6 @@ const HotelPage = () => {
                 setRooms(roomsData);
             } catch (error) {
                 console.error("Error fetching full hotel details:", error);
-                // Если отель не найден, устанавливаем hotel в null, чтобы отобразить сообщение "Hotel not found"
                 setHotel(null);
             } finally {
                 setLoading(false);

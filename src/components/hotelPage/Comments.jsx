@@ -22,6 +22,15 @@ const defaultRatings = {
     valueForMoney: 8,
 };
 
+const API_ORIGIN = "https://localhost:7090";
+
+const getImageUrl = (url) => {
+    if (!url) return avatar;
+    if (url.startsWith("http")) return url;
+    const path = url.startsWith("/") ? url : `/${url}`;
+    return `${API_ORIGIN}${path}`;
+};
+
 const getStoredUser = () => {
     try {
         const storedAuth = JSON.parse(localStorage.getItem("user"));
@@ -73,6 +82,13 @@ const getAuthorName = (review) => (
     review.authorName ||
     review.userName ||
     "Guest"
+);
+
+const getAuthorPhoto = (review) => getImageUrl(
+    review.authorAvatarUrl ||
+    review.AuthorAvatarUrl ||
+    review.avatarUrl ||
+    review.AvatarUrl
 );
 
 const RatingSelector = ({ value, onChange }) => {
@@ -311,7 +327,7 @@ const Comments = React.forwardRef(({ hotelId, hotelName = "Hotel", reviews = [],
                         name={getAuthorName(review)}
                         data={formatReviewDate(review.createdAt)}
                         hotelName={hotelName}
-                        photo={avatar}
+                        photo={getAuthorPhoto(review)}
                         text={review.comment}
                         borderColor={Number(review.overallScore) >= 7 ? "#94D0B4" : "#FFDADA"}
                     />

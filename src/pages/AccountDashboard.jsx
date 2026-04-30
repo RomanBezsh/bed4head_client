@@ -16,12 +16,18 @@ function AccountDashboard() {
     const [activeTab, setActiveTab] = useState("account");
     const [userData, setUserData] = useState(() => {
         const stored = localStorage.getItem("user");
-        return stored ? JSON.parse(stored).user : null;
+        if (!stored) return null;
+        const parsed = JSON.parse(stored);
+        return parsed.user || parsed;
     });
+
+    const handleUserUpdated = (updatedUser) => {
+        setUserData(updatedUser);
+    };
 
     const renderContent = () => {
         const components = {
-            account: <Account user={userData} />,
+            account: <Account user={userData} onUserUpdated={handleUserUpdated} />,
             payment: <PaymentMethod user={userData} />,
             travel: <TravelInformation user={userData} />,
             newsletters: <Newsletters user={userData} />,
@@ -36,11 +42,11 @@ function AccountDashboard() {
         const refreshUserData = async () => {
             try {
                 const storedAuth = JSON.parse(localStorage.getItem("user"));
-                const userId = storedAuth?.user?.id;
+                const userId = storedAuth?.user?.id || storedAuth?.id;
 
                 if (userId) {
                     const updatedUser = await userService.getUserProfile(userId);
-                    const newAuthData = { ...storedAuth, user: updatedUser };
+                    const newAuthData = storedAuth?.user ? { ...storedAuth, user: updatedUser } : updatedUser;
                     localStorage.setItem("user", JSON.stringify(newAuthData));
                     setUserData(updatedUser);
                 }

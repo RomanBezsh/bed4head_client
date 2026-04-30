@@ -1,11 +1,10 @@
-import { NavLink } from "react-router";
 import MapPinButton from "./MapPinButton.jsx";
 import Filter from "./Filter";
 import catalogSettingsIcon from "../../assets/icons/catalog/catalog_settings_icon.svg";
 import mapPinIcon from "../../assets/icons/common/map_pin_icon.svg";
 
 // Top bar for mobile devices (replaces sidebar)
-const MobileTopBar = () => {
+const MobileTopBar = ({ onMapClick, mapDisabled }) => {
     return (
         // Visible only on mobile (hidden on lg and above)
         <div className="flex w-full items-center gap-3 lg:hidden">
@@ -26,8 +25,10 @@ const MobileTopBar = () => {
             </button>
 
             {/* Map button (redirects to Google Maps) */}
-            <NavLink
-                to="https://www.google.com.ua/maps?ie=UTF8&hl=uk"
+            <button
+                type="button"
+                onClick={onMapClick}
+                disabled={mapDisabled}
                 className="flex h-10 flex-1 items-center justify-between rounded-[30px] border border-gray bg-white pl-4 pr-3"
             >
                 <span className="text-[14px] font-normal text-[#EE0039]">
@@ -38,22 +39,22 @@ const MobileTopBar = () => {
                     alt="map pin"
                     className="h-5 w-5"
                 />
-            </NavLink>
+            </button>
         </div>
     );
 };
 
 // Main filter container
-const FilterBar = () => {
+const FilterBar = ({ onMapClick, mapDisabled = false, hotels = [], filters, onFiltersChange }) => {
     return (
         <>
             {/* Mobile version (top bar) */}
-            <MobileTopBar />
+            <MobileTopBar onMapClick={onMapClick} mapDisabled={mapDisabled} />
 
             {/* Desktop version (sidebar with full filters) */}
             <div className="hidden shrink-0 lg:flex lg:flex-col lg:gap-8">
-                <MapPinButton />
-                <Filter />
+                <MapPinButton onClick={onMapClick} disabled={mapDisabled} />
+                <Filter hotels={hotels} filters={filters} onFiltersChange={onFiltersChange} />
             </div>
         </>
     );

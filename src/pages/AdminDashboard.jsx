@@ -97,7 +97,16 @@ export default function AdminDashboard() {
     const handleEditHotel = async (hotel) => {
         try {
             const fullHotel = await hotelService.getFullHotelById(hotel.id);
-            setEditingHotel({ ...hotel, ...fullHotel, id: hotel.id });
+            const normalizedFullHotel = {
+                ...(fullHotel?.hotel || fullHotel?.Hotel || {}),
+                amenities: fullHotel?.amenities || fullHotel?.Amenities || [],
+                photos: fullHotel?.photos || fullHotel?.Photos || [],
+                nearbyPlaces: fullHotel?.nearbyPlaces || fullHotel?.NearbyPlaces || [],
+                faqs: fullHotel?.faqs || fullHotel?.Faqs || [],
+                rooms: fullHotel?.rooms || fullHotel?.Rooms || [],
+            };
+
+            setEditingHotel({ ...hotel, ...normalizedFullHotel, id: hotel.id });
             setActiveSection("Add Hotel");
         } catch (err) {
             console.error("Error loading full hotel:", err);

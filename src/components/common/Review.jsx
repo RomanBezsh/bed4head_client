@@ -1,3 +1,5 @@
+import fallbackAvatar from "../../assets/avatar.png";
+
 const Review = ({ name, data, hotelName, photo, text, borderColor = "#DDDDDD" }) => {
     return (
         <div
@@ -7,9 +9,12 @@ const Review = ({ name, data, hotelName, photo, text, borderColor = "#DDDDDD" })
             <div className="flex flex-row justify-between">
                 <div className="flex flex-row gap-4">
                     <img
-                        className="h-12 w-12 rounded-full transition-transform duration-300 hover:scale-110"
-                        src={photo}
+                        className="h-12 w-12 rounded-full object-cover transition-transform duration-300 hover:scale-110"
+                        src={photo || fallbackAvatar}
                         alt={name}
+                        onError={(event) => {
+                            event.currentTarget.src = fallbackAvatar;
+                        }}
                     />
 
                     <div className="flex flex-col content-center justify-center">

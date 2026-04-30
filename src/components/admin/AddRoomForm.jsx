@@ -154,6 +154,11 @@ export default function AddRoomForm({ onAddRoom, editingRoom, onCancelEdit }) {
                     <label className="text-[14px] font-semibold text-[#1A1A1A]">Select Hotel</label>
                     {loadingHotels && <p>Loading hotels...</p>}
                     {errorHotels && <p className="text-red-500">{errorHotels}</p>}
+                    {!loadingHotels && !errorHotels && hotels.length === 0 && (
+                        <p className="text-[14px] text-[#717171]">
+                            No hotels available yet. Add a hotel before creating rooms.
+                        </p>
+                    )}
                     {!loadingHotels && hotels.length > 0 && (
                         <select
                             value={selectedHotelId}

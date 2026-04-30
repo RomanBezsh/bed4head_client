@@ -4,10 +4,20 @@ import { HotelService } from "../../api/hotelApi.js";
 import { ReviewService } from "../../api/reviewApi.js";
 import Review from "../common/Review.jsx";
 
+const API_ORIGIN = "https://localhost:7090";
+
+const getImageUrl = (url) => {
+    if (!url) return avatar;
+    if (url.startsWith("http")) return url;
+    const path = url.startsWith("/") ? url : `/${url}`;
+    return `${API_ORIGIN}${path}`;
+};
+
 const Reviews = ({ reviews }) => {
     const hotelService = useMemo(() => new HotelService(), []);
     const reviewService = useMemo(() => new ReviewService(), []);
     const [randomReviews, setRandomReviews] = useState([]);
+    const [loading, setLoading] = useState(!reviews);
 
     useEffect(() => {
         if (reviews) return;
@@ -16,17 +26,24 @@ const Reviews = ({ reviews }) => {
 
         const loadReviews = async () => {
             try {
-                const [reviewData, hotelData] = await Promise.all([
-                    reviewService.getRandomReviews(3),
-                    hotelService.getAllHotels(),
-                ]);
+                const reviewData = await reviewService.getRandomReviews(3);
+                const reviewsFromApi = Array.isArray(reviewData) ? reviewData : [];
+
+                if (reviewsFromApi.length === 0) {
+                    if (isMounted) {
+                        setRandomReviews([]);
+                    }
+                    return;
+                }
+
+                const hotelData = await hotelService.getAllHotels();
 
                 const hotelsById = new Map(
                     (hotelData || []).map((hotel) => [String(hotel.id || hotel.Id), hotel.name || hotel.Name])
                 );
 
-                const mappedReviews = (reviewData || []).map((review) => ({
-                    photo: avatar,
+                const mappedReviews = reviewsFromApi.map((review) => ({
+                    photo: getImageUrl(review.authorAvatarUrl || review.AuthorAvatarUrl),
                     name: review.authorDisplayName || review.AuthorDisplayName || "Guest",
                     data: formatReviewDate(review.createdAt || review.CreatedAt),
                     hotelName: hotelsById.get(String(review.hotelId || review.HotelId)) || "Hotel",
@@ -39,6 +56,13 @@ const Reviews = ({ reviews }) => {
                 }
             } catch (error) {
                 console.error("Error loading random reviews:", error);
+                if (isMounted) {
+                    setRandomReviews([]);
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
 
@@ -49,34 +73,7 @@ const Reviews = ({ reviews }) => {
         };
     }, [hotelService, reviewService, reviews]);
 
-    // Use incoming reviews if they exist.
-    // Otherwise show default placeholder reviews.
-    const displayReviews = (reviews || (randomReviews.length > 0 ? randomReviews : [
-        {
-            photo: avatar,
-            name: "Name",
-            data: "12 days ago",
-            hotelName: "Hotel Name",
-            text: "Lorem ipsum dolor sit amet consectetur. Viverra ultricies enim interdum fermentu tor. Facilisis nulla eun. Ac netus tincidunt arcu er sed.",
-            color: "#94D0B4",
-        },
-        {
-            photo: avatar,
-            name: "Name",
-            data: "19 days ago",
-            hotelName: "Hotel Name",
-            text: "Lorem ipsum dolor sit amet consectetur. Facilisis nulla eun. Ac netus tincidunt sed.",
-            color: "#94D0B4",
-        },
-        {
-            photo: avatar,
-            name: "Name",
-            data: "12 days ago",
-            hotelName: "Hotel Name",
-            text: "Viverra ultricies enim interdum fermentu tor. Facilisis nulla eun. Ac netus tincidunt.",
-            color: "#94D0B4",
-        },
-    ])).slice(0, 3);
+    const displayReviews = (reviews || randomReviews).slice(0, 3);
 
     return (
         <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-4 sm:px-6 lg:px-8">
@@ -85,19 +82,29 @@ const Reviews = ({ reviews }) => {
                 Reviews
             </h2>
 
-            <div className="grid w-full grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-                {displayReviews.map((rev, idx) => (
-                    <Review
-                        key={idx}
-                        name={rev.name}
-                        data={rev.data}
-                        hotelName={rev.hotelName}
-                        photo={rev.photo}
-                        text={rev.text}
-                        borderColor={rev.color}
-                    />
-                ))}
-            </div>
+            {loading && (
+                <p className="text-center text-[16px] text-[#717171]">Loading reviews...</p>
+            )}
+
+            {!loading && displayReviews.length === 0 && (
+                <p className="text-center text-[16px] text-[#717171]">No reviews yet.</p>
+            )}
+
+            {!loading && displayReviews.length > 0 && (
+                <div className="grid w-full grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+                    {displayReviews.map((rev, idx) => (
+                        <Review
+                            key={idx}
+                            name={rev.name}
+                            data={rev.data}
+                            hotelName={rev.hotelName}
+                            photo={rev.photo}
+                            text={rev.text}
+                            borderColor={rev.color}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
