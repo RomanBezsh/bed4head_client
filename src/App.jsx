@@ -45,7 +45,7 @@ const App = () => {
         try {
             const parsed = JSON.parse(storedData);
             return parsed.user || parsed;
-        } catch (e) {
+        } catch {
             return null;
         }
     });

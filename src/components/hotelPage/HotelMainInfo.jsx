@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import chevronWhiteIcon from "../../assets/icons/common/chevron_white_icon.svg";
 import mapPinIcon from "../../assets/icons/common/map_pin_icon.svg";
 import popularIcon from "../../assets/icons/common/popular_icon.svg";
@@ -14,25 +14,23 @@ const TAG_ICONS = {
     comfortable: comfortIcon,
 };
 
-const HotelMainInfo = ({ images, tags, description, address, city, coordinates }) => {
+const HotelMainInfo = ({ name, images, tags, description, address, city, onBookClick, basePricePerNight, reviews = [] }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    const reviewsData = [
-        {
-            name: "Epstein",
-            hotelName: "Tourist Hotel",
+    const randomReviews = useMemo(() => {
+        if (!reviews || reviews.length === 0) return [];
+
+        // Перемешиваем и выбираем до 3-х случайных отзывов
+        return reviews.slice(0, 3).map((rev) => ({
+            name: rev.authorDisplayName || rev.authorName || rev.userName || "Guest",
+            hotelName: name,
             photo: avatar,
-            data: "12 days ago",
-            text: "Lorem ipsum dolor sit amet consectetur. Viverra ultricies enim interdum fermentu tor. Facilisis nulla eun. Ac netus tincidunt arcu er sed.",
-        },
-        {
-            name: "Anyutka",
-            hotelName: "Tourist Hotel",
-            photo: avatar,
-            data: "19 days ago",
-            text: "Great location and very comfortable rooms. The staff was incredibly helpful during my entire stay at Bed4Head!",
-        },
-    ];
+            data: rev.createdAt
+                ? new Date(rev.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                : "Recently",
+            text: rev.comment || rev.text || "",
+        }));
+    }, [reviews, name]);
 
     const API_ORIGIN = "https://localhost:7090";
 
@@ -130,7 +128,7 @@ const HotelMainInfo = ({ images, tags, description, address, city, coordinates }
                             <div className="w-full">
                                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                                     <span className="text-[#581ADB] text-[26px] sm:text-[30px] lg:text-[32px] font-bold">
-                                        85$
+                                        {basePricePerNight}$
                                     </span>
                                     <span className="text-[#717171] text-[22px] sm:text-[28px] lg:text-[32px]">
                                         per night
@@ -145,7 +143,7 @@ const HotelMainInfo = ({ images, tags, description, address, city, coordinates }
                                 </div>
                             </div>
 
-                            <button className="bg-[#581ADB] w-full sm:w-[180px] lg:w-[181px] h-14 sm:h-16 lg:h-[72px] rounded-full shadow-[0px_0px_43px_0px_#581ADB5E,0px_0px_10px_0px_#581ADB59] transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 shrink-0">
+                            <button onClick={onBookClick} className="bg-[#581ADB] w-full sm:w-[180px] lg:w-[181px] h-14 sm:h-16 lg:h-[72px] rounded-full shadow-[0px_0px_43px_0px_#581ADB5E,0px_0px_10px_0px_#581ADB59] transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 shrink-0">
                                 <span className="text-[20px] sm:text-[22px] lg:text-[24px] font-bold text-white uppercase tracking-wide">
                                     Book
                                 </span>
@@ -172,9 +170,11 @@ const HotelMainInfo = ({ images, tags, description, address, city, coordinates }
 
                     <div className="w-full border border-gray mt-6 sm:mt-8"></div>
 
-                    <div className="mt-6 sm:mt-8 lg:mt-10">
-                        <ReviewSlider reviews={reviewsData} />
-                    </div>
+                    {randomReviews.length > 0 && (
+                        <div className="mt-6 sm:mt-8 lg:mt-10">
+                            <ReviewSlider reviews={randomReviews} />
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

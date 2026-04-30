@@ -78,7 +78,7 @@ const getAuthorName = (review) => (
 const RatingSelector = ({ value, onChange }) => {
     return (
         <div className="flex flex-wrap gap-2">
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
                 const isActive = value === num;
 
                 return (
@@ -103,7 +103,7 @@ const RatingSelector = ({ value, onChange }) => {
     );
 };
 
-const Comments = ({ hotelId, hotelName = "Hotel", reviews = [], loading = false, onReviewCreated }) => {
+const Comments = React.forwardRef(({ hotelId, hotelName = "Hotel", reviews = [], loading = false, onReviewCreated }, ref) => {
     const reviewService = new ReviewService();
     const [currentUser, setCurrentUser] = useState(getStoredUser);
     const [visibleCount, setVisibleCount] = useState(6);
@@ -129,10 +129,6 @@ const Comments = ({ hotelId, hotelName = "Hotel", reviews = [], loading = false,
     useEffect(() => {
         setVisibleCount(6);
     }, [hotelId]);
-
-    useEffect(() => {
-        console.log("Reviews state updated:", reviews);
-    }, [reviews]);
 
     const handleInputChange = (event) => {
         const { name, value, type, checked } = event.target;
@@ -235,7 +231,7 @@ const Comments = ({ hotelId, hotelName = "Hotel", reviews = [], loading = false,
     const hasMoreReviews = visibleCount < reviews.length;
 
     return (
-        <section className="w-full max-w-[1200px] mt-14 sm:mt-16 flex flex-col items-center mx-auto px-4 sm:px-6">
+        <section ref={ref} className="w-full max-w-[1200px] mt-14 sm:mt-16 flex flex-col items-center mx-auto px-4 sm:px-6">
             <div className="w-full bg-white p-4 sm:p-6 rounded-[20px] shadow-sm mb-12 sm:mb-16 border border-[#EEEEF5]">
                 <h3 className="text-[22px] sm:text-[24px] font-semibold text-[#1F1F1F] mb-6">
                     Leave a review
@@ -342,6 +338,6 @@ const Comments = ({ hotelId, hotelName = "Hotel", reviews = [], loading = false,
             )}
         </section>
     );
-};
+});
 
 export default Comments;

@@ -3,7 +3,7 @@ import chevronLeftIcon from "../../assets/icons/common/chevron_left_icon.svg";
 import starIcon from "../../assets/icons/common/star_icon.svg";
 import chevronDownIcon from "../../assets/icons/common/chevron_down_icon.svg";
 
-const HotelHeader = ({ name, stars, rating, ratingLabel, reviewsCount, phone, searchData }) => {
+const HotelHeader = ({ name, stars, rating, ratingLabel, reviewsCount, phone, searchData, onCheckClick }) => {
     return (
         // Main section with fade animation
         <section className="fade-up relative w-full px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10">
@@ -121,7 +121,10 @@ const HotelHeader = ({ name, stars, rating, ratingLabel, reviewsCount, phone, se
                     </div>
 
                     {/* Dropdown */}
-                    <div className="flex cursor-pointer flex-col items-center group">
+                    <div 
+                        onClick={onCheckClick}
+                        className="flex cursor-pointer flex-col items-center group"
+                    >
                         <span className="text-[14px] font-medium text-[#581ADB] sm:text-[16px]">
                             check
                         </span>

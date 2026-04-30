@@ -35,15 +35,11 @@ const Room = ({ room, isBooked = false }) => {
         : "Bed information unavailable";
 
     const API_ORIGIN = "https://localhost:7090";
-    console.log("Image", room.previewImage);
     const imageUrl = room.previewImage
         ? (room.previewImage.startsWith("http")
             ? room.previewImage
             : `${API_ORIGIN}${room.previewImage}`)
         : roomPlaceholder;
-
-    console.log("ROOM:", room);
-
 
     return (
         <div

@@ -60,12 +60,13 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
             if (step === "form") {
                 if (isLogin) {
                     const data = await authService.login(loginState);
+                    const token = data.token || data.Token;
 
                     // ✅ СОХРАНЯЕМ ТОКЕН
-                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("token", token);
 
                     // ✅ СОХРАНЯЕМ ПОЛЬЗОВАТЕЛЯ
-                    localStorage.setItem("user", JSON.stringify(data));
+                    localStorage.setItem("user", JSON.stringify({ ...data, token }));
 
                     window.dispatchEvent(new Event("auth-change"));
                     setStep("success");
@@ -85,9 +86,10 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 const email = isLogin ? loginState.email : registerState.email;
 
                 const data = await authService.confirmEmail({ email, code });
+                const token = data.token || data.Token;
 
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify(data));
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify({ ...data, token }));
                 window.dispatchEvent(new Event("auth-change"));
                 setStep("info");
                 return;
@@ -132,46 +134,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         }
     };
 
-    const continueVariant = "primary";
-
-    const handleLogin = async (email, password) => {
-        try {
-            const data = await authService.login(loginState);
-            console.log("Login successful:", data);
-            return true;
-        } catch (error) {
-            console.error("Login failed:", error);
-            return false;
-        }
-    };
-
-    const handleRegister = async (registerData) => {
-        try {
-            console.log("Sending registration request with data:", {
-                email: registerData.email,
-                password: registerData.password,
-                country: registerData.country,
-                city: registerData.city,
-                travelPurpose: registerData.travelReason,
-                isTravellingWithPet: registerData.travellingWithPet,
-            });
-
-            const data = await authService.register({
-                email: registerData.email,
-                password: registerData.password,
-                country: registerData.country,
-                city: registerData.city,
-                travelPurpose: registerData.travelReason,
-                isTravellingWithPet: registerData.travellingWithPet,
-            });
-
-            console.log("Registration successful:", data);
-            return true;
-        } catch (error) {
-            console.error("Registration failed:", error);
-            return false;
-        }
-    };
+    const continueVariant = step === "info" && !isInfoFormComplete ? "disabled" : "primary";
 
     return (
         <div

@@ -2,7 +2,13 @@ import api from "./client";
 
 export class AuthService {
     async login({ email, password }) {
-        return (await api.post("/auth/login", { email, password })).data;
+        try {
+            return (await api.post("/auth/login", { email, password })).data;
+        } catch (error) {
+            console.log("LOGIN status:", error?.response?.status);
+            console.log("LOGIN data:", error?.response?.data);
+            throw error;
+        }
     }
 
     async register({ email, password }) {
@@ -16,7 +22,13 @@ export class AuthService {
     }
 
     async confirmEmail({ email, code }) {
-        return (await api.post("/auth/confirm-email", { email, code })).data;
+        try {
+            return (await api.post("/auth/confirm-email", { email, code })).data;
+        } catch (error) {
+            console.log("CONFIRM EMAIL status:", error?.response?.status);
+            console.log("CONFIRM EMAIL data:", error?.response?.data);
+            throw error;
+        }
     }
 
     async updateProfile({ id, email, country, city, travelPurpose, isTravellingWithPet }) {

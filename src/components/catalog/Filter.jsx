@@ -1,6 +1,5 @@
 import loupeIcon from "../../assets/icons/catalog/loupe_icon.svg"
 import chevronDownIcon from "../../assets/icons/common/chevron_down_icon.svg"
-import catalogSettingsIcon from "../../assets/icons/catalog/catalog_settings_icon.svg"
 import {useState} from "react";
 
 const Filter = () => {

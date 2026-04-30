@@ -7,7 +7,7 @@ import { HotelService } from "../api/hotelApi";
 import { ReviewService } from "../api/reviewApi";
 import { RoomService } from "../api/roomApi";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import ReviewStats from "../components/hotelPage/ReviewStats.jsx";
 import HotelMainInfo from "../components/hotelPage/HotelMainInfo.jsx";
@@ -21,9 +21,27 @@ import Faq from "../components/hotelPage/Faq.jsx";
 import HotelsNearby from "../components/hotelPage/HotelsNearby.jsx";
 import Footer from "../components/common/Footer.jsx";
 
+const mapTypeToIcon = (type = "") => {
+    const t = type.toLowerCase();
+    if (t.includes("restaurant")) return "food";
+    if (t.includes("airport")) return "airport";
+    if (t.includes("beach")) return "beaches";
+    if (t.includes("transport")) return "transport";
+    return "attractions";
+};
+
+const formatDistance = (meters) => {
+    if (meters === undefined || meters === null) return "N/A";
+    const m = Number(meters);
+    if (m < 1000) return `${m} m`;
+    return `${(m / 1000).toFixed(1)} km`;
+};
+
 const HotelPage = () => {
     const location = useLocation();
     const { id } = useParams();
+    const reviewsRef = useRef(null);
+    const roomsRef = useRef(null);
     const hotelService = useMemo(() => new HotelService(), []);
     const roomService = useMemo(() => new RoomService(), []);
     const reviewService = useMemo(() => new ReviewService(), []);
@@ -76,7 +94,13 @@ const HotelPage = () => {
                 ]);
 
                 // Объединяем старые данные (из поиска) с новыми данными из БД
-                setHotel(prev => ({ ...prev, ...basicInfo, facilities, faqs, photos }));
+                setHotel(prev => ({
+                    ...(prev || {}),
+                    ...basicInfo,
+                    facilities,
+                    faqs,
+                    photos
+                }));
                 setRooms(roomsData);
             } catch (error) {
                 console.error("Error fetching full hotel details:", error);
@@ -168,24 +192,33 @@ const HotelPage = () => {
                 items: [item],
             });
         }
-        console.log("Review", reviewService.getHotelReviews(hotelId));
+    
         return acc;
     }, []);
 
-    // Parse nearby places string (Restaurant, KFC, 0.5km; ...)
-    const rawNearby = hotel.nearbyPlaces || hotel.NearbyPlaces || "";
-    const structuredNearby = rawNearby.split(';').reduce((acc, place) => {
-        const parts = place.split(',').map(p => p.trim());
-        if (parts.length < 3) return acc;
-        const [category, name, dist] = parts;
-        const existing = acc.find(n => n.title === category);
-        if (existing) {
-            existing.items.push({ name, dist });
-        } else {
-            acc.push({ title: category, items: [{ name, dist }] });
-        }
-        return acc;
-    }, []) || [];
+    // Parse nearby places from array of objects
+    const nearbySource = hotel?.nearbyPlaces || hotel?.NearbyPlaces || [];
+    const structuredNearby = Array.isArray(nearbySource)
+        ? nearbySource.reduce((acc, place) => {
+            const category = place.placeType || place.PlaceType || "Attractions";
+            const item = {
+                name: place.name || place.Name || "Unknown",
+                dist: formatDistance(place.distanceInMeters ?? place.DistanceInMeters)
+            };
+
+            const existing = acc.find(n => n.title === category);
+            if (existing) {
+                existing.items.push(item);
+            } else {
+                acc.push({
+                    title: category,
+                    iconKey: mapTypeToIcon(category),
+                    items: [item]
+                });
+            }
+            return acc;
+        }, [])
+        : [];
 
     // Header search summary data
     const searchData = [
@@ -300,8 +333,9 @@ const HotelPage = () => {
     if (hotelCoordinates && (isNaN(hotelCoordinates[0]) || isNaN(hotelCoordinates[1]))) {
         hotelCoordinates = null;
     }
-    console.log("Raw hotel.coordinates:", hotel.coordinates);
-    console.log("Parsed hotelCoordinates for map:", hotelCoordinates);
+
+    console.log("Hotel data:", hotel);
+    console.log("Rooms data:", rooms);
 
     return (
         <div className="w-full relative overflow-x-hidden">
@@ -314,16 +348,21 @@ const HotelPage = () => {
                 reviewsCount={ratingInfo?.reviewsCount ?? hotel.reviewsCount ?? 0}
                 phone={hotel.phone}
                 searchData={searchData}
+                onCheckClick={() => reviewsRef.current?.scrollIntoView({ behavior: "smooth" })}
             />
 
             {/* Main hotel section */}
             <HotelMainInfo
+                name={hotel.name}
                 images={images}
                 address={hotel.address}
                 city={hotel.city}
                 coordinates={hotelCoordinates}
                 tags={["popular", "city_centre", "comfortable"]}
                 description={hotel.description}
+                onBookClick={() => roomsRef.current?.scrollIntoView({ behavior: "smooth" })}
+                basePricePerNight={hotel.basePricePerNight}
+                reviews={reviews}
             />
 
 
@@ -331,13 +370,11 @@ const HotelPage = () => {
             <ReviewStats reviews={reviews} />
             <Facilities facilities={structuredFacilities} />
             <ImportantInfo info={importantData} />
-            <Book rooms={rooms} loading={loading} />
-            <Nearby
-                places={structuredNearby.length > 0 ? structuredNearby : []}
-                hotelCoordinates={hotelCoordinates}
-            />
+            <Book ref={roomsRef} rooms={rooms} loading={loading} />
+            <Nearby places={structuredNearby} hotelCoordinates={hotelCoordinates} />
             <Comments
                 hotelId={id}
+                ref={reviewsRef}
                 hotelName={hotel.name}
                 reviews={reviews}
                 loading={reviewsLoading}

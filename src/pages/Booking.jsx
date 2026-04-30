@@ -5,6 +5,7 @@ import checkIcon from "../assets/icons/check_mark.svg"
 import crossIcon from "../assets/icons/cross_icon.svg";
 import fileIcon from "../assets/icons/file_icon.svg";
 import { useNavigate, useLocation } from "react-router-dom";
+import { BookingService } from "../api/bookingApi";
 
 const Booking = () => {
     const location = useLocation();
@@ -14,6 +15,49 @@ const Booking = () => {
     const [step, setStep] = useState(1);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [name, setName] = useState(""); // Lifted state to pass to success screen
+    const [callMe, setCallMe] = useState(false);
+    const [emailMe, setEmailMe] = useState(false);
+
+    const bookingService = new BookingService();
+
+
+    const handleSubmit = async () => {
+        try {
+            // ⚠️ тут пока захардкодим, потом подтянешь нормально
+            const roomId = selectedRoom?.id;
+            const user = JSON.parse(localStorage.getItem("user"));
+            const token = user?.token || user?.Token || localStorage.getItem("token");
+            const hasToken = token && token !== "undefined" && token !== "null";
+
+            if (!roomId) {
+                alert("Room was not selected. Please choose a room again.");
+                navigate(-1);
+                return;
+            }
+
+            if (!hasToken) {
+                alert("Please log in before booking a room.");
+                navigate("/login");
+                return;
+            }
+
+            const dto = {
+                roomId,
+                checkIn: new Date(),
+                checkOut: new Date(Date.now() + 86400000),
+                adultsCount: 1,
+                childrenCount: 0,
+                callMe,
+                sendEmail: emailMe
+            };
+
+            await bookingService.createBooking(dto);
+            setIsSubmitted(true);
+        } catch (e) {
+            console.error(e);
+            alert(e.response?.data?.error || "Booking failed");
+        }
+    };
 
     if (isSubmitted) {
         return <BookingSuccess userName={name || "Guest"} />;
@@ -28,7 +72,7 @@ const Booking = () => {
                         onClick={() => setStep(step - 1)}
                         className="w-12 h-12 border border-[#E5E5E5] rounded-full flex items-center justify-center hover:bg-gray-50 transition-all active:scale-95 absolute left-10 top-[140px] z-10"
                     >
-                        <img src={chevronLeftIcon} alt="Back" className="w-6 h-4.25"/>
+                        <img src={chevronLeftIcon} alt="Back" className="w-6 h-4.25" />
                     </button>
                 )}
 
@@ -39,7 +83,7 @@ const Booking = () => {
                     onClick={() => navigate(-1)}
                     className="w-12 h-12 border border-[#E5E5E5] rounded-full flex items-center justify-center hover:bg-gray-50 transition-all active:scale-95 absolute right-10 top-[140px] z-10"
                 >
-                    <img src={crossIcon} alt="Exit" className="w-6 h-4.25"/>
+                    <img src={crossIcon} alt="Exit" className="w-6 h-4.25" />
                 </button>
             </div>
 
@@ -48,13 +92,17 @@ const Booking = () => {
                 setStep={setStep}
                 name={name}
                 setName={setName}
-                onComplete={() => setIsSubmitted(true)}
+                onSubmit={handleSubmit}
+                callMe={callMe}
+                setCallMe={setCallMe}
+                emailMe={emailMe}
+                setEmailMe={setEmailMe}
             />
         </div>
     );
 };
 
-const BookingForm = ({ step, setStep, onComplete, name, setName }) => {
+const BookingForm = ({ step, setStep, name, setName, onSubmit, callMe, setCallMe, emailMe, setEmailMe }) => {
     // Other states remain local as they aren't needed for the success screen
     const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
@@ -65,8 +113,6 @@ const BookingForm = ({ step, setStep, onComplete, name, setName }) => {
 
     const [country, setCountry] = useState("");
     const [phone, setPhone] = useState("");
-    const [callMe, setCallMe] = useState(false);
-    const [emailMe, setEmailMe] = useState(false);
 
     const [cardType, setCardType] = useState("");
     const [cardNumber, setCardNumber] = useState("");
@@ -75,9 +121,8 @@ const BookingForm = ({ step, setStep, onComplete, name, setName }) => {
 
     return (
         <div className="flex flex-col items-center mt-8">
-            <div className={`flex flex-col mx-auto w-200 border border-gray rounded-[13px] bg-white shadow-sm transition-all duration-300 ${
-                step === 1 ? "h-110" : step === 2 ? "h-74" : "h-94"
-            }`}>
+            <div className={`flex flex-col mx-auto w-200 border border-gray rounded-[13px] bg-white shadow-sm transition-all duration-300 ${step === 1 ? "h-110" : step === 2 ? "h-74" : "h-94"
+                }`}>
                 <div className="relative top-7.75 flex items-center justify-center mb-[40px] w-full">
                     <h2 className="absolute left-8 text-[24px] font-bold text-[#581ADB]">{step}/3</h2>
                     <h2 className="text-[24px] font-bold text-[#581ADB]">Booking</h2>
@@ -114,7 +159,7 @@ const BookingForm = ({ step, setStep, onComplete, name, setName }) => {
                                     <option value="us">USA</option>
                                 </select>
                                 <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
-                                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1L7 7L13 1" stroke="#ADADAD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1L7 7L13 1" stroke="#ADADAD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
@@ -199,7 +244,7 @@ const BookingForm = ({ step, setStep, onComplete, name, setName }) => {
                     <>
                         <button
                             type="button"
-                            onClick={onComplete} // FIXED: Now it calls the success state
+                            onClick={onSubmit} // FIXED: Now it calls the success state
                             className="w-108 h-14 rounded-full font-bold text-[16px] uppercase transition-all bg-[#581ADB] text-white shadow-[0_0_20px_rgba(88,26,219,0.4)] hover:shadow-[0_0_30px_rgba(88,26,219,0.6)] active:scale-95"
                         >
                             COMPLETE THE BOOKING

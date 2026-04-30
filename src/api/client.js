@@ -5,10 +5,18 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    let user = null;
+    try {
+        const storedUser = localStorage.getItem("user");
+        user = storedUser ? JSON.parse(storedUser) : null;
+    } catch (e) {
+        console.error("Failed to parse user data from localStorage", e);
+    }
 
-    if (user?.token) {
-        config.headers.Authorization = `Bearer ${user.token}`;
+    const token = user?.token || user?.Token || user?.access_token || localStorage.getItem("token");
+
+    if (token && token !== "undefined" && token !== "null" && token !== "") {
+        config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;

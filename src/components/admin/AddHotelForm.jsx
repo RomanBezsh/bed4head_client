@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormInput from "./FormInput.jsx";
 import { HotelService } from "../../api/hotelApi";
+
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import General from "../../assets/icons/accountDashboard/travel/general_icon.svg";
 import Accessibility from "../../assets/icons/accountDashboard/travel/accesibility_icon.svg";
@@ -63,8 +65,9 @@ const InfoSection = ({ icon, title, items, selectedItems, onToggle }) => (
 );
 
 // Add hotel form component
-export default function AddHotelForm({ onAddHotel }) {
+export default function AddHotelForm({ onAddHotel, editingHotel, onCancelEdit }) {
     const hotelService = new HotelService();
+    const isEditing = Boolean(editingHotel?.id);
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -78,7 +81,20 @@ export default function AddHotelForm({ onAddHotel }) {
     const [facilities, setFacilities] = useState([]);
     const [importantInfo, setImportantInfo] = useState("");
     const [coordinates, setCoordinates] = useState("");
-    const [nearbyPlaces, setNearbyPlaces] = useState("");
+    const [nearbyCategories, setNearbyCategories] = useState({
+        restaurants: [],
+        attractions: [],
+        transport: [],
+        shopping: []
+    });
+
+    const [nearbyInputs, setNearbyInputs] = useState({
+        restaurants: { name: "", value: "", unit: "km" },
+        attractions: { name: "", value: "", unit: "km" },
+        transport: { name: "", value: "", unit: "km" },
+        shopping: { name: "", value: "", unit: "km" }
+    });
+
     const [status, setStatus] = useState("Active");
     const [faqs, setFaqs] = useState([]);
     const [faqQuestion, setFaqQuestion] = useState("");
@@ -91,6 +107,67 @@ export default function AddHotelForm({ onAddHotel }) {
     const [airportTransport, setAirportTransport] = useState({ value: "", unit: "km" });
     const [trainTransport, setTrainTransport] = useState({ value: "", unit: "km" });
     const [petsAllowed, setPetsAllowed] = useState(false);
+
+    useEffect(() => {
+        if (!editingHotel) return;
+
+        setName(editingHotel.name || "");
+        setDescription(editingHotel.description || "");
+        setStars(String(editingHotel.stars || 5));
+        setType(editingHotel.type || editingHotel.hotelType || "Hotel");
+        setPhone(editingHotel.phone || "");
+        setAddress(editingHotel.address || "");
+        setCity(editingHotel.city || "");
+        setCountry(editingHotel.country || "");
+        setImportantInfo(Array.isArray(editingHotel.importantInfo)
+            ? editingHotel.importantInfo.map((item) => item.text || item).join("\n")
+            : editingHotel.importantInfo || "");
+        setCoordinates(editingHotel.coordinates || "");
+        setStatus(editingHotel.status || "Active");
+        setDistanceFromCenterKm(editingHotel.distanceFromCenterKm || 0);
+        setFacilities((editingHotel.amenities || editingHotel.facilities || []).map((item) => {
+            if (typeof item === "string") return item.includes("|||") ? item.split("|||").at(-1) : item;
+            return item.name || item.text || item.title || "";
+        }).filter(Boolean));
+        setFaqs((editingHotel.faqs || []).map((faq) => ({
+            question: faq.question || "",
+            answer: faq.answer || "",
+        })));
+        setPetsAllowed(Boolean(editingHotel.petsAllowed));
+        setPhotos([]);
+    }, [editingHotel]);
+
+    const addNearbyPlace = (category) => {
+        const { name, value, unit } = nearbyInputs[category];
+        if (name.trim() && Number(value) >= 0) {
+            setNearbyCategories(prev => ({
+                ...prev,
+                [category]: [...prev[category], { name: name.trim(), distance: `${value}${unit}` }]
+            }));
+            setNearbyInputs(prev => ({
+                ...prev,
+                [category]: { name: "", value: "", unit: "km" }
+            }));
+        }
+    };
+
+    const removeNearbyPlace = (category, index) => {
+        setNearbyCategories(prev => ({
+            ...prev,
+            [category]: prev[category].filter((_, i) => i !== index)
+        }));
+    };
+
+    const convertNearbyToString = (categories) => {
+        return Object.entries(categories)
+            .flatMap(([category, places]) =>
+                places.map(p => {
+                    const catLabel = category.charAt(0).toUpperCase() + category.slice(1);
+                    return `${catLabel}, ${p.name}, ${p.distance}`;
+                })
+            )
+            .join("; ");
+    };
 
     // Adds or removes selected service
     const toggleFacility = (service) => {
@@ -167,7 +244,7 @@ export default function AddHotelForm({ onAddHotel }) {
         if (!name.trim() || !city.trim() || !address.trim()) {
             return;
         }
-        
+
         let facilitiesToSend = amenitySections.flatMap((section) =>
             section.items
                 .filter((item) => facilities.includes(item))
@@ -183,30 +260,7 @@ export default function AddHotelForm({ onAddHotel }) {
             facilitiesToSend = facilitiesToSend.filter(item => item !== "Pets|||Pets allowed");
         }
 
-        // Process transport distances
-        const transportTypes = [
-            { type: "Metro", state: metroTransport },
-            { type: "Airport", state: airportTransport },
-            { type: "Train", state: trainTransport },
-        ];
-
-        const generatedTransportPlaces = transportTypes.map(({ type, state }) => {
-            const distanceValue = parseFloat(state.value);
-            if (isNaN(distanceValue) || distanceValue <= 0) {
-                return null; // Skip if distance is invalid
-            }
-            return `${type}, , ${distanceValue}${state.unit}`;
-        }).filter(Boolean); // Remove null entries
-
-        // Combine generated transport places with existing nearbyPlaces, filtering out old transport entries
-        const existingNearbyPlacesArray = nearbyPlaces.split(';').map(p => p.trim()).filter(Boolean);
-        const filteredExistingNearbyPlaces = existingNearbyPlacesArray.filter(place => {
-            const lowerCasePlace = place.toLowerCase();
-            return !(lowerCasePlace.startsWith("metro,") || lowerCasePlace.startsWith("airport,") || lowerCasePlace.startsWith("train,"));
-        });
-
-        const finalNearbyPlacesArray = [...generatedTransportPlaces, ...filteredExistingNearbyPlaces];
-        const finalNearbyPlacesString = finalNearbyPlacesArray.join('; ');
+        const finalNearbyPlacesString = convertNearbyToString(nearbyCategories);
 
         const formData = new FormData();
         formData.append("name", name);
@@ -259,10 +313,7 @@ export default function AddHotelForm({ onAddHotel }) {
         formData.append("coordinates", coordinates.trim());
         formData.append("nearbyPlaces", finalNearbyPlacesString);
         formData.append("status", status);
-
-        // Временные логи для проверки координат
-        console.log("coordinates before submit:", coordinates);
-        console.log("formData coordinates:", formData.get("coordinates"));
+        formData.append("distanceFromCenterKm", distanceFromCenterKm?.toString() || "");
 
         // Facilities: Добавляем каждое удобство как отдельное поле, как ожидает бэкенд
         facilitiesToSend.forEach((item) => {
@@ -279,9 +330,36 @@ export default function AddHotelForm({ onAddHotel }) {
             formData.append("photos", file);
         });
 
+        const hotelPayload = {
+            ...editingHotel,
+            id: editingHotel?.id,
+            name,
+            description,
+            stars: Number(stars),
+            type,
+            hotelType: type,
+            phone,
+            address,
+            city,
+            country,
+            coordinates: coordinates.trim(),
+            nearbyPlaces: finalNearbyPlacesString,
+            importantInfo: importantInfoToSend,
+            status,
+            distanceFromCenterKm: Number(distanceFromCenterKm) || 0,
+            facilities: facilitiesToSend,
+            amenities: facilitiesToSend,
+            faqs,
+        };
+
         try {
-            const newHotel = await hotelService.createHotel(formData);
-            if (onAddHotel) onAddHotel(newHotel);
+            if (isEditing) {
+                await hotelService.updateHotel(editingHotel.id, hotelPayload);
+                if (onAddHotel) onAddHotel(hotelPayload);
+            } else {
+                const newHotel = await hotelService.createHotel(formData);
+                if (onAddHotel) onAddHotel(newHotel);
+            }
 
             // Очистка формы
             setName("");
@@ -296,7 +374,12 @@ export default function AddHotelForm({ onAddHotel }) {
             setFacilities([]);
             setImportantInfo("");
             setCoordinates("");
-            setNearbyPlaces("");
+            setNearbyCategories({
+                restaurants: [],
+                attractions: [],
+                transport: [],
+                shopping: []
+            });
             setStatus("Active");
             setFaqs([]);
             setCheckInFrom("15:00");
@@ -308,17 +391,17 @@ export default function AddHotelForm({ onAddHotel }) {
             setTrainTransport({ value: "", unit: "km" });
             setPetsAllowed(false);
         } catch (error) {
-            console.error("Error creating hotel:", error);
-            alert("Failed to create hotel: " + error.message);
+            console.error("Error saving hotel:", error);
+            alert("Failed to save hotel: " + (error.response?.data?.message || error.message));
         }
     };
 
     return (
         <div className="rounded-[24px] bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
             <div className="mb-5">
-                <h2 className="text-[24px] font-bold text-[#1A1A1A]">Add hotel</h2>
+                <h2 className="text-[24px] font-bold text-[#1A1A1A]">{isEditing ? "Edit hotel" : "Add hotel"}</h2>
                 <p className="text-[14px] text-[#8A8A8A]">
-                    Fill in the hotel information and add it to the system
+                    {isEditing ? "Update the hotel information in the system" : "Fill in the hotel information and add it to the system"}
                 </p>
             </div>
 
@@ -567,15 +650,69 @@ export default function AddHotelForm({ onAddHotel }) {
                     />
                 </div>
 
-                <div className="md:col-span-2">
-                    <label className="text-[14px] font-semibold text-[#1A1A1A]">What's nearby (Category, Name, Distance)</label>
-                    <textarea
-                        value={nearbyPlaces}
-                        onChange={(e) => setNearbyPlaces(e.target.value)}
-                        placeholder="Restaurant, KFC, 0.5km; Park, Central Park, 1.2km..."
-                        className="mt-2 w-full rounded-[16px] border border-[#D9D9D9] p-4 outline-none text-[14px]"
-                        rows="2"
-                    />
+                <div className="md:col-span-2 mt-4">
+                    <label className="text-[14px] font-semibold text-[#1A1A1A]">What's nearby</label>
+                    <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {Object.entries({
+                            restaurants: "Restaurants",
+                            attractions: "Attractions",
+                            transport: "Transport",
+                            shopping: "Shopping"
+                        }).map(([key, label]) => (
+                            <div key={key} className="flex flex-col gap-3 rounded-[20px] border border-[#D9D9D9] p-5 bg-[#FAFBFC]">
+                                <h4 className="text-[15px] font-bold text-[#581ADB]">{label}</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <input
+                                        type="text"
+                                        value={nearbyInputs[key].name}
+                                        onChange={(e) => setNearbyInputs(prev => ({ ...prev, [key]: { ...prev[key], name: e.target.value } }))}
+                                        placeholder="Name (e.g. KFC)"
+                                        className="h-[44px] rounded-[12px] border border-[#D9D9D9] px-4 outline-none text-[14px] bg-white"
+                                    />
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        min="0"
+                                        value={nearbyInputs[key].value}
+                                        onChange={(e) => setNearbyInputs(prev => ({ ...prev, [key]: { ...prev[key], value: e.target.value } }))}
+                                        placeholder="Distance"
+                                        className="h-[44px] rounded-[12px] border border-[#D9D9D9] px-4 outline-none text-[14px] bg-white"
+                                    />
+                                    <select
+                                        value={nearbyInputs[key].unit}
+                                        onChange={(e) => setNearbyInputs(prev => ({ ...prev, [key]: { ...prev[key], unit: e.target.value } }))}
+                                        className="h-[44px] rounded-[12px] border border-[#D9D9D9] px-3 outline-none text-[14px] bg-white"
+                                    >
+                                        <option value="km">km</option>
+                                        <option value="m">m</option>
+                                    </select>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => addNearbyPlace(key)}
+                                    className="w-fit rounded-full bg-[#581ADB] px-5 py-2 text-[13px] font-semibold text-white hover:bg-[#4a15ba] transition-colors"
+                                >
+                                    Add to {label}
+                                </button>
+                                <div className="mt-2 flex flex-col gap-2">
+                                    {nearbyCategories[key].map((place, idx) => (
+                                        <div key={idx} className="flex items-center justify-between rounded-[12px] bg-white border border-[#EEE] p-3 text-[14px] shadow-sm">
+                                            <span className="text-[#1A1A1A]">
+                                                <span className="font-medium">{place.name}</span> — <span className="text-[#717171]">{place.distance}</span>
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeNearbyPlace(key, idx)}
+                                                className="text-red-500 hover:text-red-700 text-[13px] font-bold"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="md:col-span-2">
@@ -636,8 +773,17 @@ export default function AddHotelForm({ onAddHotel }) {
                         type="submit"
                         className="h-[50px] rounded-full bg-[#1E66F5] px-6 text-white"
                     >
-                        Add hotel
+                        {isEditing ? "Save hotel" : "Add hotel"}
                     </button>
+                    {isEditing && (
+                        <button
+                            type="button"
+                            onClick={onCancelEdit}
+                            className="ml-3 h-[50px] rounded-full bg-[#EEF3F8] px-6 text-[#2F2F2F]"
+                        >
+                            Cancel
+                        </button>
+                    )}
                 </div>
             </form>
         </div>

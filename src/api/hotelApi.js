@@ -2,11 +2,27 @@ import api from "./client";
 
 export class HotelService {
     async getAllHotels() {
-        return (await api.get("/hotels")).data;
+        try {
+            const { data } = await api.get("/hotels");
+            // Ensure each hotel has a rating property if the UI expects it
+            return (data || []).map(hotel => ({ ...hotel, rating: hotel.rating ?? 0 }));
+        } catch (error) {
+            if (error?.response?.status === 404) return [];
+            throw error;
+        }
     }
 
     async getHotelById(id) {
-        return (await api.get(`/hotels/${id}`)).data;
+        try {
+            return (await api.get(`/hotels/${id}`)).data;
+        } catch (error) {
+            console.error(`Error fetching hotel ${id}:`, error);
+            throw error;
+        }
+    }
+
+    async getFullHotelById(id) {
+        return (await api.get(`/hotels/${id}/full`)).data;
     }
 
     async getHotelFacilities(id) {
@@ -34,12 +50,16 @@ export class HotelService {
             })
         ).data;
     }
-    
+
     async updateHotel(id, hotel) {
         return (await api.put(`/hotels/${id}`, hotel)).data;
     }
 
     async deleteHotel(id) {
         return (await api.delete(`/hotels/${id}`)).data;
+    }
+
+    async getNearbyHotels(id) {
+        return (await api.get(`/hotels/${id}/nearby`)).data;
     }
 }

@@ -12,8 +12,18 @@ export class ReviewService {
     }
 
     async getHotelRating(hotelId) {
-        const { data } = await api.get(`/hotels/${hotelId}/rating`);
-        return data;
+        try {
+            const { data } = await api.get(`/hotels/${hotelId}/rating`);
+            return {
+                overallRating: data?.overallRating ?? 0,
+                reviewsCount: data?.reviewsCount ?? 0
+            };
+        } catch (error) {
+            if (error?.response?.status === 404) {
+                return { overallRating: 0, reviewsCount: 0 };
+            }
+            throw error;
+        }
     }
 
     async getRandomHotelReviews(hotelId, count = 5) {

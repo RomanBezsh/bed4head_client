@@ -13,4 +13,20 @@ export class RoomService {
     async getRoomsByHotelId(hotelId) {
         return (await api.get("/rooms", { params: { hotelId } })).data;
     }
+
+    async getAllRooms() {
+        return (await api.get("/rooms")).data;
+    }
+
+    async getRoomById(id) {
+        return (await api.get(`/rooms/${id}`)).data;
+    }
+
+    async updateRoom(id, roomData) {
+        return (await api.put(`/rooms/${id}`, roomData)).data;
+    }
+
+    async deleteRoom(id) {
+        return (await api.delete(`/rooms/${id}`)).data;
+    }
 }
