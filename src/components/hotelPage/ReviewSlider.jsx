@@ -1,5 +1,6 @@
 import chevronWhiteIcon from "../../assets/icons/common/chevron_white_icon.svg";
 import { useState } from "react";
+import fallbackAvatar from "../../assets/icons/common/user_placeholder.svg";
 
 const ReviewSlider = ({ reviews }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -16,7 +17,7 @@ const ReviewSlider = ({ reviews }) => {
                 <div className="flex flex-row gap-3 sm:gap-4 min-w-0">
                     <img
                         className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
-                        src={current.photo}
+                        src={current.authorAvatarUrl || fallbackAvatar}
                         alt={current.name}
                     />
 
