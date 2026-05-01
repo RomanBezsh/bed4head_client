@@ -6,6 +6,7 @@ import crossIcon from "../assets/icons/cross_icon.svg";
 import fileIcon from "../assets/icons/file_icon.svg";
 import { useNavigate, useLocation } from "react-router-dom";
 import { BookingService } from "../api/bookingApi";
+import { getCountries } from "../data/countryCities";
 
 const Booking = () => {
     const location = useLocation();
@@ -14,6 +15,7 @@ const Booking = () => {
 
     const [step, setStep] = useState(1);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [bookingId, setBookingId] = useState(null);
     const [name, setName] = useState(""); // Lifted state to pass to success screen
     const [callMe, setCallMe] = useState(false);
     const [emailMe, setEmailMe] = useState(false);
@@ -51,16 +53,23 @@ const Booking = () => {
                 sendEmail: emailMe
             };
 
-            await bookingService.createBooking(dto);
+            const result = await bookingService.createBooking(dto);
+            const createdId = result?.booking?.id || result?.booking?.Id || null;
+            setBookingId(createdId);
             setIsSubmitted(true);
         } catch (e) {
             console.error(e);
-            alert(e.response?.data?.error || "Booking failed");
+            const msg =
+                e?.response?.data?.message ||
+                (typeof e?.response?.data === "string" ? e.response.data : null) ||
+                e?.message ||
+                "Booking failed";
+            alert(msg);
         }
     };
 
     if (isSubmitted) {
-        return <BookingSuccess userName={name || "Guest"} />;
+        return <BookingSuccess userName={name || "Guest"} bookingId={bookingId} />;
     }
 
     return (
@@ -155,8 +164,9 @@ const BookingForm = ({ step, setStep, name, setName, onSubmit, callMe, setCallMe
                             <div className="relative w-90">
                                 <select className="w-full h-14 px-6 border border-gray rounded-full outline-none appearance-none text-[#ADADAD]" value={country} onChange={(e) => setCountry(e.target.value)}>
                                     <option value="" disabled>Country</option>
-                                    <option value="uk">Ukraine</option>
-                                    <option value="us">USA</option>
+                                    {getCountries().map((c) => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
                                 </select>
                                 <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
                                     <svg width="14" height="8" viewBox="0 0 14 8" fill="none"><path d="M1 1L7 7L13 1" stroke="#ADADAD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -263,8 +273,50 @@ const BookingForm = ({ step, setStep, name, setName, onSubmit, callMe, setCallMe
     );
 };
 
-const BookingSuccess = ({ userName }) => {
+const parseFilenameFromContentDisposition = (value) => {
+    if (!value || typeof value !== "string") return null;
+    const match = value.match(/filename\*?=(?:UTF-8''|")?([^;"\n]+)"?/i);
+    if (!match?.[1]) return null;
+    try {
+        return decodeURIComponent(match[1]);
+    } catch {
+        return match[1];
+    }
+};
+
+const BookingSuccess = ({ userName, bookingId }) => {
     const navigate = useNavigate();
+    const bookingService = new BookingService();
+    const [downloading, setDownloading] = useState(false);
+
+    const handleDownloadPdf = async () => {
+        if (!bookingId) {
+            alert("Booking ID is missing. Please open your booking in Account and try again.");
+            return;
+        }
+
+        try {
+            setDownloading(true);
+            const response = await bookingService.downloadBookingPdf(bookingId);
+            const blob = response?.data;
+            const contentDisposition = response?.headers?.["content-disposition"];
+            const filename = parseFilenameFromContentDisposition(contentDisposition) || `booking-${String(bookingId).replace(/-/g, "")}.pdf`;
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error(e);
+            alert("Failed to download PDF confirmation.");
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     return (
         <div className="w-full min-h-screen bg-white flex items-center justify-center animate-fadeIn relative py-20">
@@ -304,8 +356,13 @@ const BookingSuccess = ({ userName }) => {
 
                     {/* Кнопка теперь зафиксирована в нижней части за счет flex-col и justify-between */}
                     <div className="flex justify-center pb-2">
-                        <button className="w-108 h-14 bg-[#581ADB] text-white rounded-full font-bold flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(88,26,219,0.3)]">
-                            Save PDF confirmation
+                        <button
+                            type="button"
+                            onClick={handleDownloadPdf}
+                            disabled={downloading}
+                            className="w-108 h-14 bg-[#581ADB] text-white rounded-full font-bold flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(88,26,219,0.3)] disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            {downloading ? "Downloading..." : "Save PDF confirmation"}
                             <img src={fileIcon} alt="file" className="w-5 h-5" />
                         </button>
                     </div>

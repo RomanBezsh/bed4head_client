@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import avatar from "../../assets/avatar.png";
+import userPlaceholder from "../../assets/icons/common/user_placeholder.svg";
 import chevronPurpleDownIcon from "../../assets/icons/chevron_purple_down_icon.svg";
 import { ReviewService } from "../../api/reviewApi";
 import Review from "../common/Review.jsx";
+import { buildAssetUrl } from "../../config/apiConfig";
 
 const criteriaList = [
     { label: "Facilities", key: "facilities" },
@@ -22,13 +23,9 @@ const defaultRatings = {
     valueForMoney: 8,
 };
 
-const API_ORIGIN = "https://localhost:7090";
-
 const getImageUrl = (url) => {
-    if (!url) return avatar;
-    if (url.startsWith("http")) return url;
-    const path = url.startsWith("/") ? url : `/${url}`;
-    return `${API_ORIGIN}${path}`;
+    if (!url) return userPlaceholder;
+    return buildAssetUrl(url);
 };
 
 const getStoredUser = () => {

@@ -18,8 +18,7 @@ import { matchesCatalogFilters } from "../components/catalog/Filter.jsx";
 import Footer from "../components/common/Footer.jsx";
 import { HotelService } from "../api/hotelApi.js";
 import { RoomService } from "../api/roomApi.js";
-
-const API_ORIGIN = import.meta.env.VITE_BED4HEAD_API || "https://localhost:7090";
+import { buildAssetUrl } from "../config/apiConfig";
 
 const hotelMapIcon = new L.Icon({
     iconUrl: mapPinIcon,
@@ -32,9 +31,7 @@ const getImageUrl = (photos) => {
     const firstPhoto = Array.isArray(photos) ? photos[0] : null;
     const raw = typeof firstPhoto === "string" ? firstPhoto : (firstPhoto?.url ?? firstPhoto?.Url ?? "");
     if (!raw) return hotelsCardExample;
-    if (raw.startsWith("http")) return raw;
-    const path = raw.startsWith("/") ? raw : `/${raw}`;
-    return `${API_ORIGIN}${path}`;
+    return buildAssetUrl(raw);
 };
 
 const normalize = (value) => String(value || "").trim().toLowerCase();
@@ -189,14 +186,15 @@ const Catalog = () => {
                 );
 
                 const mappedHotels = hotelsFromApi.map((hotel, index) => {
-                    const rooms = roomResults[index]?.status === "fulfilled" && Array.isArray(roomResults[index].value)
-                        ? roomResults[index].value
-                        : [];
+                    const hasRoomsData = roomResults[index]?.status === "fulfilled" && Array.isArray(roomResults[index].value);
+                    const rooms = hasRoomsData ? roomResults[index].value : [];
                     const distance = hotel.distanceFromCenterKm ?? hotel.DistanceFromCenterKm;
-                    const maxRoomGuests = rooms.reduce(
-                        (max, room) => Math.max(max, Number(room.maxGuests ?? room.MaxGuests) || 0),
-                        0
-                    );
+                    const maxRoomGuests = rooms.length > 0
+                        ? rooms.reduce(
+                            (max, room) => Math.max(max, Number(room.maxGuests ?? room.MaxGuests) || 0),
+                            0
+                        )
+                        : null;
 
                     return {
                         id: hotel.id || hotel.Id,
@@ -226,6 +224,7 @@ const Catalog = () => {
                         latitude: hotel.latitude ?? hotel.Latitude,
                         longitude: hotel.longitude ?? hotel.Longitude,
                         maxRoomGuests,
+                        hasRoomsData,
                         rooms,
                     };
                 });
@@ -262,7 +261,8 @@ const Catalog = () => {
         return backendHotels.filter((hotel) => {
             const countryMatch = !countryQuery || normalize(hotel.country).includes(countryQuery);
             const cityMatch = !cityQuery || normalize(hotel.city).includes(cityQuery) || normalize(hotel.name).includes(cityQuery);
-            const guestsMatch = !guestsQuery || hotel.maxRoomGuests >= guestsQuery;
+            // If room endpoint failed for a hotel, do not hide it entirely.
+            const guestsMatch = !guestsQuery || hotel.maxRoomGuests === null || hotel.maxRoomGuests >= guestsQuery;
             const filtersMatch = matchesCatalogFilters(hotel, catalogFilters);
 
             return countryMatch && cityMatch && guestsMatch && filtersMatch;

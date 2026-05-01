@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { UserService } from "../../api/userApi";
 
 import Pic1 from "../../assets/independed_images/news_letters_images/first_picture.png";
 import Pic2 from "../../assets/independed_images/news_letters_images/second_picture.png";
@@ -44,8 +45,77 @@ const TopicCard = ({ image, title, text, selectedTopic, onSelect }) => {
     );
 };
 
-const Newsletters = () => {
+const updateStoredUser = (updatedUser) => {
+    const stored = localStorage.getItem("user");
+    if (!stored) return;
+
+    try {
+        const parsed = JSON.parse(stored);
+        const nextStored = parsed?.user
+            ? { ...parsed, user: { ...parsed.user, ...updatedUser } }
+            : { ...parsed, ...updatedUser };
+
+        localStorage.setItem("user", JSON.stringify(nextStored));
+        window.dispatchEvent(new Event("auth-change"));
+    } catch (error) {
+        console.error("Failed to update user in localStorage", error);
+    }
+};
+
+const deriveSelectedTopic = (user) => {
+    if (!user) return "";
+    if (user.NewsSeasonalOffers) return "Seasonal offers";
+    if (user.NewsFavoriteCities) return "Favorite cities";
+    if (user.NewsAcrossWorld) return "Across the world";
+    if (user.NewsAffordableTravel) return "Affordable travel";
+    return "";
+};
+
+const Newsletters = ({ user, onUserUpdated }) => {
     const [selectedTopic, setSelectedTopic] = useState("");
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState("");
+    const userService = useMemo(() => new UserService(), []);
+
+    useEffect(() => {
+        setSelectedTopic(deriveSelectedTopic(user));
+    }, [user]);
+
+    const handleSubscribe = async () => {
+        if (!user?.id) {
+            setMessage("You need to log in before saving newsletter preferences.");
+            return;
+        }
+
+        setSaving(true);
+        setMessage("");
+
+        const prefs = {
+            seasonal: selectedTopic === "Seasonal offers",
+            favorite: selectedTopic === "Favorite cities",
+            world: selectedTopic === "Across the world",
+            affordable: selectedTopic === "Affordable travel",
+        };
+
+        try {
+            await userService.updateNewsPreferences(user.id, prefs);
+            const updatedUser = {
+                ...user,
+                NewsSeasonalOffers: prefs.seasonal,
+                NewsFavoriteCities: prefs.favorite,
+                NewsAcrossWorld: prefs.world,
+                NewsAffordableTravel: prefs.affordable,
+            };
+            updateStoredUser(updatedUser);
+            onUserUpdated?.(updatedUser);
+            setMessage("Preferences saved.");
+        } catch (error) {
+            console.error("Failed to save newsletter preferences:", error);
+            setMessage(error.response?.data?.message || "Failed to save newsletter preferences.");
+        } finally {
+            setSaving(false);
+        }
+    };
 
     return (
         <div className="mt-10 font-nunito-sans">
@@ -68,9 +138,22 @@ const Newsletters = () => {
                             We curate a daily selection of topics based on your interests and send them straight to your email address.
                         </p>
 
-                        <button className="flex h-10 w-full items-center justify-center rounded-[100px] bg-[#581ADB] px-6 py-2.5 text-[14px] font-bold uppercase text-white transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 sm:w-fit sm:text-[16px]">
-                            SUBSCRIBE
-                        </button>
+                        <div className="flex flex-col gap-2">
+                            <button
+                                type="button"
+                                disabled={saving}
+                                onClick={handleSubscribe}
+                                className="flex h-10 w-full items-center justify-center rounded-[100px] bg-[#581ADB] px-6 py-2.5 text-[14px] font-bold uppercase text-white transition-all duration-200 hover:scale-105 hover:bg-[#6A2BFF] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 sm:w-fit sm:text-[16px]"
+                            >
+                                {saving ? "SAVING..." : "SUBSCRIBE"}
+                            </button>
+
+                            {message && (
+                                <span className={`text-[14px] ${message.includes("saved") ? "text-green-600" : "text-red-600"}`}>
+                                    {message}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
 

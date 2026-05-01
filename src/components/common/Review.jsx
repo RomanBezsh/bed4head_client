@@ -1,4 +1,4 @@
-import fallbackAvatar from "../../assets/avatar.png";
+import fallbackAvatar from "../../assets/icons/common/user_placeholder.svg";
 
 const Review = ({ name, data, hotelName, photo, text, borderColor = "#DDDDDD" }) => {
     return (

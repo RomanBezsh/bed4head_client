@@ -46,4 +46,9 @@ export class ReviewService {
         });
         return data;
     }
+
+    async getMyReviews() {
+        const { data } = await api.get("/reviews/me");
+        return data;
+    }
 }

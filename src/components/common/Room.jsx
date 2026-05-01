@@ -6,6 +6,7 @@ import bathIcon from "../../assets/icons/bath_icon.svg";
 import poolIcon from "../../assets/icons/pool_icon.svg";
 import checkIcon from "../../assets/icons/сheck_purple_icon.svg";
 import { useNavigate } from "react-router-dom";
+import { buildAssetUrl } from "../../config/apiConfig";
 
 const TAG_ICONS = {
     "free wi-fi": wifiIcon,
@@ -34,11 +35,10 @@ const Room = ({ room, isBooked = false }) => {
         ? beds.map(b => `${b.type || b.Type} ${b.count || b.Count}`).join(" | ")
         : "Bed information unavailable";
 
-    const API_ORIGIN = "https://localhost:7090";
     const imageUrl = room.previewImage
         ? (room.previewImage.startsWith("http")
             ? room.previewImage
-            : `${API_ORIGIN}${room.previewImage}`)
+            : buildAssetUrl(room.previewImage))
         : roomPlaceholder;
 
     return (

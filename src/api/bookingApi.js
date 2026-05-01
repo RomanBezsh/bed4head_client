@@ -16,6 +16,11 @@ export class BookingService {
         return (await api.get(`/bookings/${id}`)).data;
     }
 
+    // Получить бронирования текущего пользователя
+    async getMyBookings() {
+        return (await api.get("/bookings/me")).data;
+    }
+
     // Отмена бронирования
     async cancelBooking(id) {
         return (await api.patch(`/bookings/${id}/cancel`)).data;
@@ -29,5 +34,12 @@ export class BookingService {
     // Получить все бронирования (админ)
     async getAllBookings() {
         return (await api.get("/bookings")).data;
+    }
+
+    // Скачать PDF подтверждение бронирования
+    async downloadBookingPdf(id) {
+        return await api.get(`/bookings/${id}/pdf`, {
+            responseType: "blob",
+        });
     }
 }

@@ -7,6 +7,7 @@ import comfortIcon from "../../assets/icons/common/comfortable.svg";
 import avatar from "../../assets/avatar.png";
 import image from "../../assets/independed_images/head_image.jpg";
 import ReviewSlider from "./ReviewSlider.jsx";
+import { buildAssetUrl } from "../../config/apiConfig";
 
 const TAG_ICONS = {
     popular: popularIcon,
@@ -32,8 +33,6 @@ const HotelMainInfo = ({ name, images, tags, description, address, city, onBookC
         }));
     }, [reviews, name]);
 
-    const API_ORIGIN = "https://localhost:7090";
-
     const getImageUrl = (img) => {
         const raw =
             typeof img === "string"
@@ -49,8 +48,8 @@ const HotelMainInfo = ({ name, images, tags, description, address, city, onBookC
         if (raw.startsWith("/src/") || raw.startsWith("/assets/")) return raw;
 
         // это файл с бэка
-        if (raw.startsWith("/uploads/")) return `${API_ORIGIN}${raw}`;
-        if (raw.startsWith("uploads/")) return `${API_ORIGIN}/${raw}`;
+        if (raw.startsWith("/uploads/")) return buildAssetUrl(raw);
+        if (raw.startsWith("uploads/")) return buildAssetUrl(raw);
 
         // иначе не трогаем
         return raw;

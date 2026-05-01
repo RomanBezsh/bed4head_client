@@ -17,6 +17,11 @@ import noReviewsIcon from "../../assets/icons/common/no_reviews_icon.svg";
 
 import { AuthService } from "../../api/authApi";
 import { UserService } from "../../api/userApi";
+import { BookingService } from "../../api/bookingApi";
+import { ReviewService } from "../../api/reviewApi";
+import { RoomService } from "../../api/roomApi";
+import { useNavigate } from "react-router-dom";
+import { buildAssetUrl } from "../../config/apiConfig";
 
 import hotelRoomPhoto from "../../assets/independed_images/hotel_room_photo_example.png";
 
@@ -108,11 +113,66 @@ const BookingStat = ({ icon, value }) => {
     );
 };
 
-const BookingInfo = () => {
+const parseFilenameFromContentDisposition = (value) => {
+    if (!value || typeof value !== "string") return null;
+    const match = value.match(/filename\*?=(?:UTF-8''|")?([^;"\n]+)"?/i);
+    if (!match?.[1]) return null;
+    try {
+        return decodeURIComponent(match[1]);
+    } catch {
+        return match[1];
+    }
+};
+
+const formatDate = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toISOString().slice(0, 10);
+};
+
+const resolveAssetUrl = (value) => {
+    if (!value || typeof value !== "string") return null;
+    return buildAssetUrl(value);
+};
+
+const normalizeBooking = (b) => {
+    if (!b) return null;
+    return {
+        id: b.id ?? b.Id,
+        userId: b.userId ?? b.UserId,
+        roomId: b.roomId ?? b.RoomId,
+        hotelId: b.hotelId ?? b.HotelId,
+        checkIn: b.checkIn ?? b.CheckIn,
+        checkOut: b.checkOut ?? b.CheckOut,
+        adultsCount: b.adultsCount ?? b.AdultsCount,
+        childrenCount: b.childrenCount ?? b.ChildrenCount,
+        totalPrice: b.totalPrice ?? b.TotalPrice,
+        currencyCode: b.currencyCode ?? b.CurrencyCode,
+        status: b.status ?? b.Status,
+        hotelName: b.hotelName ?? b.HotelName,
+        hotelCity: b.hotelCity ?? b.HotelCity,
+        hotelCountry: b.hotelCountry ?? b.HotelCountry,
+        roomTitle: b.roomTitle ?? b.RoomTitle,
+    };
+};
+
+const formatBeds = (beds) => {
+    if (!Array.isArray(beds) || beds.length === 0) return "—";
+    return beds
+        .filter((b) => b?.type && b?.count)
+        .map((b) => `${b.type} ${b.count}`)
+        .join(" | ");
+};
+
+const BookingInfo = ({ booking, room }) => {
+    const title = booking?.roomTitle || room?.title || "Room";
+    const hotelName = booking?.hotelName || "Hotel";
+    const preview = resolveAssetUrl(room?.previewImage);
     return (
         <div className="flex w-full flex-col lg:flex-row">
             <img
-                src={hotelRoomPhoto}
+                src={preview || hotelRoomPhoto}
                 alt="hotel room"
                 className="h-55 w-full object-cover transition-transform duration-500 hover:scale-105 sm:h-58 lg:h-58 lg:w-[320px]"
             />
@@ -120,14 +180,17 @@ const BookingInfo = () => {
             <div className="flex w-full flex-col justify-between px-3.5 py-2.5 lg:max-w-97.5">
                 <div>
                     <h3 className="mb-2 font-nunito-sans text-[20px] font-bold text-[#222222]">
-                        Suite with a queen-size bed
+                        {title}
                     </h3>
+                    <div className="text-[14px] text-[#717171]">
+                        {hotelName}
+                    </div>
 
                     <div className="mt-2.5">
                         <BookingInfoItem
                             icon={bedIcon}
                             label="Bed:"
-                            text="queen-sized bed 1 | double bed 1"
+                            text={formatBeds(room?.beds)}
                         />
                     </div>
 
@@ -135,14 +198,14 @@ const BookingInfo = () => {
                         <BookingInfoItem
                             icon={profile2userIcon}
                             label="Guests:"
-                            text="maximum 3"
+                            text={room?.maxGuests ? `maximum ${room.maxGuests}` : `${booking?.adultsCount ?? 0} ad. ${booking?.childrenCount ?? 0} ch.`}
                         />
                     </div>
 
                     <div className="mt-6 flex flex-wrap gap-3 lg:mt-10">
-                        <BookingInfoItem icon={freeWifiIcon} text="free wi-fi" />
-                        <BookingInfoItem icon={bathIcon} text="bath" />
-                        <BookingInfoItem icon={poolIcon} text="private pool" />
+                        {(room?.hasWifi ?? room?.HasWifi) && <BookingInfoItem icon={freeWifiIcon} text="free wi-fi" />}
+                        {(room?.privateBathroom ?? room?.PrivateBathroom) && <BookingInfoItem icon={bathIcon} text="bath" />}
+                        {(room?.hasPrivatePool ?? room?.HasPrivatePool) && <BookingInfoItem icon={poolIcon} text="private pool" />}
                     </div>
                 </div>
 
@@ -154,29 +217,56 @@ const BookingInfo = () => {
     );
 };
 
-const BookingActions = () => {
+const BookingActions = ({
+    booking,
+    onDownloadPdf,
+    onCancel,
+    onOpenHotel,
+    pdfDownloading,
+    cancelling,
+}) => {
+    const city = booking?.hotelCity || booking?.hotelCountry || "—";
+    const dateLabel = booking?.checkIn && booking?.checkOut
+        ? `${formatDate(booking.checkIn)} - ${formatDate(booking.checkOut)}`
+        : "—";
+    const guestsLabel = `${booking?.adultsCount ?? 0} ad. ${booking?.childrenCount ?? 0} ch.`;
+
     return (
         <div className="flex h-full w-full flex-col justify-between px-4.5 py-3 lg:w-auto">
             <div className="flex flex-wrap gap-2.5">
-                <BookingStat icon={plainIcon} value="Kyiv" />
-                <BookingStat icon={calendarIcon} value="Apr 9-11" />
-                <BookingStat icon={profile2userIcon} value="2 ad. 1 ch." />
+                <BookingStat icon={plainIcon} value={city} />
+                <BookingStat icon={calendarIcon} value={dateLabel} />
+                <BookingStat icon={profile2userIcon} value={guestsLabel} />
             </div>
 
             <div className="mt-2.5 flex flex-col gap-2.5 sm:flex-row">
-                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] transition-all duration-200 hover:bg-[#6B46FF] hover:text-white sm:h-24 sm:w-44">
+                <button
+                    type="button"
+                    onClick={onOpenHotel}
+                    className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] transition-all duration-200 hover:bg-[#6B46FF] hover:text-white sm:h-24 sm:w-44"
+                >
                     HOTEL PAGE
                 </button>
 
-                <button className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] transition-all duration-200 hover:bg-[#6B46FF] hover:text-white sm:h-24 sm:w-44">
-                    BOOKING INFO
+                <button
+                    type="button"
+                    onClick={onDownloadPdf}
+                    disabled={pdfDownloading}
+                    className="h-14 w-full rounded-[10px] border border-[#6B46FF] text-[12px] font-semibold text-[#6B46FF] transition-all duration-200 hover:bg-[#6B46FF] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed sm:h-24 sm:w-44"
+                >
+                    {pdfDownloading ? "DOWNLOADING..." : "DOWNLOAD PDF"}
                 </button>
             </div>
 
             <div className="mt-3 flex flex-col gap-1.5 text-[11px] sm:flex-row sm:items-center sm:justify-between">
-                <span className="font-nunito-sans text-[16px] font-normal text-[#6B46FF]">
-                    Want to cancel?
-                </span>
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    disabled={cancelling}
+                    className="font-nunito-sans text-[16px] font-normal text-[#6B46FF] transition-all duration-200 hover:underline disabled:opacity-60 disabled:cursor-not-allowed text-left"
+                >
+                    {cancelling ? "Cancelling..." : "Want to cancel?"}
+                </button>
 
                 <span className="font-nunito-sans text-[16px] font-normal text-[#8A8A8A]">
                     Time left: 4 days 16 hours
@@ -186,14 +276,61 @@ const BookingActions = () => {
     );
 };
 
-const BookingCard = () => {
+const BookingCard = ({
+    booking,
+    room,
+    onDownloadPdf,
+    onCancel,
+    onOpenHotel,
+    pdfDownloading,
+    cancelling,
+}) => {
     return (
         <div className="fade-up flex w-full flex-col overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] xl:flex-row">
-            <BookingInfo />
+            <BookingInfo booking={booking} room={room} />
 
             <div className="border-t border-[#E5E5E5] xl:border-l xl:border-t-0">
-                <BookingActions />
+                <BookingActions
+                    booking={booking}
+                    onDownloadPdf={onDownloadPdf}
+                    onCancel={onCancel}
+                    onOpenHotel={onOpenHotel}
+                    pdfDownloading={pdfDownloading}
+                    cancelling={cancelling}
+                />
             </div>
+        </div>
+    );
+};
+
+const ReviewCard = ({ review }) => {
+    const date = review?.createdAt ? new Date(review.createdAt) : null;
+    const dateLabel = date && !Number.isNaN(date.getTime()) ? date.toISOString().slice(0, 10) : "";
+    const score = typeof review?.overallScore === "number" ? review.overallScore.toFixed(1) : "";
+
+    return (
+        <div className="fade-up w-full rounded-xl border border-[#E5E5E5] bg-white px-4 py-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]">
+            <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                    <div className="text-[16px] font-bold text-[#222222] truncate">
+                        {review?.title || "Review"}
+                    </div>
+                    <div className="mt-1 text-[14px] text-[#717171]">
+                        {dateLabel}
+                    </div>
+                </div>
+                {score && (
+                    <div className="shrink-0 rounded-full border border-[#581ADB] px-3 py-1 text-[14px] font-semibold text-[#581ADB]">
+                        {score}/10
+                    </div>
+                )}
+            </div>
+
+            {review?.comment && (
+                <div className="mt-3 text-[16px] leading-[1.6] text-[#717171] whitespace-pre-wrap">
+                    {review.comment}
+                </div>
+            )}
         </div>
     );
 };
@@ -251,16 +388,110 @@ const updateStoredUser = (updatedUser) => {
 };
 
 const Account = ({ user, onUserUpdated }) => {
+    const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const authService = useMemo(() => new AuthService(), []);
     const userService = useMemo(() => new UserService(), []);
+    const bookingService = useMemo(() => new BookingService(), []);
+    const reviewService = useMemo(() => new ReviewService(), []);
+    const roomService = useMemo(() => new RoomService(), []);
     const [form, setForm] = useState(() => buildInitialForm(user));
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState("");
 
+    const [bookings, setBookings] = useState([]);
+    const [bookingsLoading, setBookingsLoading] = useState(false);
+    const [bookingsError, setBookingsError] = useState("");
+    const [pdfDownloadingId, setPdfDownloadingId] = useState(null);
+    const [cancellingId, setCancellingId] = useState(null);
+    const [roomsById, setRoomsById] = useState({});
+
+    const [reviews, setReviews] = useState([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [reviewsError, setReviewsError] = useState("");
+
     useEffect(() => {
         setForm(buildInitialForm(user));
     }, [user]);
+
+    useEffect(() => {
+        const load = async () => {
+            if (!user?.id) {
+                setBookings([]);
+                setBookingsError("");
+                return;
+            }
+
+            try {
+                setBookingsLoading(true);
+                setBookingsError("");
+                const data = await bookingService.getMyBookings();
+                const normalized = (Array.isArray(data) ? data : [])
+                    .map(normalizeBooking)
+                    .filter(Boolean);
+                setBookings(normalized);
+            } catch (error) {
+                console.error("Failed to load bookings:", error);
+                setBookingsError("Failed to load your bookings.");
+                setBookings([]);
+            } finally {
+                setBookingsLoading(false);
+            }
+        };
+
+        load();
+    }, [user?.id, bookingService]);
+
+    useEffect(() => {
+        const loadRooms = async () => {
+            const roomIds = Array.from(new Set(bookings.map((b) => b?.roomId).filter(Boolean)));
+            if (roomIds.length === 0) return;
+
+            try {
+                const results = await Promise.allSettled(roomIds.map((id) => roomService.getRoomById(id)));
+                setRoomsById((prev) => {
+                    const next = { ...prev };
+                    results.forEach((r, idx) => {
+                        if (r.status === "fulfilled") {
+                            const room = r.value;
+                            const rid = room?.id ?? room?.Id ?? roomIds[idx];
+                            next[rid] = room;
+                        }
+                    });
+                    return next;
+                });
+            } catch (error) {
+                console.error("Failed to load rooms for bookings:", error);
+            }
+        };
+
+        loadRooms();
+    }, [bookings, roomService]);
+
+    useEffect(() => {
+        const load = async () => {
+            if (!user?.id) {
+                setReviews([]);
+                setReviewsError("");
+                return;
+            }
+
+            try {
+                setReviewsLoading(true);
+                setReviewsError("");
+                const data = await reviewService.getMyReviews();
+                setReviews(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Failed to load reviews:", error);
+                setReviewsError("Failed to load your comments.");
+                setReviews([]);
+            } finally {
+                setReviewsLoading(false);
+            }
+        };
+
+        load();
+    }, [user?.id, reviewService]);
 
     const updateForm = (field, value) => {
         setForm((prev) => ({ ...prev, [field]: value }));
@@ -346,6 +577,63 @@ const Account = ({ user, onUserUpdated }) => {
             setSaveMessage(error.response?.data?.message || "Failed to save account information.");
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleDownloadBookingPdf = async (bookingId) => {
+        try {
+            setPdfDownloadingId(bookingId);
+            const response = await bookingService.downloadBookingPdf(bookingId);
+            const blob = response?.data;
+            const contentDisposition = response?.headers?.["content-disposition"];
+            const filename =
+                parseFilenameFromContentDisposition(contentDisposition) ||
+                `booking-${String(bookingId).replace(/-/g, "")}.pdf`;
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Failed to download booking pdf:", error);
+            alert("Failed to download PDF confirmation.");
+        } finally {
+            setPdfDownloadingId(null);
+        }
+    };
+
+    const handleCancelBooking = async (bookingId) => {
+        if (!bookingId) {
+            alert("Booking ID is missing.");
+            return;
+        }
+        const ok = window.confirm("Cancel this booking?");
+        if (!ok) return;
+
+        try {
+            setCancellingId(bookingId);
+            await bookingService.cancelBooking(String(bookingId));
+            const data = await bookingService.getMyBookings();
+            const normalized = (Array.isArray(data) ? data : [])
+                .map(normalizeBooking)
+                .filter(Boolean);
+            setBookings(normalized);
+        } catch (error) {
+            console.error("Failed to cancel booking:", error);
+            const status = error?.response?.status;
+            const data = error?.response?.data;
+            const msg =
+                data?.message ||
+                (typeof data === "string" ? data : null) ||
+                (status ? `Failed to cancel booking (HTTP ${status}).` : null) ||
+                "Failed to cancel booking.";
+            alert(msg);
+        } finally {
+            setCancellingId(null);
         }
     };
 
@@ -496,16 +784,58 @@ const Account = ({ user, onUserUpdated }) => {
                         Your Bookings
                     </h2>
 
-                    <BookingCard />
+                    {bookingsLoading ? (
+                        <div className="fade-up flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+                            <span className="text-[16px] text-[#717171]">Loading...</span>
+                        </div>
+                    ) : bookingsError ? (
+                        <div className="fade-up flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+                            <span className="text-[16px] text-red-600">{bookingsError}</span>
+                        </div>
+                    ) : bookings.length === 0 ? (
+                        <div className="fade-up flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+                            <span className="text-[16px] text-[#717171]">You have no bookings yet.</span>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-4">
+                            {bookings.map((b) => (
+                                <BookingCard
+                                    key={b.id}
+                                    booking={b}
+                                    room={roomsById[b.roomId]}
+                                    onDownloadPdf={() => handleDownloadBookingPdf(b.id)}
+                                    onCancel={() => handleCancelBooking(b.id)}
+                                    onOpenHotel={() => b.hotelId && navigate(`/hotel/${b.hotelId}`)}
+                                    pdfDownloading={pdfDownloadingId === b.id}
+                                    cancelling={cancellingId === b.id}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* REVIEWS */}
                 <div className="mt-5">
                     <h2 className="fade-up mb-2.5 text-[16px] font-normal uppercase tracking-[0.08em] text-[#717171]">
-                        Your Reviews
+                        Your Comments
                     </h2>
-
-                    <ReviewsEmpty />
+                    {reviewsLoading ? (
+                        <div className="fade-up flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+                            <span className="text-[16px] text-[#717171]">Loading...</span>
+                        </div>
+                    ) : reviewsError ? (
+                        <div className="fade-up flex h-58 w-full items-center justify-center rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_2px_8px_rgba(0,0,0,0.04)]">
+                            <span className="text-[16px] text-red-600">{reviewsError}</span>
+                        </div>
+                    ) : reviews.length === 0 ? (
+                        <ReviewsEmpty />
+                    ) : (
+                        <div className="flex flex-col gap-4">
+                            {reviews.map((r) => (
+                                <ReviewCard key={r.id} review={r} />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

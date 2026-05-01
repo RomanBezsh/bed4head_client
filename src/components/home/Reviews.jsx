@@ -1,16 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import avatar from "../../assets/avatar.png";
+import userPlaceholder from "../../assets/icons/common/user_placeholder.svg";
 import { HotelService } from "../../api/hotelApi.js";
 import { ReviewService } from "../../api/reviewApi.js";
 import Review from "../common/Review.jsx";
-
-const API_ORIGIN = "https://localhost:7090";
+import { buildAssetUrl } from "../../config/apiConfig";
 
 const getImageUrl = (url) => {
-    if (!url) return avatar;
-    if (url.startsWith("http")) return url;
-    const path = url.startsWith("/") ? url : `/${url}`;
-    return `${API_ORIGIN}${path}`;
+    if (!url) return userPlaceholder;
+    return buildAssetUrl(url);
 };
 
 const Reviews = ({ reviews }) => {

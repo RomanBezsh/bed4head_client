@@ -10,6 +10,7 @@ import { AuthService } from "../../../api/authApi";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCountries, getCitiesForCountry } from "../../../data/countryCities";
 
 const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const isLogin = mode === "login";
@@ -37,6 +38,8 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
     const navigate = useNavigate();
     const authService = new AuthService();
+    const countries = getCountries();
+    const cities = getCitiesForCountry(registerState.country);
 
     const isInfoFormComplete = registerState.country && registerState.city && registerState.travelReason;
 
@@ -281,12 +284,12 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                     <select
                                         className="h-[56px] w-full appearance-none rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none"
                                         value={registerState.country}
-                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, country: e.target.value }))}
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, country: e.target.value, city: "" }))}
                                     >
                                         <option value="" disabled>Country</option>
-                                        <option value="Ukraine">Ukraine</option>
-                                        <option value="USA">USA</option>
-                                        <option value="Poland">Poland</option>
+                                        {countries.map((c) => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
                                     </select>
 
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
@@ -299,9 +302,9 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         onChange={(e) => setRegisterState((prev) => ({ ...prev, city: e.target.value }))}
                                     >
                                         <option value="" disabled>City</option>
-                                        <option value="Kyiv">Kyiv</option>
-                                        <option value="Lviv">Lviv</option>
-                                        <option value="Odesa">Odesa</option>
+                                        {cities.map((city) => (
+                                            <option key={city} value={city}>{city}</option>
+                                        ))}
                                     </select>
 
                                     <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />

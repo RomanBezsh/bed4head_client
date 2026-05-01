@@ -35,6 +35,17 @@ export class UserService {
         return (await api.put("/user/update", { ...userData, id })).data;
     }
 
+    async updateNewsPreferences(id, prefs) {
+        return (await api.patch(`/user/${id}/preferences`, null, {
+            params: {
+                seasonal: Boolean(prefs?.seasonal),
+                favorite: Boolean(prefs?.favorite),
+                world: Boolean(prefs?.world),
+                affordable: Boolean(prefs?.affordable),
+            }
+        })).data;
+    }
+
     async deleteUser(id) {
         return (await api.delete(`/user/${id}`)).data;
     }

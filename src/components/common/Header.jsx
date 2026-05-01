@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router';
 
 import logo from "../../assets/logo.svg";
@@ -10,6 +10,21 @@ const Header = () => {
     const location = useLocation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("register");
+    const readAuthState = useMemo(() => {
+        return () => {
+            try {
+                const stored = localStorage.getItem("user");
+                if (!stored) return false;
+                const parsed = JSON.parse(stored);
+                const token = parsed?.token || parsed?.Token || parsed?.access_token || localStorage.getItem("token");
+                return Boolean(token && token !== "undefined" && token !== "null" && token !== "");
+            } catch {
+                return false;
+            }
+        };
+    }, []);
+
+    const [isLoggedIn, setIsLoggedIn] = useState(() => readAuthState());
 
     const isAccountPage = location.pathname === "/account";
     const isBooking = location.pathname === "/booking";
@@ -18,6 +33,19 @@ const Header = () => {
         setModalMode(mode);
         setIsModalOpen(true);
     };
+
+    useEffect(() => {
+        const sync = () => setIsLoggedIn(readAuthState());
+        sync();
+
+        window.addEventListener("auth-change", sync);
+        window.addEventListener("storage", sync);
+
+        return () => {
+            window.removeEventListener("auth-change", sync);
+            window.removeEventListener("storage", sync);
+        };
+    }, [readAuthState]);
 
     return (
         <header className="w-full h-[80px] flex items-center justify-center bg-white border-b border-gray">
@@ -52,6 +80,7 @@ const Header = () => {
                     {!isAccountPage && !isBooking && (
                         <AuthButtons
                             accountIcon={accountIcon}
+                            isLoggedIn={isLoggedIn}
                             onOpen={openModal}
                         />
                     )}

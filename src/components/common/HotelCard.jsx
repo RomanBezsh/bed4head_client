@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import favoriteIcon from "../../assets/icons/home/favorite_icon.svg";
 import starIcon from "../../assets/icons/common/star_icon.svg";
 import hotelPlaceholder from "../../assets/independed_images/hotel_card_img.jpg";
+import { buildAssetUrl } from "../../config/apiConfig";
 
 const HotelCard = ({
     id,
@@ -31,13 +32,10 @@ const HotelCard = ({
             : `${Number(km).toFixed(1)} km`;
     };
 
-    const API_ORIGIN = import.meta.env.VITE_BED4HEAD_API || "https://localhost:7090";
     const getImageUrl = (img) => {
         const raw = typeof img === "string" ? img : (img?.url ?? img?.Url ?? "");
         if (!raw) return "";
-        if (raw.startsWith("http")) return raw;
-        const path = raw.startsWith("/") ? raw : `/${raw}`;
-        return `${API_ORIGIN}${path}`;
+        return buildAssetUrl(raw);
     };
 
     return (
