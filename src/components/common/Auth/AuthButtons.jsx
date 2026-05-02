@@ -17,12 +17,12 @@ const AuthButtons = ({ accountIcon, isLoggedIn = false, onOpen }) => {
                     </button>
 
                     <button
-                        onClick={() => onOpen && onOpen("login")}
+                        onClick={() => onOpen("login")}
                         className={`${baseBtn} w-30 pr-1 justify-between`}
                     >
                         <span className="ml-4">Sign In</span>
 
-                        <div className="my-1 mr-1.25 flex h-6 w-6 items-center justify-center rounded-full bg-[#666666]">
+                        <div className="my-1 mr-1.25 flex h-6 w-6 items-center justify-center rounded-full bg-[#666666] transition-transform duration-200 group-hover:scale-110">
                             <img src={accountIcon} alt="account" className="h-6 w-6" />
                         </div>
                     </button>
@@ -32,7 +32,7 @@ const AuthButtons = ({ accountIcon, isLoggedIn = false, onOpen }) => {
                     onClick={() => navigate("/account")}
                     className={`${baseBtn} w-30 justify-between pl-4 pr-1`}
                 >
-                    <span>Account</span>
+                    <span className="">Account</span>
 
                     <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#666666]">
                         <img src={accountIcon} alt="account" className="h-6 w-6" />

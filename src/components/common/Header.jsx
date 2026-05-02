@@ -10,27 +10,14 @@ const Header = () => {
     const location = useLocation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("register");
-
     const readAuthState = useMemo(() => {
         return () => {
             try {
                 const stored = localStorage.getItem("user");
                 if (!stored) return false;
-
                 const parsed = JSON.parse(stored);
-
-                const token =
-                    parsed?.token ||
-                    parsed?.Token ||
-                    parsed?.access_token ||
-                    localStorage.getItem("token");
-
-                return Boolean(
-                    token &&
-                    token !== "undefined" &&
-                    token !== "null" &&
-                    token !== ""
-                );
+                const token = parsed?.token || parsed?.Token || parsed?.access_token || localStorage.getItem("token");
+                return Boolean(token && token !== "undefined" && token !== "null" && token !== "");
             } catch {
                 return false;
             }
@@ -49,7 +36,6 @@ const Header = () => {
 
     useEffect(() => {
         const sync = () => setIsLoggedIn(readAuthState());
-
         sync();
 
         window.addEventListener("auth-change", sync);
@@ -78,6 +64,17 @@ const Header = () => {
                 </NavLink>
 
                 <div className="flex items-center gap-[10px]">
+
+                    {/* LANGUAGE */}
+                    {!isBooking && (
+                        <button className="w-[26px] h-[26px] rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95">
+                            <img
+                                src="/src/assets/language_icons/gb.png"
+                                alt="English"
+                                className="w-full h-full object-cover rounded-full"
+                            />
+                        </button>
+                    )}
 
                     {/* AUTH */}
                     {!isAccountPage && !isBooking && (

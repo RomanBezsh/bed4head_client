@@ -6,6 +6,8 @@ import closerIcon from "../../../assets/icons/common/closer_icon.svg";
 import checkmarkIcon from "../../../assets/icons/big_check_purple_icon.svg";
 import selectArrowIcon from "../../../assets/icons/common/select_arrow_icon.svg";
 
+import { AuthService } from "../../../api/authApi";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCountries, getCitiesForCountry } from "../../../data/countryCities";
@@ -35,14 +37,11 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     const [authError, setAuthError] = useState("");
 
     const navigate = useNavigate();
+    const authService = new AuthService();
     const countries = getCountries();
     const cities = getCitiesForCountry(registerState.country);
 
-    const isInfoFormComplete =
-        registerState.country &&
-        registerState.city &&
-        registerState.travelReason &&
-        registerState.travellingWithPet !== null;
+    const isInfoFormComplete = registerState.country && registerState.city && registerState.travelReason;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -52,46 +51,6 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         return () => clearTimeout(timer);
     }, []);
 
-    const validateEmail = (email) => {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    };
-
-    const validateRegister = () => {
-        if (
-            !registerState.email.trim() ||
-            !registerState.password.trim() ||
-            !registerState.passwordRepeated.trim()
-        ) {
-            return "Fill all fields";
-        }
-
-        if (!validateEmail(registerState.email)) {
-            return "Invalid email format";
-        }
-
-        if (registerState.password.length < 6) {
-            return "Password must be at least 6 characters";
-        }
-
-        if (registerState.password !== registerState.passwordRepeated) {
-            return "Passwords do not match";
-        }
-
-        return "";
-    };
-
-    const validateLogin = () => {
-        if (!loginState.email.trim() || !loginState.password.trim()) {
-            return "Fill all fields";
-        }
-
-        if (!validateEmail(loginState.email)) {
-            return "Invalid email format";
-        }
-
-        return "";
-    };
-
     const handleClose = () => {
         setIsVisible(false);
 
@@ -100,95 +59,94 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
         }, 200);
     };
 
-    const handleContinue = () => {
-        setAuthError("");
+    const handleContinue = async () => {
+        try {
+            setAuthError("");
 
-        if (step === "form") {
-            if (isLogin) {
-                const error = validateLogin();
+            if (step === "form") {
+                if (isLogin) {
+                    const data = await authService.login(loginState);
+                    const token = data.token || data.Token;
 
-                if (error) {
-                    setAuthError(error);
+                    // ✅ СОХРАНЯЕМ ТОКЕН
+                    localStorage.setItem("token", token);
+
+                    // ✅ СОХРАНЯЕМ ПОЛЬЗОВАТЕЛЯ
+                    localStorage.setItem("user", JSON.stringify({ ...data, token }));
+
+                    window.dispatchEvent(new Event("auth-change"));
+                    setStep("success");
                     return;
                 }
 
-                localStorage.setItem("token", "demo-token");
-                localStorage.setItem(
-                    "user",
-                    JSON.stringify({
-                        email: loginState.email,
-                    })
-                );
+                await authService.register({
+                    email: registerState.email,
+                    password: registerState.password,
+                });
 
+                setStep("code");
+                return;
+            }
+
+            if (step === "code") {
+                const email = isLogin ? loginState.email : registerState.email;
+
+                const data = await authService.confirmEmail({ email, code });
+                const token = data.token || data.Token;
+
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify({ ...data, token }));
                 window.dispatchEvent(new Event("auth-change"));
+                setStep("info");
+                return;
+            }
+
+            if (step === "info") {
+                const storedAuth = JSON.parse(localStorage.getItem("user"));
+
+                const formatValue = (str) => {
+                    if (!str) return str;
+                    if (str.toLowerCase() === "usa") return "USA";
+                    return str.charAt(0).toUpperCase() + str.slice(1);
+                };
+
+                const updatePayload = {
+                    id: storedAuth?.user?.id,
+                    email: registerState.email,
+                    country: formatValue(registerState.country),
+                    city: formatValue(registerState.city),
+                    travelPurpose: formatValue(registerState.travelReason),
+                    isTravellingWithPet: registerState.travellingWithPet === "true",
+                };
+
+                const response = await authService.updateProfile(updatePayload);
+
+                if (storedAuth) {
+                    const newUser = (response && typeof response === 'object' && response.id)
+                        ? response
+                        : { ...storedAuth.user, ...updatePayload };
+
+                    localStorage.setItem("user", JSON.stringify({ ...storedAuth, user: newUser }));
+                    window.dispatchEvent(new Event("auth-change"));
+                }
+
                 setStep("success");
                 return;
             }
 
-            const error = validateRegister();
-
-            if (error) {
-                setAuthError(error);
-                return;
-            }
-
-            setStep("code");
-            return;
-        }
-
-        if (step === "code") {
-            if (!code.trim()) {
-                setAuthError("Enter confirmation code");
-                return;
-            }
-
-            if (code.trim().length < 4) {
-                setAuthError("Code must contain at least 4 characters");
-                return;
-            }
-
-            localStorage.setItem("token", "demo-token");
-            localStorage.setItem(
-                "user",
-                JSON.stringify({
-                    email: registerState.email,
-                })
+            handleClose();
+        } catch (e) {
+            console.error(e);
+            const responseText = e?.response?.data;
+            setAuthError(
+                typeof responseText === "string"
+                    ? responseText
+                    : "Something went wrong. Please try again."
             );
-
-            window.dispatchEvent(new Event("auth-change"));
-            setStep("info");
-            return;
         }
-
-        if (step === "info") {
-            if (!isInfoFormComplete) {
-                setAuthError("Fill all information fields");
-                return;
-            }
-
-            const user = JSON.parse(localStorage.getItem("user")) || {};
-
-            localStorage.setItem(
-                "user",
-                JSON.stringify({
-                    ...user,
-                    country: registerState.country,
-                    city: registerState.city,
-                    travelReason: registerState.travelReason,
-                    travellingWithPet: registerState.travellingWithPet === "true",
-                })
-            );
-
-            window.dispatchEvent(new Event("auth-change"));
-            setStep("success");
-            return;
-        }
-
-        handleClose();
     };
 
-    const continueVariant =
-        step === "info" && !isInfoFormComplete ? "disabled" : "primary";
+    const continueVariant = step === "info" && !isInfoFormComplete ? "disabled" : "primary";
 
     return (
         <div
@@ -240,25 +198,15 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                         placeholder="Email"
                                         className="h-[56px] rounded-full border border-[#DDDDDD] px-[24px] outline-none focus:border-[#581ADB]"
                                         value={loginState.email}
-                                        onChange={(e) =>
-                                            setLoginState((prev) => ({
-                                                ...prev,
-                                                email: e.target.value,
-                                            }))
-                                        }
+                                        onChange={(e) => setLoginState((prev) => ({ ...prev, email: e.target.value }))}
                                     />
 
                                     <AuthInput
                                         type="password"
                                         placeholder="Password"
-                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] outline-none focus:border-[#581ADB]"
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] outline-none"
                                         value={loginState.password}
-                                        onChange={(e) =>
-                                            setLoginState((prev) => ({
-                                                ...prev,
-                                                password: e.target.value,
-                                            }))
-                                        }
+                                        onChange={(e) => setLoginState((prev) => ({ ...prev, password: e.target.value }))}
                                     />
                                 </>
                             ) : (
@@ -269,12 +217,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                             placeholder="Email"
                                             className="h-[56px] rounded-full border border-[#DDDDDD] px-[24px] outline-none focus:border-[#581ADB]"
                                             value={registerState.email}
-                                            onChange={(e) =>
-                                                setRegisterState((prev) => ({
-                                                    ...prev,
-                                                    email: e.target.value,
-                                                }))
-                                            }
+                                            onChange={(e) => setRegisterState((prev) => ({ ...prev, email: e.target.value }))}
                                         />
 
                                         <p className="mx-[24px] mt-2 text-[16px] font-normal leading-[16px] text-[#717171]">
@@ -285,29 +228,19 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                     <AuthInput
                                         type="password"
                                         placeholder="Password"
-                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] pr-[72px] outline-none focus:border-[#581ADB]"
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] pr-[72px] outline-none"
                                         showCounter
                                         value={registerState.password}
-                                        onChange={(e) =>
-                                            setRegisterState((prev) => ({
-                                                ...prev,
-                                                password: e.target.value,
-                                            }))
-                                        }
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, password: e.target.value }))}
                                     />
 
                                     <AuthInput
                                         type="password"
                                         placeholder="Repeat password"
-                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] pr-[72px] outline-none focus:border-[#581ADB]"
+                                        className="h-[56px] w-full rounded-full border border-[#DDDDDD] px-[24px] pr-[72px] outline-none"
                                         showCounter
                                         value={registerState.passwordRepeated}
-                                        onChange={(e) =>
-                                            setRegisterState((prev) => ({
-                                                ...prev,
-                                                passwordRepeated: e.target.value,
-                                            }))
-                                        }
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, passwordRepeated: e.target.value }))}
                                     />
 
                                     <p className="px-[24px] text-[16px] text-[#717171]">
@@ -351,86 +284,45 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                     <select
                                         className="h-[56px] w-full appearance-none rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none"
                                         value={registerState.country}
-                                        onChange={(e) =>
-                                            setRegisterState((prev) => ({
-                                                ...prev,
-                                                country: e.target.value,
-                                                city: "",
-                                            }))
-                                        }
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, country: e.target.value, city: "" }))}
                                     >
-                                        <option value="" disabled>
-                                            Country
-                                        </option>
-
+                                        <option value="" disabled>Country</option>
                                         {countries.map((c) => (
-                                            <option key={c} value={c}>
-                                                {c}
-                                            </option>
+                                            <option key={c} value={c}>{c}</option>
                                         ))}
                                     </select>
 
-                                    <img
-                                        src={selectArrowIcon}
-                                        alt="arrow"
-                                        className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2"
-                                    />
+                                    <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
                                 </div>
 
                                 <div className="relative w-full">
                                     <select
                                         className="h-[56px] w-full appearance-none rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none"
                                         value={registerState.city}
-                                        onChange={(e) =>
-                                            setRegisterState((prev) => ({
-                                                ...prev,
-                                                city: e.target.value,
-                                            }))
-                                        }
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, city: e.target.value }))}
                                     >
-                                        <option value="" disabled>
-                                            City
-                                        </option>
-
+                                        <option value="" disabled>City</option>
                                         {cities.map((city) => (
-                                            <option key={city} value={city}>
-                                                {city}
-                                            </option>
+                                            <option key={city} value={city}>{city}</option>
                                         ))}
                                     </select>
 
-                                    <img
-                                        src={selectArrowIcon}
-                                        alt="arrow"
-                                        className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2"
-                                    />
+                                    <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
                                 </div>
 
                                 <div className="relative w-full">
                                     <select
                                         className="h-[56px] w-full appearance-none rounded-full border border-[#DDDDDD] bg-white px-[24px] pr-[72px] text-[16px] text-[#717171] outline-none"
                                         value={registerState.travelReason}
-                                        onChange={(e) =>
-                                            setRegisterState((prev) => ({
-                                                ...prev,
-                                                travelReason: e.target.value,
-                                            }))
-                                        }
+                                        onChange={(e) => setRegisterState((prev) => ({ ...prev, travelReason: e.target.value }))}
                                     >
-                                        <option value="" disabled>
-                                            Why do you travel?
-                                        </option>
-
+                                        <option value="" disabled>Why do you travel?</option>
                                         <option value="Business">Business</option>
                                         <option value="Vacation">Vacation</option>
                                         <option value="Family">Family</option>
                                     </select>
 
-                                    <img
-                                        src={selectArrowIcon}
-                                        alt="arrow"
-                                        className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2"
-                                    />
+                                    <img src={selectArrowIcon} alt="arrow" className="pointer-events-none absolute right-[24px] top-1/2 h-2.5 w-2.5 -translate-y-1/2" />
                                 </div>
 
                                 <div className="mt-7 ml-6 flex flex-col gap-3">
@@ -445,12 +337,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                                 name="travellingWithPet"
                                                 value="true"
                                                 checked={registerState.travellingWithPet === "true"}
-                                                onChange={(e) =>
-                                                    setRegisterState((prev) => ({
-                                                        ...prev,
-                                                        travellingWithPet: e.target.value,
-                                                    }))
-                                                }
+                                                onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
                                                 className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
                                             />
                                             Yes
@@ -462,12 +349,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                                 name="travellingWithPet"
                                                 value="false"
                                                 checked={registerState.travellingWithPet === "false"}
-                                                onChange={(e) =>
-                                                    setRegisterState((prev) => ({
-                                                        ...prev,
-                                                        travellingWithPet: e.target.value,
-                                                    }))
-                                                }
+                                                onChange={(e) => setRegisterState((prev) => ({ ...prev, travellingWithPet: e.target.value }))}
                                                 className="h-4 w-4 rounded-full border border-[#D9D9D9] text-[#581ADB] focus:ring-[#581ADB]"
                                             />
                                             No
@@ -476,15 +358,10 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                                 </div>
                             </div>
 
-                            {authError && (
-                                <p className="mt-4 px-2 text-center text-[14px] font-medium text-red-600">
-                                    {authError}
-                                </p>
-                            )}
-
                             <div className="mt-7 flex flex-col gap-4">
                                 <AuthPrimaryButton
                                     variant={continueVariant}
+                                    disabled={continueVariant === "disabled"}
                                     onClick={handleContinue}
                                 >
                                     Continue
@@ -541,6 +418,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
                         <AuthPrimaryButton
                             variant={continueVariant}
+                            disabled={continueVariant === "disabled"}
                             onClick={handleContinue}
                         >
                             Continue
@@ -551,14 +429,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
                 {step === "form" && isLogin && (
                     <p className="mb-6 text-center text-[14px] text-[#717171]">
                         Do not have an account?{" "}
-                        <button
-                            type="button"
-                            className="text-[#581ADB]"
-                            onClick={() => {
-                                setAuthError("");
-                                onSwitch("register");
-                            }}
-                        >
+                        <button type="button" className="text-[#581ADB]" onClick={() => onSwitch("register")}>
                             Register
                         </button>
                     </p>
@@ -576,14 +447,7 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
     );
 };
 
-const AuthInput = ({
-    type = "text",
-    placeholder,
-    className = "",
-    showCounter = false,
-    value,
-    onChange,
-}) => {
+const AuthInput = ({ type = "text", placeholder, className = "", showCounter = false, value, onChange }) => {
     if (!showCounter) {
         return (
             <input
@@ -591,8 +455,7 @@ const AuthInput = ({
                 placeholder={placeholder}
                 className={className}
                 maxLength={50}
-                value={value}
-                onChange={onChange}
+                {...(value !== undefined ? { value, onChange } : {})}
             />
         );
     }
@@ -616,8 +479,7 @@ const AuthInput = ({
 };
 
 const AuthPrimaryButton = ({ children, variant = "primary", onClick }) => {
-    const baseClasses =
-        "w-full h-[56px] rounded-full font-semibold text-[16px] transition-colors";
+    const baseClasses = "w-full h-[56px] rounded-full font-semibold text-[16px] transition-colors";
 
     const variants = {
         primary: "bg-[#581ADB] text-white hover:bg-[#4a15ba]",
