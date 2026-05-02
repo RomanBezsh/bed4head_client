@@ -140,7 +140,7 @@ const Search = () => {
                         <span className="min-w-0 flex-1 truncate text-[14px] font-semibold text-[#222222]">
                             {guestsLabel}
                         </span>
-                        <img src={arrowsIcon} className={`h-[18px] w-[18px] shrink-0 transition-transform ${activePanel === "guests" ? "rotate-180" : ""}`} alt="" />
+                        <img src={arrowsIcon} className={`h-[22px] w-[22px] shrink-0 transition-transform ${activePanel === "guests" ? "rotate-180" : ""}`} alt="" />
                     </button>
                 </div>
 
@@ -153,7 +153,7 @@ const Search = () => {
                     "
                     aria-label="Search"
                 >
-                    <img src={searchButton} className="h-[28px] w-[28px]" alt="" />
+                    <img src={searchButton} className="h-[48px] w-[48px]" alt="" />
                 </button>
 
                 {activePanel === "destination" && (
