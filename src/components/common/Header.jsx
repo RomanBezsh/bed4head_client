@@ -65,7 +65,7 @@ const Header = () => {
 
                 <div className="flex items-center gap-[10px]">
 
-                    {/* LANGUAGE */}
+                    {/* LANGUAGE
                     {!isBooking && (
                         <button className="w-[26px] h-[26px] rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95">
                             <img
@@ -74,7 +74,7 @@ const Header = () => {
                                 className="w-full h-full object-cover rounded-full"
                             />
                         </button>
-                    )}
+                    )} */}
 
                     {/* AUTH */}
                     {!isAccountPage && !isBooking && (
