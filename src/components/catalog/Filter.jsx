@@ -134,7 +134,7 @@ const Filter = ({ hotels = [], filters, onFiltersChange }) => {
     };
 
     return (
-        <div className="flex flex-col border border-gray w-full max-w-[272px] text-[#717171] bg-white rounded-lg gap-0 divide-y divide-gray">
+        <div className="flex flex-col lg:border lg:border-gray w-full max-w-[272px] text-[#717171] bg-white lg:rounded-lg gap-0 divide-y divide-gray">
             <div className="flex flex-col gap-3 p-6">
                 <h3 className="text-[16px] font-bold text-[#555555]">Price</h3>
                 <div className="flex flex-row justify-between text-[16px]">
