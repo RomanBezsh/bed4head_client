@@ -59,7 +59,7 @@ const HotelCard = ({
                 <img
                     src={getImageUrl(maxImages[current])}
                     alt="hotel"
-                    className="block w-68 h-62 w-full rounded-[13px] object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="block w-68 h-62 rounded-[13px] object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
                 <div className="absolute bottom-[10px] left-0 flex w-full justify-center gap-[6px]">
