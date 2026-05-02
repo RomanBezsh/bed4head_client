@@ -65,6 +65,12 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
             if (step === "form") {
                 if (isLogin) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(loginState.email)) {
+                        setAuthError("Please enter a valid email address.");
+                        return;
+                    }
+
                     const data = await authService.login(loginState);
                     const token = data.token || data.Token;
 
@@ -76,6 +82,23 @@ const AuthModal = ({ mode = "register", onClose, onSwitch }) => {
 
                     window.dispatchEvent(new Event("auth-change"));
                     setStep("success");
+                    return;
+                }
+
+                // Registration Validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(registerState.email)) {
+                    setAuthError("Please enter a valid email address.");
+                    return;
+                }
+
+                if (registerState.password.length < 8) {
+                    setAuthError("Password must be at least 8 characters long.");
+                    return;
+                }
+
+                if (registerState.password !== registerState.passwordRepeated) {
+                    setAuthError("Passwords do not match.");
                     return;
                 }
 
