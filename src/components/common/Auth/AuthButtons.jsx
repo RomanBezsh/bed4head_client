@@ -32,10 +32,10 @@ const AuthButtons = ({ accountIcon, isLoggedIn = false, onOpen }) => {
                     onClick={() => navigate("/account")}
                     className={`${baseBtn} w-30 justify-between pl-4 pr-1`}
                 >
-                    <span className="ml-2.5">Account</span>
+                    <span className="">Account</span>
 
                     <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#666666]">
-                        <img src={accountIcon} alt="account" className="h-4 w-4" />
+                        <img src={accountIcon} alt="account" className="h-6 w-6" />
                     </div>
                 </button>
             )}
