@@ -29,7 +29,7 @@ const Layout = ({ user }) => {
 
                 <Route path="/catalog" element={<Catalog />} /> {/* Keep this for the main catalog page */}
                 <Route path="/hotel/:id" element={<HotelPage />} /> {/* Dynamic route for individual hotel pages */}
-                <Route element={<ProtectedRoute user={user} allowedRole={UserRole.User || UserRole.Admin} />}>
+                <Route element={<ProtectedRoute user={user} />}>
                     <Route path="/account" element={<AccountDashboard />} />
                 </Route>
                 <Route path="/booking" element={<Booking />} />

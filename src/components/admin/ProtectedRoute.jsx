@@ -2,15 +2,15 @@ import { Navigate, Outlet } from "react-router-dom";
 import { UserRole } from "./roles";
 
 const ProtectedRoute = ({ user, allowedRole }) => {
-    
-    // Проверяем доступ:
     const userRoleValue = user?.role;
-    const isAdminRequired = allowedRole === UserRole.Admin;
 
-    // Прямое сравнение чисел или строк
+    // Доступ разрешен, если:
+    // 1. Пользователь авторизован (не null)
+    // И (Либо роль не указана, либо она совпадает, либо пользователь — админ)
     const hasAccess = user !== null && (
+        !allowedRole || 
         Number(userRoleValue) === Number(allowedRole) || 
-        (isAdminRequired && String(userRoleValue).toLowerCase() === "admin")
+        String(userRoleValue).toLowerCase() === "admin"
     );
 
     if (!hasAccess) {
