@@ -25,7 +25,12 @@ const HotelMainInfo = ({ name, images, tags, description, address, city, onBookC
         return reviews.slice(0, 3).map((rev) => ({
             name: rev.authorDisplayName || rev.authorName || rev.userName || "Guest",
             hotelName: name,
-            photo: avatar,
+            photo: getImageUrl(
+                rev.authorAvatarUrl || 
+                rev.AuthorAvatarUrl || 
+                rev.avatarUrl || 
+                rev.AvatarUrl
+            ) || avatar,
             data: rev.createdAt
                 ? new Date(rev.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
                 : "Recently",
