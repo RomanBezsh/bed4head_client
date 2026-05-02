@@ -18,26 +18,6 @@ const TAG_ICONS = {
 const HotelMainInfo = ({ name, images, tags, description, address, city, onBookClick, basePricePerNight, reviews = [] }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    const randomReviews = useMemo(() => {
-        if (!reviews || reviews.length === 0) return [];
-
-        // Перемешиваем и выбираем до 3-х случайных отзывов
-        return reviews.slice(0, 3).map((rev) => ({
-            name: rev.authorDisplayName || rev.authorName || rev.userName || "Guest",
-            hotelName: name,
-            photo: getImageUrl(
-                rev.authorAvatarUrl || 
-                rev.AuthorAvatarUrl || 
-                rev.avatarUrl || 
-                rev.AvatarUrl
-            ) || avatar,
-            data: rev.createdAt
-                ? new Date(rev.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                : "Recently",
-            text: rev.comment || rev.text || "",
-        }));
-    }, [reviews, name]);
-
     const getImageUrl = (img) => {
         const raw =
             typeof img === "string"
@@ -59,6 +39,26 @@ const HotelMainInfo = ({ name, images, tags, description, address, city, onBookC
         // иначе не трогаем
         return raw;
     };
+
+    const randomReviews = useMemo(() => {
+        if (!reviews || reviews.length === 0) return [];
+
+        // Перемешиваем и выбираем до 3-х случайных отзывов
+        return reviews.slice(0, 3).map((rev) => ({
+            name: rev.authorDisplayName || rev.authorName || rev.userName || "Guest",
+            hotelName: name,
+            photo: getImageUrl(
+                rev.authorAvatarUrl || 
+                rev.AuthorAvatarUrl || 
+                rev.avatarUrl || 
+                rev.AvatarUrl
+            ) || avatar,
+            data: rev.createdAt
+                ? new Date(rev.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                : "Recently",
+            text: rev.comment || rev.text || "",
+        }));
+    }, [reviews, name]);
 
     const activeImage = getImageUrl(images[currentImageIndex]);
 
